@@ -47,7 +47,7 @@ class FloorCV(ABC):
         cv.imwrite(str(output_path), img)
 
     @staticmethod
-    def find_table_corners(intersections: List[Point]) -> np.ndarray:
+    def get_table_corners(intersections: List[Point]) -> List:
         top_left = Point(float('inf'), float('inf'))
         top_right = Point(float('-inf'), float('inf'))
         bottom_left = Point(float('inf'), float('-inf'))
@@ -74,14 +74,14 @@ class FloorCV(ABC):
                 bottom_left = point
                 bottom_left_sum = bottom_left.y - bottom_left.x
         corner_list = [top_left, top_right, bottom_right, bottom_left]
-        corners_tuple = [[point.x, point.y] for point in corner_list]
-        corners = np.array(corners_tuple, dtype=np.int32)
+        corners = [[point.x, point.y] for point in corner_list]
         return corners
 
     @staticmethod
-    def create_rectangular_mask(img: np.ndarray, corner_points: np.ndarray) -> np.ndarray:
+    def create_rectangular_mask(img: np.ndarray, corners: List) -> np.ndarray:
         mask_image = np.zeros_like(img)
-        cv.fillConvexPoly(mask_image, corner_points, [255])
+        np_corners = np.int32(corners)
+        cv.fillConvexPoly(mask_image, np_corners, [255])
         return mask_image
 
     @staticmethod
@@ -146,7 +146,7 @@ class FloorCV(ABC):
         for contour in contours:
             x, y, width, height = cv.boundingRect(contour)
             # Filter small rectangles that are not cells
-            if width > 10 and height > 10:  # Adjust this threshold as needed
+            if width > 12 and height > 12:  # Adjust this threshold as needed
                 cells.append(Cell(x, y, width, height))
         return cells
 
@@ -175,74 +175,159 @@ class FloorCV(ABC):
         FloorCV.log_image(root_dir, annotated_image, 'annotated_image')
 
     @staticmethod
-    def straighten_table(img: np.ndarray, src_corners: np.ndarray) -> np.ndarray:
-        dst_corners = np.float32([
-            [0, 0],  # Top-left
-            [img.shape[1] - 1, 0],  # Top-right
-            [img.shape[1] - 1, img.shape[0] - 1],  # Bottom-right
-            [0, img.shape[0] - 1]  # Bottom-left
-        ])
-        src_corners = np.float32(src_corners)
+    def get_dst_corners(corners: List) -> List:
+        """
+        Expects corner spots of a distorted rect and deduces the new corner spots for a straightened rect.
+        """
+        x_min = float('inf')
+        y_min = float('inf')
+        x_max = float('-inf')
+        y_max = float('-inf')
+        for corner in corners:
+            corner_x = corner[0]
+            corner_y = corner[1]
+            if corner_x < x_min:
+                x_min = corner_x
+            if corner_y < y_min:
+                y_min = corner_y
+            if corner_x > x_max:
+                x_max = corner_x
+            if corner_y > y_max:
+                y_max = corner_y
+        return [
+            [x_min, y_min],
+            [x_max, y_min],
+            [x_max, y_max],
+            [x_min, y_max],
+        ]
+
+    @staticmethod
+    def straighten_table(img: np.ndarray, lines: List, corners: List) -> Tuple:
+        src_corners = np.float32(corners)
+        new_corners = FloorCV.get_dst_corners(corners)
+        dst_corners = np.float32(new_corners)
         perspective_transform = cv.getPerspectiveTransform(src_corners, dst_corners)
+
+        transformed_lines = []
+        for line in lines:
+            # Convert the line endpoints to homogeneous coordinates (adding a third coordinate)
+            points = np.float32(line).reshape(-1, 1, 2)  # Ensure shape is correct for cv2
+            transformed_points = cv.perspectiveTransform(points, perspective_transform)
+            transformed_points = transformed_points.reshape(4)
+            transformed_lines.append(transformed_points)
         warped_image = cv.warpPerspective(img, perspective_transform, (img.shape[1], img.shape[0]))
-        return warped_image
+        return warped_image, transformed_lines, new_corners, perspective_transform
 
     @staticmethod
-    def get_all_lines(img: np.ndarray) -> np.ndarray:
-        return cv.HoughLinesP(image=img, rho=1, theta=np.pi / 180, threshold=400, minLineLength=50,
-                              maxLineGap=100)
+    def get_all_lines(img: np.ndarray) -> List:
+        lines = cv.HoughLinesP(image=img, rho=1, theta=np.pi / 180, threshold=400, minLineLength=50,
+                               maxLineGap=100)
+        lines = np.squeeze(lines)
+        return list(lines)
 
     @staticmethod
-    def get_line_img(img: np.ndarray, lines: np.ndarray) -> np.ndarray:
-        img_all_lines = np.zeros_like(img)
+    def extend_all_lines(img: np.ndarray, lines: List) -> None:
+        base_img = np.zeros_like(img)
         if lines is None or len(lines) < 2:
             pass
         for i in range(len(lines)):
-            for x1, y1, x2, y2 in lines[i]:
-                lines[i] = FloorCV.extend_line(x1, y1, x2, y2, img_all_lines.shape)
-                x1_ext, y1_ext, x2_ext, y2_ext = lines[i][0]
-                cv.line(img_all_lines, [x1_ext, y1_ext], [x2_ext, y2_ext], [255], 1)
+            x1, y1, x2, y2 = lines[i]
+            lines[i] = FloorCV.extend_line(x1, y1, x2, y2, base_img.shape)
+
+    @staticmethod
+    def get_line_img(img: np.ndarray, lines: List) -> np.ndarray:
+        img_all_lines = np.zeros_like(img)
+        if lines is None or len(lines) < 2:
+            pass
+        for line in lines:
+            x1, y1, x2, y2 = line
+            cv.line(img_all_lines, [x1, y1], [x2, y2], [255], 1)
         return img_all_lines
 
     @staticmethod
-    def get_all_intersections(img: np.ndarray, lines: np.ndarray) -> Tuple[List[Point], np.ndarray]:
+    def filter_out_close_lines(lines: np.ndarray, threshold: float = 20.0) -> List:
+        shapely_lines = [LineString([(x1, y1), (x2, y2)]) for x1, y1, x2, y2 in lines]
+
+        def is_horizontal(line: LineString, rtol=.03):
+            return np.isclose(line.coords[0][1], line.coords[1][1], rtol=rtol)  # y1 == y2
+
+        def is_vertical(line: LineString, rtol=.03):
+            return np.isclose(line.coords[0][0], line.coords[1][0], rtol=rtol)  # x1 == x2
+
+        horizontal_lines = [line for line in shapely_lines if is_horizontal(line)]
+        vertical_lines = [line for line in shapely_lines if is_vertical(line)]
+
+        def get_abs_slope(x1, x2, y1, y2):
+            dx = x2 - x1
+            dy = y2 - y1
+            slope = float('inf')
+            if dx != 0:
+                slope = dy / dx
+            abs_slope = abs(slope)
+            return abs_slope
+
+        def filter_lines_by_orientation(lines: List[LineString], is_horizontal: bool):
+            filtered = []
+            for i, line1 in enumerate(lines):
+                keep_line = True
+                line1_abs_slope = get_abs_slope(line1.coords[0][0], line1.coords[1][0], line1.coords[0][1],
+                                                line1.coords[1][1])
+                for j, line2 in enumerate(filtered):
+                    if line1.distance(line2) < threshold:
+                        line2_abs_slope = get_abs_slope(line2.coords[0][0], line2.coords[1][0], line2.coords[0][1],
+                                                        line2.coords[1][1])
+                        if (is_horizontal and line1_abs_slope < line2_abs_slope) or (
+                                not is_horizontal and line1_abs_slope > line2_abs_slope):
+                            filtered[j] = line1
+                        keep_line = False
+                        break
+                if keep_line:
+                    filtered.append(line1)
+
+            return filtered
+
+        filtered_horizontal = filter_lines_by_orientation(horizontal_lines, is_horizontal=True)
+        filtered_vertical = filter_lines_by_orientation(vertical_lines, is_horizontal=False)
+        filtered_lines = filtered_horizontal + filtered_vertical
+        filtered_array = np.array(
+            [[line.coords[0][0], line.coords[0][1], line.coords[1][0], line.coords[1][1]] for line in filtered_lines],
+            dtype=np.int32)
+        return list(filtered_array)
+
+    @staticmethod
+    def add_lines_around_table(corners: List, lines: List):
+        lines_around_table = [
+            [corners[0][0], corners[0][1], corners[1][0], corners[1][1]],  # top-left to top-right
+            [corners[1][0], corners[1][1], corners[2][0], corners[2][1]],  # top-right to bottom-right
+            [corners[0][0], corners[0][1], corners[3][0], corners[3][1]],  # top-left to bottom-left
+            [corners[3][0], corners[3][1], corners[2][0], corners[2][1]],  # bottom-left to bottom-right
+        ]
+        lines_around_table = np.float32(lines_around_table)
+        lines.extend(lines_around_table)
+
+    @staticmethod
+    def get_all_intersections(img: np.ndarray, lines: List) -> List[Point]:
         intersections = []
         img_height, img_width = img.shape[:2]
         image_box = box(0, 0, img_width, img_height)
 
-        def is_within_existing_intersections(new_point: Point, existing_points: List[Point], threshold=10) -> bool:
-            for existing_point in existing_points:
-                distance = new_point.distance(existing_point)
-                if distance < threshold:
-                    return True
-            return False
-
         lines_list = [line for line in lines]
         lines_length = len(lines_list)
         for i in range(lines_length - 1, -1, -1):
-            x0_1, y0_1, x0_2, y0_2 = lines_list[i][0]
+            x0_1, y0_1, x0_2, y0_2 = lines_list[i]
             line_str_a = LineString([(x0_1, y0_1), (x0_2, y0_2)])
-            should_delete_line = False
             tmp_points = []
             for j in range(len(lines_list)):
                 if i == j:
                     continue
-                x1_1, y1_1, x1_2, y1_2 = lines_list[j][0]
+                x1_1, y1_1, x1_2, y1_2 = lines_list[j]
                 line_str_b = LineString([(x1_1, y1_1), (x1_2, y1_2)])
                 point = line_str_a.intersection(line_str_b)
                 if point is None or isinstance(point, LineString):
                     continue
                 if not image_box.contains(point):
                     continue
-                if is_within_existing_intersections(point, intersections):
-                    should_delete_line = True
-                    break
                 tmp_points.append(point)
-            if should_delete_line:
-                lines_list.pop(i)
-            else:
-                for point in tmp_points:
-                    intersections.append(point)
-
-        filtered_lines = np.array(lines_list)
-        return intersections, filtered_lines
+            for point in tmp_points:
+                intersections.append(point)
+        return intersections
