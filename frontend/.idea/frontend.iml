@@ -249,11 +249,14 @@
       <excludeFolder url="file://$MODULE_DIR$/.fvm/flutter_sdk/packages/integration_test/integration_test_macos/build" />
       <excludeFolder url="file://$MODULE_DIR$/.pub" />
       <excludeFolder url="file://$MODULE_DIR$/build" />
+      <excludeFolder url="file://$MODULE_DIR$/.fvm/flutter_sdk/bin/cache/artifacts/engine/windows-x64/flutter_gpu/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/.fvm/flutter_sdk/bin/cache/artifacts/engine/windows-x64/flutter_gpu/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/.fvm/flutter_sdk/bin/cache/artifacts/engine/windows-x64/flutter_gpu/build" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="Dart SDK" level="project" />
-    <orderEntry type="library" name="Dart Packages" level="project" />
     <orderEntry type="library" name="Flutter Plugins" level="project" />
+    <orderEntry type="library" name="Dart Packages" level="project" />
   </component>
 </module>

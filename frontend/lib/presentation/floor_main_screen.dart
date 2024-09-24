@@ -1,13 +1,13 @@
 import 'package:floor_cv/components/floor_app_bar.dart';
-import 'package:floor_cv/components/floor_dismissible_card.dart';
+import 'package:floor_cv/components/floor_card.dart';
 import 'package:floor_cv/config/config.dart';
 import 'package:floor_cv/data/models/floor_dto_models.dart';
 import 'package:floor_cv/data/repositories/floor_repository.dart';
+import 'package:floor_cv/presentation/floor_overview_screen.dart';
 import 'package:floor_cv/utils/alert_dialog.dart';
 import 'package:floor_cv/utils/list_utils.dart';
 import 'package:floor_cv/utils/widget_utils.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:timeago_flutter/timeago_flutter.dart';
 
 class FloorMainScreen extends StatefulWidget {
@@ -23,8 +23,10 @@ class _FloorMainScreenState extends State<FloorMainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    Widget buildPreviewCard(DocumentPreviewDto documentPreview) => FloorDismissibleCard(
-          onTap: () {},
+    Widget buildPreviewCard(DocumentPreviewDto documentPreview) => FloorCard(
+          onTap: () async {
+            await Navigator.of(context).push(MaterialPageRoute(builder: (_) => FloorOverviewScreen()));
+          },
           child: RowGap(
             gap: AppSizes.kGap,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -36,7 +38,7 @@ class _FloorMainScreenState extends State<FloorMainScreen> {
                   color: colorScheme.secondaryContainer,
                 ),
                 child: Icon(
-                  Icons.description,
+                  Icons.article_outlined,
                   size: AppSizes.kIconSize,
                   color: colorScheme.onSecondaryContainer,
                 ),
@@ -81,27 +83,13 @@ class _FloorMainScreenState extends State<FloorMainScreen> {
       ),
       floatingActionButton: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
-        child: RowGap(
-          gap: AppSizes.kSmallGap,
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            FloatingActionButton.extended(
-              heroTag: UniqueKey(),
-              icon: Icon(Icons.image),
-              label: Text('Galerie'),
-              onPressed: () async {
-                final XFile? photo = await ImagePicker().pickImage(source: ImageSource.gallery);
-              },
-            ),
-            FloatingActionButton.extended(
-              heroTag: UniqueKey(),
-              icon: Icon(Icons.camera_alt),
-              label: Text('Kamera'),
-              onPressed: () async {
-                final XFile? photo = await ImagePicker().pickImage(source: ImageSource.camera);
-              },
-            )
-          ],
+        child: FloatingActionButton.extended(
+          heroTag: UniqueKey(),
+          icon: Icon(Icons.post_add),
+          label: Text('Erfassen'),
+          onPressed: () async {
+            await Navigator.of(context).push(MaterialPageRoute(builder: (_) => FloorOverviewScreen()));
+          },
         ),
       ),
       body: StreamBuilder(
