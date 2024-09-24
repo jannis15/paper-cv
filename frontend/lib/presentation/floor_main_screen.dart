@@ -79,7 +79,7 @@ class _FloorMainScreenState extends State<FloorMainScreen> {
 
     return Scaffold(
       appBar: FloorAppBar(
-        title: Text('Demo'),
+        title: Text('FloorCV'),
       ),
       floatingActionButton: SingleChildScrollView(
         scrollDirection: Axis.horizontal,

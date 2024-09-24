@@ -2,6 +2,7 @@ import 'package:floor_cv/components/floor_app_bar.dart';
 import 'package:floor_cv/components/floor_attachment_card.dart';
 import 'package:floor_cv/components/floor_card.dart';
 import 'package:floor_cv/components/floor_file_picker.dart';
+import 'package:floor_cv/components/floor_loader_overlay.dart';
 import 'package:floor_cv/components/floor_text_field.dart';
 import 'package:floor_cv/config/config.dart';
 import 'package:floor_cv/utils/file_picker_models.dart';
@@ -80,19 +81,31 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
               },
               onRemoveFile: (file) {},
             ),
-            FloorAttachmentCard(
-              title: 'Scan',
-              iconData: Icons.document_scanner,
-              iconText: 'Scannen',
-              onPickFiles: () async => null,
-              onRemoveFile: (file) {},
+            IntrinsicHeight(
+              child: FloorLoaderOverlay(
+                loading: true,
+                loadingWidget: const SizedBox(),
+                child: FloorAttachmentCard(
+                  title: 'Scan',
+                  iconData: Icons.document_scanner,
+                  iconText: 'Scannen',
+                  onPickFiles: () async => null,
+                  onRemoveFile: (file) {},
+                ),
+              ),
             ),
-            FloorAttachmentCard(
-              title: 'Bericht',
-              iconData: Icons.preview,
-              iconText: 'Vorschau',
-              onPickFiles: () async => null,
-              onRemoveFile: (file) {},
+            IntrinsicHeight(
+              child: FloorLoaderOverlay(
+                loading: true,
+                loadingWidget: const SizedBox(),
+                child: FloorAttachmentCard(
+                  title: 'Bericht',
+                  iconData: Icons.preview,
+                  iconText: 'Vorschau',
+                  onPickFiles: () async => null,
+                  onRemoveFile: (file) {},
+                ),
+              ),
             ),
           ],
         ),

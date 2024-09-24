@@ -28,7 +28,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Demo',
+      title: 'FloorCV',
       theme: ThemeData(
         colorSchemeSeed: Colors.teal,
         textTheme: FloorTextTheme(),
