@@ -39,7 +39,7 @@ class _FloorCardState extends State<FloorCard> {
                   color: Colors.red,
                   padding: EdgeInsets.all(AppSizes.kGap),
                   alignment: AlignmentDirectional.centerEnd,
-                  child: Icon(Icons.delete, size: AppSizes.kIconSize),
+                  child: Icon(Icons.delete, size: AppSizes.kIconSize, color: Colors.white),
                 ),
                 child: buildCardChild(),
               )

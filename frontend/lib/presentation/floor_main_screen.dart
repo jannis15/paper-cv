@@ -38,7 +38,7 @@ class _FloorMainScreenState extends State<FloorMainScreen> {
                   color: colorScheme.secondaryContainer,
                 ),
                 child: Icon(
-                  Icons.article_outlined,
+                  Icons.article,
                   size: AppSizes.kIconSize,
                   color: colorScheme.onSecondaryContainer,
                 ),
@@ -66,7 +66,10 @@ class _FloorMainScreenState extends State<FloorMainScreen> {
               context,
               title: "'${documentPreview.title.trim().isNotEmpty ? documentPreview.title : 'Gescanntes Dokument'}' löschen?",
               content: 'Das Dokument wird dadurch unwiderruflich gelöscht!',
-              optionData: [AlertOptionData.yes(customText: 'Löschen'), AlertOptionData.cancel()],
+              optionData: [
+                AlertOptionData.cancel(),
+                AlertOptionData.yes(customText: 'Löschen'),
+              ],
             );
             return alertOption == AlertOption.yes;
           },

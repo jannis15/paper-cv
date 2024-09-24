@@ -1,5 +1,6 @@
 import 'package:floor_cv/components/floor_app_bar.dart';
 import 'package:floor_cv/components/floor_attachment_card.dart';
+import 'package:floor_cv/components/floor_buttons.dart';
 import 'package:floor_cv/components/floor_card.dart';
 import 'package:floor_cv/components/floor_file_picker.dart';
 import 'package:floor_cv/components/floor_loader_overlay.dart';
@@ -87,8 +88,21 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
                 loadingWidget: const SizedBox(),
                 child: FloorAttachmentCard(
                   title: 'Scan',
-                  iconData: Icons.document_scanner,
-                  iconText: 'Scannen',
+                  iconData: Icons.cloud_upload,
+                  iconText: 'Hochladen',
+                  onPickFiles: () async => null,
+                  onRemoveFile: (file) {},
+                ),
+              ),
+            ),
+            IntrinsicHeight(
+              child: FloorLoaderOverlay(
+                loading: true,
+                loadingWidget: const SizedBox(),
+                child: FloorAttachmentCard(
+                  title: 'Vorlage',
+                  iconData: Icons.calculate,
+                  iconText: 'Auswählen',
                   onPickFiles: () async => null,
                   onRemoveFile: (file) {},
                 ),
@@ -100,10 +114,21 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
                 loadingWidget: const SizedBox(),
                 child: FloorAttachmentCard(
                   title: 'Bericht',
-                  iconData: Icons.preview,
-                  iconText: 'Vorschau',
+                  iconData: Icons.auto_awesome,
+                  iconText: 'Generieren',
                   onPickFiles: () async => null,
                   onRemoveFile: (file) {},
+                ),
+              ),
+            ),
+            IntrinsicHeight(
+              child: FloorLoaderOverlay(
+                loading: true,
+                loadingWidget: const SizedBox(),
+                child: FloorFilledButton(
+                  iconData: Icons.lock,
+                  text: 'Abschließen',
+                  onPressed: () {},
                 ),
               ),
             ),
