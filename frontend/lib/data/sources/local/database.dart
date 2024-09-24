@@ -33,6 +33,11 @@ class FloorDatabase extends _$FloorDatabase with DbMixin {
         modifiedAt: row.modifiedAt,
       );
 
+  Future<void> deleteDocumentById(String documentId) async {
+    final query = delete(tbDocument)..where((tbl) => tbl.uuid.isValue(documentId));
+    await query.go();
+  }
+
   Stream<List<DocumentPreviewDto>> watchDocumentPreviews() {
     final query = select(tbDocument).join([]);
     query.orderBy([

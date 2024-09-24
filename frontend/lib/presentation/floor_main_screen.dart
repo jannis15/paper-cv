@@ -3,6 +3,7 @@ import 'package:floor_cv/components/floor_dismissible_card.dart';
 import 'package:floor_cv/config/config.dart';
 import 'package:floor_cv/data/models/floor_dto_models.dart';
 import 'package:floor_cv/data/repositories/floor_repository.dart';
+import 'package:floor_cv/utils/alert_dialog.dart';
 import 'package:floor_cv/utils/list_utils.dart';
 import 'package:floor_cv/utils/widget_utils.dart';
 import 'package:flutter/material.dart';
@@ -59,9 +60,19 @@ class _FloorMainScreenState extends State<FloorMainScreen> {
             ],
           ),
           confirmDismiss: (dismissDirection) async {
-            return false;
+            final alertOption = await showAlertDialog(
+              context,
+              title: "'${documentPreview.title.trim().isNotEmpty ? documentPreview.title : 'Gescanntes Dokument'}' löschen?",
+              content: 'Das Dokument wird dadurch unwiderruflich gelöscht!',
+              optionData: [AlertOptionData.yes(customText: 'Löschen'), AlertOptionData.cancel()],
+            );
+            return alertOption == AlertOption.yes;
           },
-          onDismissed: (dismissDirection) {},
+          onDismissed: (dismissDirection) async {
+            if (documentPreview.uuid != null) {
+              await FloorRepository.deleteDocumentById(documentPreview.uuid!);
+            }
+          },
         );
 
     return Scaffold(
