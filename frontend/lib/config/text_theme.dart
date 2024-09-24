@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class FloorTextTheme extends TextTheme {
-  static const String? _fontFamily = null;
+  static const String? _fontFamily = 'Atkinson Hyperlegible';
 
   const FloorTextTheme()
       : super(

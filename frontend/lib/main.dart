@@ -24,7 +24,15 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Demo',
-      theme: ThemeData(textTheme: FloorTextTheme()),
+      theme: ThemeData(
+        colorSchemeSeed: Colors.teal,
+        textTheme: FloorTextTheme(),
+      ),
+      darkTheme: ThemeData(
+        colorSchemeSeed: Colors.teal,
+        brightness: Brightness.dark,
+        textTheme: FloorTextTheme(),
+      ),
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,

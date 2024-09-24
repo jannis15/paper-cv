@@ -15,6 +15,9 @@ class FloorDatabase extends _$FloorDatabase with DbMixin {
   @override
   int get schemaVersion => version;
 
+  @override
+  MigrationStrategy get migration => getMigration;
+
   static final _instance = FloorDatabase();
 
   static FloorDatabase get instance => _instance;

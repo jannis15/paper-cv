@@ -16,7 +16,7 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$DocumentPreviewDto {
-  String get uuid => throw _privateConstructorUsedError;
+  String? get uuid => throw _privateConstructorUsedError;
   String get title => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
   DateTime get modifiedAt => throw _privateConstructorUsedError;
@@ -35,7 +35,7 @@ abstract class $DocumentPreviewDtoCopyWith<$Res> {
       _$DocumentPreviewDtoCopyWithImpl<$Res, DocumentPreviewDto>;
   @useResult
   $Res call(
-      {String uuid, String title, DateTime createdAt, DateTime modifiedAt});
+      {String? uuid, String title, DateTime createdAt, DateTime modifiedAt});
 }
 
 /// @nodoc
@@ -53,16 +53,16 @@ class _$DocumentPreviewDtoCopyWithImpl<$Res, $Val extends DocumentPreviewDto>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? uuid = null,
+    Object? uuid = freezed,
     Object? title = null,
     Object? createdAt = null,
     Object? modifiedAt = null,
   }) {
     return _then(_value.copyWith(
-      uuid: null == uuid
+      uuid: freezed == uuid
           ? _value.uuid
           : uuid // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
       title: null == title
           ? _value.title
           : title // ignore: cast_nullable_to_non_nullable
@@ -88,7 +88,7 @@ abstract class _$$DocumentPreviewDtoImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {String uuid, String title, DateTime createdAt, DateTime modifiedAt});
+      {String? uuid, String title, DateTime createdAt, DateTime modifiedAt});
 }
 
 /// @nodoc
@@ -104,16 +104,16 @@ class __$$DocumentPreviewDtoImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? uuid = null,
+    Object? uuid = freezed,
     Object? title = null,
     Object? createdAt = null,
     Object? modifiedAt = null,
   }) {
     return _then(_$DocumentPreviewDtoImpl(
-      uuid: null == uuid
+      uuid: freezed == uuid
           ? _value.uuid
           : uuid // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
       title: null == title
           ? _value.title
           : title // ignore: cast_nullable_to_non_nullable
@@ -140,7 +140,7 @@ class _$DocumentPreviewDtoImpl implements _DocumentPreviewDto {
       required this.modifiedAt});
 
   @override
-  final String uuid;
+  final String? uuid;
   @override
   final String title;
   @override
@@ -182,13 +182,13 @@ class _$DocumentPreviewDtoImpl implements _DocumentPreviewDto {
 
 abstract class _DocumentPreviewDto implements DocumentPreviewDto {
   const factory _DocumentPreviewDto(
-      {required final String uuid,
+      {required final String? uuid,
       required final String title,
       required final DateTime createdAt,
       required final DateTime modifiedAt}) = _$DocumentPreviewDtoImpl;
 
   @override
-  String get uuid;
+  String? get uuid;
   @override
   String get title;
   @override
