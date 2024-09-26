@@ -25,7 +25,13 @@ class _FloorMainScreenState extends State<FloorMainScreen> {
   Widget build(BuildContext context) {
     Widget buildPreviewCard(DocumentPreviewDto documentPreview) => FloorCard(
           onTap: () async {
-            await Navigator.of(context).push(MaterialPageRoute(builder: (_) => FloorOverviewScreen()));
+            await Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => FloorOverviewScreen(
+                  documentId: documentPreview.uuid,
+                ),
+              ),
+            );
           },
           child: RowGap(
             gap: AppSizes.kGap,

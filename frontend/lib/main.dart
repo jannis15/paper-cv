@@ -1,5 +1,7 @@
+import 'package:floor_cv/config/system.dart';
 import 'package:floor_cv/config/text_theme.dart';
 import 'package:floor_cv/presentation/floor_main_screen.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -8,6 +10,17 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  FlutterError.onError = (details) {
+    if (details.exception.toString().contains('overflowed')) return;
+    FlutterError.presentError(details);
+    logException(details, StackTrace.current);
+    WidgetsBinding.instance.addPostFrameCallback((_) => showException(details.exception));
+  };
+  PlatformDispatcher.instance.onError = (error, stackTrace) {
+    logException(error, stackTrace);
+    WidgetsBinding.instance.addPostFrameCallback((_) => showException(error));
+    return true;
+  };
   timeago.setLocaleMessages('de', timeago.DeMessages());
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   runApp(
@@ -28,6 +41,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorKey: navigatorKey,
       title: 'FloorCV',
       theme: ThemeData(
         colorSchemeSeed: Colors.teal,

@@ -24,8 +24,12 @@ class FloorAppBarIconButton extends StatelessWidget {
 
 class FloorAppBar extends ConsumerWidget implements PreferredSizeWidget {
   final Widget? title;
+  final void Function()? customPop;
 
-  FloorAppBar({this.title});
+  FloorAppBar({
+    this.title,
+    this.customPop,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -44,7 +48,7 @@ class FloorAppBar extends ConsumerWidget implements PreferredSizeWidget {
                   FloorTransparentButton(
                     iconData: Icons.chevron_left,
                     text: 'Zurück',
-                    onPressed: Navigator.of(context).pop,
+                    onPressed: customPop ?? Navigator.of(context).pop,
                   ),
                 if (title != null) Expanded(child: title!),
               ],

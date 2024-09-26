@@ -7,7 +7,7 @@ enum FilePickerOption {
 }
 
 class SelectedFile {
-  int? id;
+  String? id;
   final String name;
   final String path;
   final Uint8List bytes;

@@ -1,14 +1,21 @@
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 import 'package:floor_cv/data/models/floor_dto_models.dart';
+import 'package:floor_cv/data/models/floor_enums.dart';
 import 'package:floor_cv/data/sources/local/migration.dart';
 import 'package:floor_cv/data/sources/local/tables.dart';
+import 'package:floor_cv/domain/floor_models.dart';
 import 'package:floor_cv/utils/db_mixin.dart';
+import 'package:floor_cv/utils/enum_utils.dart';
+import 'package:floor_cv/utils/type_converters.dart';
 import 'package:uuid/uuid.dart';
 
 part 'database.g.dart';
 
-@DriftDatabase(tables: [TbDocument])
+@DriftDatabase(tables: [
+  TbDocument,
+  TbFile,
+])
 class FloorDatabase extends _$FloorDatabase with DbMixin {
   FloorDatabase() : super(_openConnection());
 
@@ -33,6 +40,17 @@ class FloorDatabase extends _$FloorDatabase with DbMixin {
         modifiedAt: row.modifiedAt,
       );
 
+  FileDto _mapToFileDto(TbFileData row) => FileDto(
+        uuid: row.uuid,
+        refUuid: row.refUuid,
+        filename: row.filename,
+        data: row.data,
+        index: row.index,
+        fileType: row.fileType as FileType,
+        createdAt: row.createdAt,
+        modifiedAt: row.modifiedAt,
+      );
+
   Future<void> deleteDocumentById(String documentId) async {
     final query = delete(tbDocument)..where((tbl) => tbl.uuid.isValue(documentId));
     await query.go();
@@ -42,8 +60,73 @@ class FloorDatabase extends _$FloorDatabase with DbMixin {
     final query = select(tbDocument).join([]);
     query.orderBy([
       OrderingTerm.desc(tbDocument.modifiedAt),
-      OrderingTerm.desc(tbDocument.createdAt),
     ]);
     return query.map((row) => _mapToDocumentPreviewDto(row.readTable(tbDocument)!)).watch();
+  }
+
+  Future<List<FileDto>> _getFilesByDocumentId(String documentId) async {
+    final query = select(tbFile).join([]);
+    query.where(tbFile.refUuid.isValue(documentId));
+    query.orderBy([OrderingTerm.desc(tbFile.modifiedAt)]);
+    final result = await query.get();
+    return result.map((row) => _mapToFileDto(row.readTable(tbFile))).toList();
+  }
+
+  Future<DocumentForm> getDocumentFormById(String documentId) async {
+    final query = select(tbDocument).join([]);
+    query.where(tbDocument.uuid.isValue(documentId));
+    final result = await query.getSingleOrNull();
+    if (result == null) {
+      throw Exception('Could not load document by provided id.');
+    } else {
+      final tbDocumentRow = result.readTable(tbDocument);
+      final files = await _getFilesByDocumentId(tbDocumentRow.uuid);
+      final form = DocumentForm(
+        uuid: tbDocumentRow.uuid,
+        title: tbDocumentRow.title,
+        notes: tbDocumentRow.notes,
+        createdAt: tbDocumentRow.createdAt,
+        modifiedAt: tbDocumentRow.modifiedAt,
+        captures: files,
+      );
+      return form;
+    }
+  }
+
+  Future<void> _saveCapture({required FileDto file, required String documentId}) async {
+    if (file.uuid != null) return;
+    final String newUuid = Uuid().v4().toString();
+    await into(tbFile).insert(
+      TbFileCompanion(
+        uuid: Value(newUuid),
+        refUuid: Value(documentId),
+        filename: Value(file.filename),
+        fileType: Value(file.fileType),
+        data: Value(file.data),
+        createdAt: Value(file.createdAt),
+        modifiedAt: Value(file.modifiedAt),
+      ),
+    );
+  }
+
+  Future<void> saveDocumentForm(DocumentForm form) async {
+    await transaction(
+      () async {
+        final DateTime now = DateTime.now();
+        final String newUuid = form.uuid ?? Uuid().v4().toString();
+        await into(tbDocument).insertOnConflictUpdate(
+          TbDocumentCompanion(
+            uuid: Value(newUuid),
+            title: Value(form.title),
+            notes: Value(form.notes),
+            createdAt: Value(form.createdAt ?? now),
+            modifiedAt: Value(now),
+          ),
+        );
+        for (final capture in form.captures) {
+          await _saveCapture(file: capture, documentId: newUuid);
+        }
+      },
+    );
   }
 }

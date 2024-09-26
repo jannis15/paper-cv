@@ -16,17 +16,20 @@ extension Migration on FloorDatabase {
             final now = DateTime.now();
             List<TbDocumentCompanion> testData = [
               TbDocumentCompanion(
-                title: Value("Document 1"),
+                title: Value('Document 1'),
+                notes: Value(''),
                 createdAt: Value(now),
                 modifiedAt: Value(now),
               ),
               TbDocumentCompanion(
-                title: Value("Document 2"),
+                title: Value('Document 2'),
+                notes: Value(''),
                 createdAt: Value(now.subtract(const Duration(days: 1))),
                 modifiedAt: Value(now),
               ),
               TbDocumentCompanion(
-                title: Value("Document 3"),
+                title: Value('Document 3'),
+                notes: Value(''),
                 createdAt: Value(now.subtract(const Duration(days: 2))),
                 modifiedAt: Value(now.subtract(const Duration(days: 1))),
               ),
