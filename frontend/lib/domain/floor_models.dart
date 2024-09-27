@@ -12,7 +12,7 @@ class DocumentForm {
     this.uuid,
     this.title = '',
     this.notes = '',
-    this.captures = const [],
+    required this.captures,
     this.createdAt,
     this.modifiedAt,
   });

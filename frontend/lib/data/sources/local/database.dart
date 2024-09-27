@@ -109,6 +109,13 @@ class FloorDatabase extends _$FloorDatabase with DbMixin {
     );
   }
 
+  Future<void> _deleteUnlinkedFiles(String refUuid, List<String> existingFileIds) async {
+    final query = delete(tbFile);
+    query.where((_) => tbFile.refUuid.isValue(refUuid));
+    query.where((_) => tbFile.uuid.isNotIn(existingFileIds));
+    await query.go();
+  }
+
   Future<void> saveDocumentForm(DocumentForm form) async {
     await transaction(
       () async {
@@ -123,6 +130,8 @@ class FloorDatabase extends _$FloorDatabase with DbMixin {
             modifiedAt: Value(now),
           ),
         );
+        final existingfileIds = form.captures.map((e) => e.uuid).whereType<String>().toList();
+        await _deleteUnlinkedFiles(newUuid, existingfileIds);
         for (final capture in form.captures) {
           await _saveCapture(file: capture, documentId: newUuid);
         }

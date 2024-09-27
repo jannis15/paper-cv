@@ -9,7 +9,6 @@ enum FilePickerOption {
 class SelectedFile {
   String? id;
   final String name;
-  final String path;
   final Uint8List bytes;
 
   String get base64String => base64Encode(bytes);
@@ -18,6 +17,5 @@ class SelectedFile {
     this.id,
     required this.name,
     required this.bytes,
-    required this.path,
   });
 }

@@ -28,7 +28,6 @@ class _SelectedFilePreview extends SelectedFile {
     super.id,
     required super.name,
     required super.bytes,
-    required super.path,
   });
 }
 
@@ -36,7 +35,7 @@ class FloorAttachmentCard extends StatefulWidget {
   final String title;
   final List<SelectedFile>? initialFiles;
   final Future<List<SelectedFile>?> Function() onPickFiles;
-  final Function(SelectedFile file) onRemoveFile;
+  final Function(int fileIndex, SelectedFile file) onRemoveFile;
   final IconData iconData;
   final String iconText;
 
@@ -84,7 +83,6 @@ class _FloorAttachmentCardState extends State<FloorAttachmentCard> {
         id: file.id,
         name: file.name,
         bytes: file.bytes,
-        path: file.path,
       );
       _filePreviews.add(newPreview);
     }
@@ -124,7 +122,7 @@ class _FloorAttachmentCardState extends State<FloorAttachmentCard> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         gap: 4,
                         children: [
-                          FileIcon(preview.path, size: 32),
+                          FileIcon(preview.name, size: 32),
                           Text(preview.name, textAlign: TextAlign.center, maxLines: 2, style: textTheme.labelSmall),
                         ],
                       ),
@@ -148,7 +146,7 @@ class _FloorAttachmentCardState extends State<FloorAttachmentCard> {
                   ],
                 );
                 if (alertResult == AlertOption.yes) {
-                  await widget.onRemoveFile(preview);
+                  await widget.onRemoveFile(index, preview);
                   _filePreviews.removeAt(index);
                   if (context.mounted) setState(() {});
                 }

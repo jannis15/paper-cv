@@ -32,7 +32,7 @@ abstract class FloorFilePicker {
       }
       if (xFiles.isNotEmpty) {
         final List<Future<SelectedFile>> futures =
-            xFiles.map((file) async => SelectedFile(name: file.name, path: file.path, bytes: await file.readAsBytes())).toList();
+            xFiles.map((file) async => SelectedFile(name: file.name, bytes: await file.readAsBytes())).toList();
         return Future.wait(futures);
       } else {
         return null;
@@ -44,7 +44,7 @@ abstract class FloorFilePicker {
       final XFile? tmpXFile = await ImagePicker().pickImage(source: ImageSource.camera);
       if (tmpXFile != null) xFiles.add(tmpXFile);
       if (xFiles.isNotEmpty) {
-        final futures = xFiles.map((file) async => SelectedFile(name: file.name, path: file.path, bytes: await file.readAsBytes())).toList();
+        final futures = xFiles.map((file) async => SelectedFile(name: file.name, bytes: await file.readAsBytes())).toList();
         return Future.wait(futures);
       } else {
         return null;

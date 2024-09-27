@@ -40,7 +40,7 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
     if (_isLoading) {
       _asyncInit();
     } else {
-      _form = DocumentForm();
+      _form = DocumentForm(captures: []);
     }
     super.initState();
   }
@@ -53,7 +53,6 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
           id: capture.uuid,
           name: capture.filename,
           bytes: capture.data,
-          path: capture.filename,
         );
         _initialCaptures.add(selectedFile);
       }
@@ -76,6 +75,13 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
 
   @override
   Widget build(BuildContext context) {
+    Widget buildScanCard() => FloorAttachmentCard(
+          title: 'Scan',
+          iconData: Icons.cloud_upload,
+          iconText: 'Hochladen',
+          onPickFiles: () async => null,
+          onRemoveFile: (_, __) => null,
+        );
     return Scaffold(
       appBar: FloorAppBar(
         customPop: () async {
@@ -88,151 +94,150 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
         child: _isLoading
             ? Center(child: CircularProgressIndicator())
             : SingleChildScrollView(
-          padding: EdgeInsets.all(AppSizes.kGap),
-          child: ColumnGap(
-            gap: AppSizes.kGap,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              ColumnGap(
-                gap: AppSizes.kSmallGap,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  if (_form.modifiedAt != null)
-                    RowGap(
-                      gap: 4,
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Icon(
-                          Icons.edit,
-                          color: colorScheme.outline,
-                          size: AppSizes.kSubIconSize,
-                        ),
-                        Timeago(
-                          locale: 'de',
-                          date: _form.modifiedAt!,
-                          builder: (context, value) =>
-                              Text(
-                                value,
-                                style: textTheme.labelMedium?.copyWith(color: colorScheme.outline),
-                              ),
-                        ),
-                      ],
-                    ),
-                  FloorCard(
-                    child: ColumnGap(
-                      gap: AppSizes.kGap,
+                padding: EdgeInsets.all(AppSizes.kGap),
+                child: ColumnGap(
+                  gap: AppSizes.kGap,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    ColumnGap(
+                      gap: AppSizes.kSmallGap,
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        Text('Kopfdaten', style: textTheme.titleLarge),
-                        ColumnGap(
-                          gap: AppSizes.kSmallGap,
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            FloorTextField(
-                              text: _form.title,
-                              onChanged: (value) {
-                                _form.title = value;
-                              },
-                              decoration: outlinedInputDecoration(labelText: 'Titel'),
-                            ),
-                            FloorTextField(
-                              text: _form.notes,
-                              onChanged: (value) {
-                                _form.notes = value;
-                              },
-                              decoration: outlinedInputDecoration(labelText: 'Notizen'),
-                              minLines: 4,
-                              maxLines: null,
-                            ),
-                          ],
+                        if (_form.modifiedAt != null)
+                          RowGap(
+                            gap: 4,
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Icon(
+                                Icons.edit,
+                                color: colorScheme.outline,
+                                size: AppSizes.kSubIconSize,
+                              ),
+                              Timeago(
+                                locale: 'de',
+                                date: _form.modifiedAt!,
+                                builder: (context, value) => Text(
+                                  value,
+                                  style: textTheme.labelMedium?.copyWith(color: colorScheme.outline),
+                                ),
+                              ),
+                            ],
+                          ),
+                        FloorCard(
+                          child: ColumnGap(
+                            gap: AppSizes.kGap,
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              Text('Kopfdaten', style: textTheme.titleLarge),
+                              ColumnGap(
+                                gap: AppSizes.kSmallGap,
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  FloorTextField(
+                                    text: _form.title,
+                                    onChanged: (value) {
+                                      _form.title = value;
+                                    },
+                                    decoration: outlinedInputDecoration(labelText: 'Titel'),
+                                  ),
+                                  FloorTextField(
+                                    text: _form.notes,
+                                    onChanged: (value) {
+                                      _form.notes = value;
+                                    },
+                                    decoration: outlinedInputDecoration(labelText: 'Notizen'),
+                                    minLines: 4,
+                                    maxLines: null,
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
                       ],
                     ),
-                  ),
-                ],
-              ),
-              FloorAttachmentCard(
-                title: 'Aufnahme',
-                iconData: Icons.add_a_photo,
-                initialFiles: _initialCaptures,
-                // TODO
-                onPickFiles: () async {
-                  final file = await FloorFilePicker.pickFile(context, pickerOption: FilePickerOption.camera);
-                  if (file != null) {
-                    final now = DateTime.now();
-                    final fileDto = FileDto(
-                      uuid: null,
-                      refUuid: null,
-                      filename: file.name,
-                      data: file.bytes,
-                      index: null,
-                      fileType: FileType.capture,
-                      createdAt: now,
-                      modifiedAt: now,
-                    );
-                    _form.captures.add(fileDto);
-                  }
-                  return [file].whereType<SelectedFile>().toList();
-                },
-                onRemoveFile: (file) {},
-              ),
-              IntrinsicHeight(
-                child: FloorLoaderOverlay(
-                  loading: true,
-                  disableBackButton: false,
-                  loadingWidget: const SizedBox(),
-                  child: FloorAttachmentCard(
-                    title: 'Scan',
-                    iconData: Icons.cloud_upload,
-                    iconText: 'Hochladen',
-                    onPickFiles: () async => null,
-                    onRemoveFile: (file) {},
-                  ),
+                    FloorAttachmentCard(
+                      title: 'Aufnahme',
+                      iconData: Icons.add_a_photo,
+                      initialFiles: _initialCaptures,
+                      onPickFiles: () async {
+                        final file = await FloorFilePicker.pickFile(context, pickerOption: FilePickerOption.camera);
+                        if (file != null) {
+                          final now = DateTime.now();
+                          final fileDto = FileDto(
+                            uuid: null,
+                            refUuid: null,
+                            filename: file.name,
+                            data: file.bytes,
+                            index: null,
+                            fileType: FileType.capture,
+                            createdAt: now,
+                            modifiedAt: now,
+                          );
+                          _form.captures.add(fileDto);
+                          if (mounted) setState(() {});
+                        }
+                        return [file].whereType<SelectedFile>().toList();
+                      },
+                      onRemoveFile: (fileIndex, file) {
+                        _form.captures.removeAt(fileIndex);
+                        if (mounted) setState(() {});
+                      },
+                    ),
+                    if (_form.captures.isNotEmpty)
+                      buildScanCard()
+                    else
+                      IntrinsicHeight(
+                        child: FloorLoaderOverlay(
+                          loading: true,
+                          disableBackButton: false,
+                          loadingWidget: const SizedBox(),
+                          child: buildScanCard(),
+                        ),
+                      ),
+                    IntrinsicHeight(
+                      child: FloorLoaderOverlay(
+                        loading: true,
+                        disableBackButton: false,
+                        loadingWidget: const SizedBox(),
+                        child: FloorAttachmentCard(
+                          title: 'Vorlage',
+                          iconData: Icons.calculate,
+                          iconText: 'Auswählen',
+                          onPickFiles: () async => null,
+                          onRemoveFile: (_, __) => null,
+                        ),
+                      ),
+                    ),
+                    IntrinsicHeight(
+                      child: FloorLoaderOverlay(
+                        loading: true,
+                        disableBackButton: false,
+                        loadingWidget: const SizedBox(),
+                        child: FloorAttachmentCard(
+                          title: 'Bericht',
+                          iconData: Icons.auto_awesome,
+                          iconText: 'Generieren',
+                          onPickFiles: () async => null,
+                          onRemoveFile: (_, __) => null,
+                        ),
+                      ),
+                    ),
+                    IntrinsicHeight(
+                      child: FloorLoaderOverlay(
+                        loading: true,
+                        disableBackButton: false,
+                        loadingWidget: const SizedBox(),
+                        child: FloorFilledButton(
+                          iconData: Icons.lock,
+                          text: 'Abschließen',
+                          onPressed: () {},
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              IntrinsicHeight(
-                child: FloorLoaderOverlay(
-                  loading: true,
-                  disableBackButton: false,
-                  loadingWidget: const SizedBox(),
-                  child: FloorAttachmentCard(
-                    title: 'Vorlage',
-                    iconData: Icons.calculate,
-                    iconText: 'Auswählen',
-                    onPickFiles: () async => null,
-                    onRemoveFile: (file) {},
-                  ),
-                ),
-              ),
-              IntrinsicHeight(
-                child: FloorLoaderOverlay(
-                  loading: true,
-                  disableBackButton: false,
-                  loadingWidget: const SizedBox(),
-                  child: FloorAttachmentCard(
-                    title: 'Bericht',
-                    iconData: Icons.auto_awesome,
-                    iconText: 'Generieren',
-                    onPickFiles: () async => null,
-                    onRemoveFile: (file) {},
-                  ),
-                ),
-              ),
-              IntrinsicHeight(
-                child: FloorLoaderOverlay(
-                  loading: true,
-                  disableBackButton: false,
-                  loadingWidget: const SizedBox(),
-                  child: FloorFilledButton(
-                    iconData: Icons.lock,
-                    text: 'Abschließen',
-                    onPressed: () {},
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }
