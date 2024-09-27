@@ -79,7 +79,10 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
           title: 'Scan',
           iconData: Icons.cloud_upload,
           iconText: 'Hochladen',
-          onPickFiles: () async => null,
+          onPickFiles: () async {
+            await FloorRepository.scanCapture(_form.captures.first);
+            return [];
+          },
           onRemoveFile: (_, __) => null,
         );
     return Scaffold(
