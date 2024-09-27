@@ -21,6 +21,10 @@ class FloorCV(ABC):
         return cv.imread(filename, cv.IMREAD_GRAYSCALE)
 
     @staticmethod
+    def read_grayscale_img_from_bytes(data) -> np.ndarray:
+        return cv.imdecode(data, cv.IMREAD_GRAYSCALE)
+
+    @staticmethod
     def img_to_bgr(img: np.ndarray) -> np.ndarray:
         return cv.cvtColor(img, cv.COLOR_GRAY2BGR)
 
