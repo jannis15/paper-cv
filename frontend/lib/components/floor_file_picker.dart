@@ -1,3 +1,4 @@
+import 'package:floor_cv/utils/camera/camera_utils.dart';
 import 'package:floor_cv/utils/file_picker_models.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:image_picker/image_picker.dart';
@@ -40,9 +41,7 @@ abstract class FloorFilePicker {
     }
 
     Future<List<SelectedFile>?> pickCameraFiles() async {
-      final List<XFile> xFiles = [];
-      final XFile? tmpXFile = await ImagePicker().pickImage(source: ImageSource.camera);
-      if (tmpXFile != null) xFiles.add(tmpXFile);
+      final List<XFile> xFiles = await CameraUtils.takePicture(context, allowMultiple: allowMultiple);
       if (xFiles.isNotEmpty) {
         final futures = xFiles.map((file) async => SelectedFile(name: file.name, bytes: await file.readAsBytes())).toList();
         return Future.wait(futures);
