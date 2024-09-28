@@ -37,14 +37,6 @@ class FloorCV(ABC):
         return cv.adaptiveThreshold(img, 255, cv.ADAPTIVE_THRESH_GAUSSIAN_C, cv.THRESH_BINARY_INV, 11, 5)
 
     @staticmethod
-    def get_structuring_elements(img: np.ndarray) -> np.ndarray:
-        horizontal_kernel = cv.getStructuringElement(cv.MORPH_RECT, (20, 1))
-        vertical_kernel = cv.getStructuringElement(cv.MORPH_RECT, (1, 20))
-        horizontal_lines = cv.morphologyEx(img, cv.MORPH_OPEN, horizontal_kernel, iterations=2)
-        vertical_lines = cv.morphologyEx(img, cv.MORPH_OPEN, vertical_kernel, iterations=2)
-        return cv.add(horizontal_lines, vertical_lines)
-
-    @staticmethod
     def log_image(root_dir: Path, img: np.ndarray, title: str) -> None:
         unique_id = uuid.uuid4()
         output_path = root_dir / 'outputs' / f'{title}_{unique_id}.jpg'
@@ -223,9 +215,19 @@ class FloorCV(ABC):
         return warped_image, transformed_lines, new_corners, perspective_transform
 
     @staticmethod
+    def get_structuring_elements(img: np.ndarray) -> np.ndarray:
+        kernel = cv.getStructuringElement(cv.MORPH_RECT, (3, 3))
+        dilated_img = cv.dilate(img, kernel, iterations=1)
+        horizontal_kernel = cv.getStructuringElement(cv.MORPH_RECT, (20, 1))
+        vertical_kernel = cv.getStructuringElement(cv.MORPH_RECT, (1, 15))
+        horizontal_lines = cv.morphologyEx(img, cv.MORPH_OPEN, horizontal_kernel, iterations=2)
+        vertical_lines = cv.morphologyEx(dilated_img, cv.MORPH_OPEN, vertical_kernel, iterations=2)
+        return cv.add(horizontal_lines, vertical_lines)
+
+    @staticmethod
     def get_all_lines(img: np.ndarray) -> List:
-        lines = cv.HoughLinesP(image=img, rho=1, theta=np.pi / 180, threshold=400, minLineLength=50,
-                               maxLineGap=100)
+        lines = cv.HoughLinesP(image=img, rho=1, theta=np.pi / 180, threshold=300, minLineLength=30,
+                               maxLineGap=200)
         lines = np.squeeze(lines)
         return list(lines)
 
@@ -252,7 +254,7 @@ class FloorCV(ABC):
     def filter_out_close_lines(lines: np.ndarray, threshold: float = 20.0) -> List:
         shapely_lines = [LineString([(x1, y1), (x2, y2)]) for x1, y1, x2, y2 in lines]
 
-        def is_horizontal(line: LineString, rtol=.03):
+        def is_horizontal(line: LineString, rtol=.25):
             return np.isclose(line.coords[0][1], line.coords[1][1], rtol=rtol)  # y1 == y2
 
         def is_vertical(line: LineString, rtol=.03):
