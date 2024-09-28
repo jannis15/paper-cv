@@ -1,15 +1,25 @@
 from abc import ABC
 from pathlib import Path
-
+import numpy as np
+from google.cloud import vision
 from lib.floor_cv import FloorCV
 
 
 class FloorCvController(ABC):
     @staticmethod
-    def scan_file(file):
+    def __detect_handwriting(client: vision.ImageAnnotatorClient, content: bytes):
+        image = vision.Image(content=content)
+        response = client.text_detection(image=image)
+        texts = response.text_annotations
+
+
+    @staticmethod
+    def scan_file(client: vision.ImageAnnotatorClient, file_bytes: bytes):
+        FloorCvController.__detect_handwriting(client=client,content=file_bytes)
         current_dir = Path(__file__).resolve().parent
         root_dir = current_dir.parent
-        img_grayscale = FloorCV.read_grayscale_img_from_bytes(file)
+        np_arr = np.frombuffer(file_bytes, np.uint8)
+        img_grayscale = FloorCV.read_grayscale_img_from_bytes(np_arr)
         FloorCV.log_image(root_dir, img_grayscale, 'grayscale')
         assert img_grayscale is not None, "file could not be read, check with os.path.exists()"
 
