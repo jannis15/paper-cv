@@ -171,7 +171,7 @@ class FloorCV(ABC):
             font_scale = 0.7
             text_color = (0, 0, 255)  # Red color
             text_thickness = 2
-            cv.putText(annotated_image, str(idx+1), (center_x - 10, center_y + 10), font, font_scale, text_color,
+            cv.putText(annotated_image, str(idx + 1), (center_x - 10, center_y + 10), font, font_scale, text_color,
                        text_thickness)
         FloorCV.log_image(root_dir, annotated_image, 'annotated_image')
 
@@ -204,6 +204,7 @@ class FloorCV(ABC):
 
     @staticmethod
     def straighten_table(img: np.ndarray, lines: List, corners: List) -> Tuple:
+        hier verliere ich die vertikalen linien
         src_corners = np.float32(corners)
         new_corners = FloorCV.get_dst_corners(corners)
         dst_corners = np.float32(new_corners)
@@ -211,8 +212,7 @@ class FloorCV(ABC):
 
         transformed_lines = []
         for line in lines:
-            # Convert the line endpoints to homogeneous coordinates (adding a third coordinate)
-            points = np.float32(line).reshape(-1, 1, 2)  # Ensure shape is correct for cv2
+            points = np.float32(line).reshape(-1, 1, 2)
             transformed_points = cv.perspectiveTransform(points, perspective_transform)
             transformed_points = transformed_points.reshape(4)
             transformed_lines.append(transformed_points)
@@ -308,20 +308,12 @@ class FloorCV(ABC):
             pass
         for line in lines:
             x1, y1, x2, y2 = line
+            x1, y1, x2, y2 = int(x1), int(y1), int(x2), int(y2)
             cv.line(img, [x1, y1], [x2, y2], [255], 1)
 
     @staticmethod
-    def filter_out_close_lines(lines: np.ndarray, threshold: float = 20.0) -> Tuple[np.ndarray, np.ndarray]:
+    def filter_out_close_lines(lines: np.ndarray, threshold: float = 25.0) -> Tuple[np.ndarray, np.ndarray]:
         shapely_lines = [LineString([(x1, y1), (x2, y2)]) for x1, y1, x2, y2 in lines]
-
-        def is_horizontal(line: LineString, rtol=.25):
-            return np.isclose(line.coords[0][1], line.coords[1][1], rtol=rtol)  # y1 == y2
-
-        def is_vertical(line: LineString, rtol=.9):
-            return np.isclose(line.coords[0][0], line.coords[1][0], rtol=rtol)  # x1 == x2
-
-        horizontal_lines = [line for line in shapely_lines if is_horizontal(line)]
-        vertical_lines = [line for line in shapely_lines if is_vertical(line)]
 
         def get_abs_slope(x1, x2, y1, y2):
             dx = x2 - x1
@@ -331,6 +323,15 @@ class FloorCV(ABC):
                 slope = dy / dx
             abs_slope = abs(slope)
             return abs_slope
+
+        def is_horizontal(line: LineString, threshold=.2):
+            abs_slope = get_abs_slope(line.coords[0][0], line.coords[1][0], line.coords[0][1],
+                                      line.coords[1][1])
+            return abs_slope <= threshold
+
+        def is_vertical(line: LineString):
+            return is_horizontal(
+                line=LineString([(-line.coords[0][1], line.coords[0][0]), (-line.coords[1][1], line.coords[1][0])]))
 
         def filter_lines_by_orientation(lines: List[LineString], is_horizontal: bool):
             filtered = []
@@ -354,17 +355,30 @@ class FloorCV(ABC):
 
             return filtered
 
-        filtered_horizontal = filter_lines_by_orientation(horizontal_lines, is_horizontal=True)
-        filtered_vertical = filter_lines_by_orientation(vertical_lines, is_horizontal=False)
-        filtered_horizontal = np.array(
+        # remaining_lines = shapely_lines.copy()
+        # horizontal_lines = []
+        # for i in range(len(shapely_lines) - 1, -1, -1):
+        #     line = shapely_lines[i]
+        #     if is_horizontal(line):
+        #         horizontal_lines.append(line)
+        #         remaining_lines.pop(i)
+        # vertical_lines = [line for line in remaining_lines if is_vertical(line)]
+        #
+        # filtered_horizontal = filter_lines_by_orientation(horizontal_lines, is_horizontal=True)
+        # filtered_vertical = filter_lines_by_orientation(vertical_lines, is_horizontal=False)
+        # filtered_horizontal = np.array(
+        #     [[line.coords[0][0], line.coords[0][1], line.coords[1][0], line.coords[1][1]] for line in
+        #      filtered_horizontal],
+        #     dtype=np.int32)
+        # filtered_vertical = np.array(
+        #     [[line.coords[0][0], line.coords[0][1], line.coords[1][0], line.coords[1][1]] for line in
+        #      filtered_vertical],
+        #     dtype=np.int32)
+        # return filtered_horizontal, filtered_vertical
+        return np.array([], dtype=np.int32), np.array(
             [[line.coords[0][0], line.coords[0][1], line.coords[1][0], line.coords[1][1]] for line in
-             filtered_horizontal],
+             shapely_lines],
             dtype=np.int32)
-        filtered_vertical = np.array(
-            [[line.coords[0][0], line.coords[0][1], line.coords[1][0], line.coords[1][1]] for line in
-             filtered_vertical],
-            dtype=np.int32)
-        return filtered_horizontal, filtered_vertical
 
     @staticmethod
     def add_lines_around_table(corners: List, lines: List):
