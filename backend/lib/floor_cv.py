@@ -17,6 +17,10 @@ class Cell:
 
 class FloorCV(ABC):
     @staticmethod
+    def subtract_images(img1: np.ndarray, img2: np.ndarray) -> np.ndarray:
+        return cv.subtract(img1, img2)
+
+    @staticmethod
     def read_grayscale_img(filename: str) -> np.ndarray:
         return cv.imread(filename, cv.IMREAD_GRAYSCALE)
 
@@ -144,6 +148,7 @@ class FloorCV(ABC):
             # Filter small rectangles that are not cells
             if width > 12 and height > 12:  # Adjust this threshold as needed
                 cells.append(Cell(x, y, width, height))
+        cells.reverse()
         return cells
 
     @staticmethod
@@ -166,7 +171,7 @@ class FloorCV(ABC):
             font_scale = 0.7
             text_color = (0, 0, 255)  # Red color
             text_thickness = 2
-            cv.putText(annotated_image, str(idx), (center_x - 10, center_y + 10), font, font_scale, text_color,
+            cv.putText(annotated_image, str(idx+1), (center_x - 10, center_y + 10), font, font_scale, text_color,
                        text_thickness)
         FloorCV.log_image(root_dir, annotated_image, 'annotated_image')
 
@@ -211,8 +216,12 @@ class FloorCV(ABC):
             transformed_points = cv.perspectiveTransform(points, perspective_transform)
             transformed_points = transformed_points.reshape(4)
             transformed_lines.append(transformed_points)
-        warped_image = cv.warpPerspective(img, perspective_transform, (img.shape[1], img.shape[0]))
+        warped_image = FloorCV.warp_image(img, perspective_transform)
         return warped_image, transformed_lines, new_corners, perspective_transform
+
+    @staticmethod
+    def warp_image(img, perspective_transform) -> cv.typing.MatLike:
+        return cv.warpPerspective(img, perspective_transform, (img.shape[1], img.shape[0]))
 
     @staticmethod
     def get_structuring_elements(img: np.ndarray) -> np.ndarray:
@@ -241,23 +250,74 @@ class FloorCV(ABC):
             lines[i] = FloorCV.extend_line(x1, y1, x2, y2, base_img.shape)
 
     @staticmethod
-    def get_line_img(img: np.ndarray, lines: List) -> np.ndarray:
+    def straighten_horizontal_lines(horizontal_lines: np.ndarray) -> np.ndarray:
+        straightened_lines = horizontal_lines.copy()
+        for line in straightened_lines:
+            x1, y1, x2, y2 = line
+            avg_y = (y1 + y2) / 2
+            line[1] = avg_y
+            line[3] = avg_y
+
+        return straightened_lines
+
+    @staticmethod
+    def straighten_vertical_lines(vertical_lines: np.ndarray) -> np.ndarray:
+        straightened_lines = vertical_lines.copy()
+        for line in straightened_lines:
+            x1, y1, x2, y2 = line
+            avg_x = (x1 + x2) / 2
+            line[0] = avg_x
+            line[2] = avg_x
+
+        return straightened_lines
+
+    @staticmethod
+    def sort_horizontal_lines_by_y(horizontal_lines: np.ndarray) -> np.ndarray:
+        return horizontal_lines[horizontal_lines[:, 1].argsort()]
+
+    @staticmethod
+    def average_vertical_distance(sorted_horizontal_lines: np.ndarray) -> float:
+        if len(sorted_horizontal_lines) < 2:
+            return 0.0
+        first_y = sorted_horizontal_lines[0, 1]
+        last_y = sorted_horizontal_lines[-1, 1]
+        return float((last_y - first_y) / (len(sorted_horizontal_lines) - 1))
+
+    @staticmethod
+    def adjust_horizontal_lines_by_avg_vertical_distance(avg_distance: float,
+                                                         sorted_horizontal_lines: np.ndarray) -> np.ndarray:
+        adjusted_lines = sorted_horizontal_lines.copy()
+        if len(sorted_horizontal_lines) < 2:
+            return adjusted_lines
+
+        for i in range(1, len(adjusted_lines) - 1):
+            adjusted_lines[i, 1] = adjusted_lines[0, 1] + avg_distance * i
+            adjusted_lines[i, 3] = adjusted_lines[0, 3] + avg_distance * i
+
+        return adjusted_lines
+
+    @staticmethod
+    def add_lines_to_zeros_like_img(img: np.ndarray, lines: List) -> np.ndarray:
         img_all_lines = np.zeros_like(img)
+        FloorCV.add_lines_to_img(img_all_lines, lines)
+        return img_all_lines
+
+    @staticmethod
+    def add_lines_to_img(img: np.ndarray, lines: List) -> None:
         if lines is None or len(lines) < 2:
             pass
         for line in lines:
             x1, y1, x2, y2 = line
-            cv.line(img_all_lines, [x1, y1], [x2, y2], [255], 1)
-        return img_all_lines
+            cv.line(img, [x1, y1], [x2, y2], [255], 1)
 
     @staticmethod
-    def filter_out_close_lines(lines: np.ndarray, threshold: float = 20.0) -> List:
+    def filter_out_close_lines(lines: np.ndarray, threshold: float = 20.0) -> Tuple[np.ndarray, np.ndarray]:
         shapely_lines = [LineString([(x1, y1), (x2, y2)]) for x1, y1, x2, y2 in lines]
 
         def is_horizontal(line: LineString, rtol=.25):
             return np.isclose(line.coords[0][1], line.coords[1][1], rtol=rtol)  # y1 == y2
 
-        def is_vertical(line: LineString, rtol=.03):
+        def is_vertical(line: LineString, rtol=.9):
             return np.isclose(line.coords[0][0], line.coords[1][0], rtol=rtol)  # x1 == x2
 
         horizontal_lines = [line for line in shapely_lines if is_horizontal(line)]
@@ -279,6 +339,8 @@ class FloorCV(ABC):
                 line1_abs_slope = get_abs_slope(line1.coords[0][0], line1.coords[1][0], line1.coords[0][1],
                                                 line1.coords[1][1])
                 for j, line2 in enumerate(filtered):
+                    if i == j:
+                        continue
                     if line1.distance(line2) < threshold:
                         line2_abs_slope = get_abs_slope(line2.coords[0][0], line2.coords[1][0], line2.coords[0][1],
                                                         line2.coords[1][1])
@@ -294,11 +356,15 @@ class FloorCV(ABC):
 
         filtered_horizontal = filter_lines_by_orientation(horizontal_lines, is_horizontal=True)
         filtered_vertical = filter_lines_by_orientation(vertical_lines, is_horizontal=False)
-        filtered_lines = filtered_horizontal + filtered_vertical
-        filtered_array = np.array(
-            [[line.coords[0][0], line.coords[0][1], line.coords[1][0], line.coords[1][1]] for line in filtered_lines],
+        filtered_horizontal = np.array(
+            [[line.coords[0][0], line.coords[0][1], line.coords[1][0], line.coords[1][1]] for line in
+             filtered_horizontal],
             dtype=np.int32)
-        return list(filtered_array)
+        filtered_vertical = np.array(
+            [[line.coords[0][0], line.coords[0][1], line.coords[1][0], line.coords[1][1]] for line in
+             filtered_vertical],
+            dtype=np.int32)
+        return filtered_horizontal, filtered_vertical
 
     @staticmethod
     def add_lines_around_table(corners: List, lines: List):

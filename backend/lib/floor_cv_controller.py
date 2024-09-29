@@ -12,10 +12,9 @@ class FloorCvController(ABC):
         response = client.text_detection(image=image)
         texts = response.text_annotations
 
-
     @staticmethod
     def scan_file(client: vision.ImageAnnotatorClient, file_bytes: bytes):
-        FloorCvController.__detect_handwriting(client=client,content=file_bytes)
+        # FloorCvController.__detect_handwriting(client=client,content=file_bytes)
         current_dir = Path(__file__).resolve().parent
         root_dir = current_dir.parent
         np_arr = np.frombuffer(file_bytes, np.uint8)
@@ -35,7 +34,7 @@ class FloorCvController(ABC):
         lines = FloorCV.get_all_lines(img_structure)
         print(f'Lines: {len(lines)}')
         FloorCV.extend_all_lines(img_structure, lines)
-        img_lines = FloorCV.get_line_img(img_structure, lines)
+        img_lines = FloorCV.add_lines_to_zeros_like_img(img_structure, lines)
         FloorCV.log_image(root_dir, img_lines, 'lines')
 
         intersections = FloorCV.get_all_intersections(img_lines, lines)
@@ -51,8 +50,18 @@ class FloorCvController(ABC):
         FloorCV.log_image(root_dir, img_straightened, 'straightened')
 
         FloorCV.add_lines_around_table(new_corners, lines)
-        new_lines = FloorCV.filter_out_close_lines(lines)
-        img_new_lines = FloorCV.get_line_img(img_structure, new_lines)
+        new_horizontal_lines, new_vertical_lines = FloorCV.filter_out_close_lines(lines)
+
+        new_vertical_lines = FloorCV.straighten_vertical_lines(new_vertical_lines)
+        new_horizontal_lines = FloorCV.straighten_horizontal_lines(new_horizontal_lines)
+        # new_horizontal_lines = FloorCV.sort_horizontal_lines_by_y(new_horizontal_lines)
+        # avg_vertical_distance = FloorCV.average_vertical_distance(new_horizontal_lines)
+        # new_horizontal_lines = FloorCV.adjust_horizontal_lines_by_avg_vertical_distance(avg_vertical_distance,
+        #                                                                                 new_horizontal_lines)
+
+        new_lines = np.concatenate((new_horizontal_lines, new_vertical_lines), axis=0)
+        new_lines = list(new_lines)
+        img_new_lines = FloorCV.add_lines_to_zeros_like_img(img_structure, new_lines)
         print(f'New Lines: {len(new_lines)}')
         FloorCV.log_image(root_dir, img_new_lines, 'new_lines')
         # lines = FloorCV.get_all_lines(img_straightened)
@@ -64,6 +73,12 @@ class FloorCvController(ABC):
         # FloorCV.log_image(root_dir, img_masked_lines, 'masked')
         cropped_img = img_new_lines[int(new_corners[0][1]):int(new_corners[2][1]),
                       int(new_corners[0][0]):int(new_corners[2][0])]
+
+        img_threshold_straightened = FloorCV.warp_image(img_threshold, perspective_transform)
+        FloorCV.add_lines_to_img(img_threshold_straightened, new_lines)
+        img_mask = FloorCV.create_rectangular_mask(img_threshold_straightened, new_corners)
+        img_threshold_masked = FloorCV.apply_mask(img_threshold_straightened, img_mask)
+        FloorCV.log_image(root_dir, img_threshold_masked, 'threshold_masked')
 
         cells = FloorCV.find_cells(cropped_img)
         img_straightened_bgr = FloorCV.img_to_bgr(cropped_img)
