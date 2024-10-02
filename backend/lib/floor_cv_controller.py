@@ -49,24 +49,22 @@ class FloorCvController(ABC):
         img_new_lines = FloorCV.add_lines_to_zeros_like_img(img_structure, lines)
         FloorCV.log_image(root_dir, img_new_lines, 'new_lines1')
 
-        img_straightened, lines, new_corners, perspective_transform = FloorCV.straighten_table(img_lines, lines,
+        img_straightened, lines, new_corners, perspective_transform = FloorCV.straighten_table(img_new_lines, lines,
                                                                                                corners)
+        FloorCV.log_image(root_dir, img_straightened, 'straightened')
         img_new_lines = FloorCV.add_lines_to_zeros_like_img(img_straightened, lines)
         FloorCV.log_image(root_dir, img_new_lines, 'new_lines2')
-
-        FloorCV.log_image(root_dir, img_straightened, 'straightened')
 
         FloorCV.add_lines_around_table(new_corners, lines)
         new_horizontal_lines, new_vertical_lines = FloorCV.filter_out_close_lines(lines)
 
-        # new_vertical_lines = FloorCV.straighten_vertical_lines(new_vertical_lines)
-        # new_horizontal_lines = FloorCV.straighten_horizontal_lines(new_horizontal_lines)
-        # new_horizontal_lines = FloorCV.sort_horizontal_lines_by_y(new_horizontal_lines)
-        # avg_vertical_distance = FloorCV.average_vertical_distance(new_horizontal_lines)
+        new_vertical_lines = FloorCV.straighten_vertical_lines(new_vertical_lines)
+        new_horizontal_lines = FloorCV.straighten_horizontal_lines(new_horizontal_lines)
+        new_horizontal_lines = FloorCV.sort_horizontal_lines_by_y(new_horizontal_lines)
+        avg_vertical_distance = FloorCV.average_vertical_distance(new_horizontal_lines)
         # new_horizontal_lines = FloorCV.adjust_horizontal_lines_by_avg_vertical_distance(avg_vertical_distance,
         #                                                                                 new_horizontal_lines)
-        new_lines = new_vertical_lines
-        # new_lines = np.concatenate((new_horizontal_lines, new_vertical_lines), axis=0)
+        new_lines = np.concatenate((new_horizontal_lines, new_vertical_lines), axis=0)
         new_lines = list(new_lines)
         img_new_lines = FloorCV.add_lines_to_zeros_like_img(img_structure, new_lines)
         print(f'New Lines: {len(new_lines)}')

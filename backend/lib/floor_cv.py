@@ -103,38 +103,46 @@ class FloorCV(ABC):
         FloorCV.log_image(root_dir, intersection_canvas, 'lines_with_intersections')
 
     @staticmethod
+    def __extend_line_from_slope(x1: float, y1: float, slope: float, width: float, height: float) -> np.ndarray:
+        points = []
+
+        # Calculate intersection with the top boundary (y = 0)
+        try:
+            x_top = x1 + (0 - y1) / slope
+            if 0 <= x_top <= width:
+                points.append((x_top, 0))
+        except ZeroDivisionError:
+            pass
+
+        # Calculate intersection with the bottom boundary (y = height)
+        try:
+            x_bottom = x1 + (height - y1) / slope
+            if 0 <= x_bottom <= width:
+                points.append((x_bottom, height))
+        except ZeroDivisionError:
+            pass
+
+        # Calculate intersection with the left boundary (x = 0)
+        y_left = y1 + slope * (0 - x1)
+        if 0 <= y_left <= height:
+            points.append((0, y_left))
+
+        # Calculate intersection with the right boundary (x = width)
+        y_right = y1 + slope * (width - x1)
+        if 0 <= y_right <= height:
+            points.append((width, y_right))
+
+        # If we have exactly 2 valid points, return them
+        if len(points) == 2:
+            return np.array([points[0][0], points[0][1], points[1][0], points[1][1]])
+        else:
+            raise ValueError("Could not find exactly two boundary intersections.")
+
+    @staticmethod
     def extend_line(x1: float, y1: float, x2: float, y2: float, img: np.ndarray) -> np.ndarray:
         height, width = img[:2]
-        dx = x2 - x1
-        dy = y2 - y1
-        if dx != 0:
-            slope = dy / dx
-            intercept = y1 - slope * x1
-        else:
-            slope = float('inf')
-            intercept = x1
-
-        if slope != float('inf'):
-            # Calculate extended coordinates
-            x1_extended = 0
-            y1_extended = int(intercept)
-            x2_extended = width
-            y2_extended = int(slope * width + intercept)
-
-            # Clip the extended line to image boundaries
-            if y1_extended < 0:
-                y1_extended = 0
-                x1_extended = int((y1_extended - intercept) / slope)
-
-            if y2_extended > height:
-                y2_extended = height
-                x2_extended = int((y2_extended - intercept) / slope)
-
-            # Return as ndarray
-            return np.array([x1_extended, y1_extended, x2_extended, y2_extended])
-        else:
-            # Vertical line case
-            return np.array([intercept, 0, intercept, height])
+        slope = FloorCV.__get_slope(x1, x2, y1, y2)
+        return FloorCV.__extend_line_from_slope(x1, y1, slope, width, height)
 
     @staticmethod
     def find_cells(imh: np.ndarray) -> List[Cell]:
@@ -204,7 +212,6 @@ class FloorCV(ABC):
 
     @staticmethod
     def straighten_table(img: np.ndarray, lines: List, corners: List) -> Tuple:
-        hier verliere ich die vertikalen linien
         src_corners = np.float32(corners)
         new_corners = FloorCV.get_dst_corners(corners)
         dst_corners = np.float32(new_corners)
@@ -216,6 +223,7 @@ class FloorCV(ABC):
             transformed_points = cv.perspectiveTransform(points, perspective_transform)
             transformed_points = transformed_points.reshape(4)
             transformed_lines.append(transformed_points)
+        FloorCV.extend_all_lines(img, transformed_lines)
         warped_image = FloorCV.warp_image(img, perspective_transform)
         return warped_image, transformed_lines, new_corners, perspective_transform
 
@@ -312,21 +320,28 @@ class FloorCV(ABC):
             cv.line(img, [x1, y1], [x2, y2], [255], 1)
 
     @staticmethod
+    def __get_abs_slope(x1, x2, y1, y2):
+        return abs(FloorCV.__get_slope(x1, x2, y1, y2))
+
+    @staticmethod
+    def __get_slope(x1, x2, y1, y2):
+        dx = x2 - x1
+        dy = y2 - y1
+        if dx == 0:
+            return float('inf')
+        elif dy == 0:
+            return 0.0
+        else:
+            slope = dy / dx
+            return slope
+
+    @staticmethod
     def filter_out_close_lines(lines: np.ndarray, threshold: float = 25.0) -> Tuple[np.ndarray, np.ndarray]:
         shapely_lines = [LineString([(x1, y1), (x2, y2)]) for x1, y1, x2, y2 in lines]
 
-        def get_abs_slope(x1, x2, y1, y2):
-            dx = x2 - x1
-            dy = y2 - y1
-            slope = float('inf')
-            if dx != 0:
-                slope = dy / dx
-            abs_slope = abs(slope)
-            return abs_slope
-
         def is_horizontal(line: LineString, threshold=.2):
-            abs_slope = get_abs_slope(line.coords[0][0], line.coords[1][0], line.coords[0][1],
-                                      line.coords[1][1])
+            abs_slope = FloorCV.__get_abs_slope(line.coords[0][0], line.coords[1][0], line.coords[0][1],
+                                                line.coords[1][1])
             return abs_slope <= threshold
 
         def is_vertical(line: LineString):
@@ -337,14 +352,15 @@ class FloorCV(ABC):
             filtered = []
             for i, line1 in enumerate(lines):
                 keep_line = True
-                line1_abs_slope = get_abs_slope(line1.coords[0][0], line1.coords[1][0], line1.coords[0][1],
-                                                line1.coords[1][1])
+                line1_abs_slope = FloorCV.__get_abs_slope(line1.coords[0][0], line1.coords[1][0], line1.coords[0][1],
+                                                          line1.coords[1][1])
                 for j, line2 in enumerate(filtered):
                     if i == j:
                         continue
                     if line1.distance(line2) < threshold:
-                        line2_abs_slope = get_abs_slope(line2.coords[0][0], line2.coords[1][0], line2.coords[0][1],
-                                                        line2.coords[1][1])
+                        line2_abs_slope = FloorCV.__get_abs_slope(line2.coords[0][0], line2.coords[1][0],
+                                                                  line2.coords[0][1],
+                                                                  line2.coords[1][1])
                         if (is_horizontal and line1_abs_slope < line2_abs_slope) or (
                                 not is_horizontal and line1_abs_slope > line2_abs_slope):
                             filtered[j] = line1
@@ -355,30 +371,26 @@ class FloorCV(ABC):
 
             return filtered
 
-        # remaining_lines = shapely_lines.copy()
-        # horizontal_lines = []
-        # for i in range(len(shapely_lines) - 1, -1, -1):
-        #     line = shapely_lines[i]
-        #     if is_horizontal(line):
-        #         horizontal_lines.append(line)
-        #         remaining_lines.pop(i)
-        # vertical_lines = [line for line in remaining_lines if is_vertical(line)]
-        #
-        # filtered_horizontal = filter_lines_by_orientation(horizontal_lines, is_horizontal=True)
-        # filtered_vertical = filter_lines_by_orientation(vertical_lines, is_horizontal=False)
-        # filtered_horizontal = np.array(
-        #     [[line.coords[0][0], line.coords[0][1], line.coords[1][0], line.coords[1][1]] for line in
-        #      filtered_horizontal],
-        #     dtype=np.int32)
-        # filtered_vertical = np.array(
-        #     [[line.coords[0][0], line.coords[0][1], line.coords[1][0], line.coords[1][1]] for line in
-        #      filtered_vertical],
-        #     dtype=np.int32)
-        # return filtered_horizontal, filtered_vertical
-        return np.array([], dtype=np.int32), np.array(
+        remaining_lines = shapely_lines.copy()
+        horizontal_lines = []
+        for i in range(len(shapely_lines) - 1, -1, -1):
+            line = shapely_lines[i]
+            if is_horizontal(line):
+                horizontal_lines.append(line)
+                remaining_lines.pop(i)
+        vertical_lines = [line for line in remaining_lines if is_vertical(line)]
+
+        filtered_horizontal = filter_lines_by_orientation(horizontal_lines, is_horizontal=True)
+        filtered_vertical = filter_lines_by_orientation(vertical_lines, is_horizontal=False)
+        filtered_horizontal = np.array(
             [[line.coords[0][0], line.coords[0][1], line.coords[1][0], line.coords[1][1]] for line in
-             shapely_lines],
+             filtered_horizontal],
             dtype=np.int32)
+        filtered_vertical = np.array(
+            [[line.coords[0][0], line.coords[0][1], line.coords[1][0], line.coords[1][1]] for line in
+             filtered_vertical],
+            dtype=np.int32)
+        return filtered_horizontal, filtered_vertical
 
     @staticmethod
     def add_lines_around_table(corners: List, lines: List):
