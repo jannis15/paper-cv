@@ -89,6 +89,7 @@ class FloorDatabase extends _$FloorDatabase with DbMixin {
       final files = await _getFilesByDocumentId(tbDocumentRow.uuid);
       final captures = files.where((file) => file.fileType == FileType.capture).toList();
       final scans = files.where((file) => file.fileType == FileType.scan).toList();
+      final reports = files.where((file) => file.fileType == FileType.report).toList();
       final form = DocumentForm(
         uuid: tbDocumentRow.uuid,
         title: tbDocumentRow.title,
@@ -97,6 +98,7 @@ class FloorDatabase extends _$FloorDatabase with DbMixin {
         modifiedAt: tbDocumentRow.modifiedAt,
         captures: captures,
         scans: scans,
+        reports: reports,
       );
       return form;
     }
@@ -139,13 +141,20 @@ class FloorDatabase extends _$FloorDatabase with DbMixin {
             modifiedAt: Value(now),
           ),
         );
-        final existingfileIds = [...form.captures.map((e) => e.uuid), ...form.scans.map((e) => e.uuid)].whereType<String>().toList();
+        final List<String> existingfileIds = [
+          ...form.captures.map((e) => e.uuid),
+          ...form.scans.map((e) => e.uuid),
+          ...form.reports.map((e) => e.uuid),
+        ].whereType<String>().toList();
         await _deleteUnlinkedFiles(newUuid, existingfileIds);
         for (final capture in form.captures) {
           await _saveDocumentFile(file: capture, documentId: newUuid);
         }
         for (final scan in form.scans) {
           await _saveDocumentFile(file: scan, documentId: newUuid);
+        }
+        for (final reports in form.reports) {
+          await _saveDocumentFile(file: reports, documentId: newUuid);
         }
       },
     );

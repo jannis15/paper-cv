@@ -1,6 +1,5 @@
 import 'package:floor_cv/components/floor_app_bar.dart';
 import 'package:floor_cv/components/floor_attachment_card.dart';
-import 'package:floor_cv/components/floor_buttons.dart';
 import 'package:floor_cv/components/floor_card.dart';
 import 'package:floor_cv/components/floor_file_picker.dart';
 import 'package:floor_cv/components/floor_loader_overlay.dart';
@@ -15,6 +14,8 @@ import 'package:floor_cv/utils/list_utils.dart';
 import 'package:floor_cv/utils/widget_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:timeago_flutter/timeago_flutter.dart';
+import 'package:uuid/uuid.dart';
+import 'dart:convert';
 
 class FloorOverviewScreen extends StatefulWidget {
   final String? documentId;
@@ -34,6 +35,7 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
   late DocumentForm _form;
   final List<SelectedFile> _initialCaptures = [];
   final List<SelectedFile> _initialScans = [];
+  final List<SelectedFile> _initialReports = [];
 
   @override
   void initState() {
@@ -44,6 +46,7 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
       _form = DocumentForm(
         captures: [],
         scans: [],
+        reports: [],
       );
     }
     super.initState();
@@ -54,6 +57,7 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
       _form = await FloorRepository.getDocumentFormById(widget.documentId!);
       _initialCaptures.addAll(_form.captures.map((e) => e.toSelectedFile()));
       _initialScans.addAll(_form.scans.map((e) => e.toSelectedFile()));
+      _initialReports.addAll(_form.reports.map((e) => e.toSelectedFile()));
     } finally {
       _isLoading = false;
       if (mounted) setState(() {});
@@ -86,23 +90,48 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
             final newSelectedFile = newFile.toSelectedFile();
             return [newSelectedFile];
           },
-          onRemoveFile: (_, __) => null,
+          onRemoveFile: (fileIndex, file) {
+            _form.scans.removeAt(fileIndex);
+            if (mounted) setState(() {});
+          },
         );
 
-    Widget buildTemplateCard() => FloorAttachmentCard(
-          title: 'Vorlage',
-          iconData: Icons.calculate,
-          iconText: 'Auswählen',
-          onPickFiles: () async => null,
-          onRemoveFile: (_, __) => null,
-        );
+    // Widget buildTemplateCard() => FloorAttachmentCard(
+    //       title: 'Vorlage',
+    //       iconData: Icons.calculate,
+    //       iconText: 'Auswählen',
+    //       onPickFiles: () async => null,
+    //       onRemoveFile: (_, __) => null,
+    //     );
 
     Widget buildReportCard() => FloorAttachmentCard(
           title: 'Bericht',
+          initialFiles: _initialReports,
           iconData: Icons.auto_awesome,
           iconText: 'Generieren',
-          onPickFiles: () async => null,
-          onRemoveFile: (_, __) => null,
+          onPickFiles: () async {
+            final scanProperties = ScanPropertiesDto.fromJson(jsonDecode(utf8.decode(_form.scans.first.data)));
+            final pdfFile = FloorRepository.createPdf(scanProperties);
+            final pdfData = await pdfFile.save();
+            final now = DateTime.now();
+            final pdfFileDto = FileDto(
+              uuid: null,
+              refUuid: _form.uuid,
+              filename: '${Uuid().v4()}.pdf',
+              data: pdfData,
+              index: null,
+              fileType: FileType.report,
+              createdAt: now,
+              modifiedAt: now,
+            );
+            _form.reports.add(pdfFileDto);
+            if (mounted) setState(() {});
+            return [pdfFileDto.toSelectedFile()];
+          },
+          onRemoveFile: (fileIndex, file) {
+            _form.reports.removeAt(fileIndex);
+            if (mounted) setState(() {});
+          },
         );
 
     return Scaffold(
