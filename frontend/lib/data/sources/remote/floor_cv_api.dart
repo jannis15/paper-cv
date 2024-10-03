@@ -9,7 +9,8 @@ class FloorCvApi extends RestApi {
 
   static FloorCvApi get instance => _instance;
 
-  Future<void> scanCapture(FileDto capture) async {
-    await uploadFile(route: '/scan', file: capture);
+  Future<ScanPropertiesDto> scanCapture(FileDto capture) async {
+    final response = await uploadFile<JsonObject>(route: '/scan', file: capture);
+    return ScanPropertiesDto.fromJson(response.data!);
   }
 }

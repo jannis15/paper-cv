@@ -10,7 +10,9 @@ enum FileType implements IJsonEnum<FileType> {
   @JsonValue(1)
   capture,
   @JsonValue(2)
-  report;
+  report,
+  @JsonValue(3)
+  scan;
 
   @override
   int toJson() => _$FileTypeEnumMap[this]!;

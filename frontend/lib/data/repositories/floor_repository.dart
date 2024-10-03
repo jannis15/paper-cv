@@ -12,5 +12,5 @@ abstract class FloorRepository {
 
   static Future<void> saveDocumentForm(DocumentForm form) => FloorDatabase.instance.saveDocumentForm(form);
 
-  static Future<void> scanCapture(FileDto capture) => FloorCvApi.instance.scanCapture(capture);
+  static Future<ScanPropertiesDto> scanCapture(FileDto capture) => FloorCvApi.instance.scanCapture(capture);
 }

@@ -52,8 +52,14 @@ class FloorDatabase extends _$FloorDatabase with DbMixin {
       );
 
   Future<void> deleteDocumentById(String documentId) async {
-    final query = delete(tbDocument)..where((tbl) => tbl.uuid.isValue(documentId));
-    await query.go();
+    await transaction(
+      () async {
+        final query = delete(tbDocument)..where((tbl) => tbl.uuid.isValue(documentId));
+        await query.go();
+        await _deleteUnlinkedFiles(documentId, []);
+      },
+    );
+    await optimizeSize();
   }
 
   Stream<List<DocumentPreviewDto>> watchDocumentPreviews() {
@@ -81,19 +87,22 @@ class FloorDatabase extends _$FloorDatabase with DbMixin {
     } else {
       final tbDocumentRow = result.readTable(tbDocument);
       final files = await _getFilesByDocumentId(tbDocumentRow.uuid);
+      final captures = files.where((file) => file.fileType == FileType.capture).toList();
+      final scans = files.where((file) => file.fileType == FileType.scan).toList();
       final form = DocumentForm(
         uuid: tbDocumentRow.uuid,
         title: tbDocumentRow.title,
         notes: tbDocumentRow.notes,
         createdAt: tbDocumentRow.createdAt,
         modifiedAt: tbDocumentRow.modifiedAt,
-        captures: files,
+        captures: captures,
+        scans: scans,
       );
       return form;
     }
   }
 
-  Future<void> _saveCapture({required FileDto file, required String documentId}) async {
+  Future<void> _saveDocumentFile({required FileDto file, required String documentId}) async {
     if (file.uuid != null) return;
     final String newUuid = Uuid().v4().toString();
     await into(tbFile).insert(
@@ -130,10 +139,13 @@ class FloorDatabase extends _$FloorDatabase with DbMixin {
             modifiedAt: Value(now),
           ),
         );
-        final existingfileIds = form.captures.map((e) => e.uuid).whereType<String>().toList();
+        final existingfileIds = [...form.captures.map((e) => e.uuid), ...form.scans.map((e) => e.uuid)].whereType<String>().toList();
         await _deleteUnlinkedFiles(newUuid, existingfileIds);
         for (final capture in form.captures) {
-          await _saveCapture(file: capture, documentId: newUuid);
+          await _saveDocumentFile(file: capture, documentId: newUuid);
+        }
+        for (final scan in form.scans) {
+          await _saveDocumentFile(file: scan, documentId: newUuid);
         }
       },
     );

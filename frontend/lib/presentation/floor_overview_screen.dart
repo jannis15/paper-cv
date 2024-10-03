@@ -33,6 +33,7 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
   bool _isSaving = false;
   late DocumentForm _form;
   final List<SelectedFile> _initialCaptures = [];
+  final List<SelectedFile> _initialScans = [];
 
   @override
   void initState() {
@@ -40,7 +41,10 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
     if (_isLoading) {
       _asyncInit();
     } else {
-      _form = DocumentForm(captures: []);
+      _form = DocumentForm(
+        captures: [],
+        scans: [],
+      );
     }
     super.initState();
   }
@@ -48,14 +52,8 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
   void _asyncInit() async {
     try {
       _form = await FloorRepository.getDocumentFormById(widget.documentId!);
-      for (final capture in _form.captures) {
-        final selectedFile = SelectedFile(
-          id: capture.uuid,
-          name: capture.filename,
-          bytes: capture.data,
-        );
-        _initialCaptures.add(selectedFile);
-      }
+      _initialCaptures.addAll(_form.captures.map((e) => e.toSelectedFile()));
+      _initialScans.addAll(_form.scans.map((e) => e.toSelectedFile()));
     } finally {
       _isLoading = false;
       if (mounted) setState(() {});
@@ -77,14 +75,36 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
   Widget build(BuildContext context) {
     Widget buildScanCard() => FloorAttachmentCard(
           title: 'Scan',
+          initialFiles: _initialScans,
           iconData: Icons.cloud_upload,
           iconText: 'Hochladen',
           onPickFiles: () async {
-            await FloorRepository.scanCapture(_form.captures.first);
-            return [];
+            final ScanPropertiesDto scanProperties = await FloorRepository.scanCapture(_form.captures.first);
+            final newFile = scanProperties.toFileDto(formId: _form.uuid);
+            _form.scans.add(newFile);
+            if (mounted) setState(() {});
+            final newSelectedFile = newFile.toSelectedFile();
+            return [newSelectedFile];
           },
           onRemoveFile: (_, __) => null,
         );
+
+    Widget buildTemplateCard() => FloorAttachmentCard(
+          title: 'Vorlage',
+          iconData: Icons.calculate,
+          iconText: 'Auswählen',
+          onPickFiles: () async => null,
+          onRemoveFile: (_, __) => null,
+        );
+
+    Widget buildReportCard() => FloorAttachmentCard(
+          title: 'Bericht',
+          iconData: Icons.auto_awesome,
+          iconText: 'Generieren',
+          onPickFiles: () async => null,
+          onRemoveFile: (_, __) => null,
+        );
+
     return Scaffold(
       appBar: FloorAppBar(
         customPop: () async {
@@ -161,8 +181,8 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
                     ),
                     FloorAttachmentCard(
                       title: 'Aufnahme',
-                      iconData: Icons.add_a_photo,
                       initialFiles: _initialCaptures,
+                      iconData: Icons.add_a_photo,
                       onPickFiles: () async {
                         final file = await FloorFilePicker.pickFile(context, pickerOption: FilePickerOption.camera);
                         if (file != null) {
@@ -198,46 +218,40 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
                           child: buildScanCard(),
                         ),
                       ),
-                    IntrinsicHeight(
-                      child: FloorLoaderOverlay(
-                        loading: true,
-                        disableBackButton: false,
-                        loadingWidget: const SizedBox(),
-                        child: FloorAttachmentCard(
-                          title: 'Vorlage',
-                          iconData: Icons.calculate,
-                          iconText: 'Auswählen',
-                          onPickFiles: () async => null,
-                          onRemoveFile: (_, __) => null,
+                    // if (_form.scans.isNotEmpty)
+                    //   buildTemplateCard()
+                    // else
+                    //   IntrinsicHeight(
+                    //     child: FloorLoaderOverlay(
+                    //       loading: true,
+                    //       disableBackButton: false,
+                    //       loadingWidget: const SizedBox(),
+                    //       child: buildTemplateCard(),
+                    //     ),
+                    //   ),
+                    if (_form.scans.isNotEmpty)
+                      buildReportCard()
+                    else
+                      IntrinsicHeight(
+                        child: FloorLoaderOverlay(
+                          loading: true,
+                          disableBackButton: false,
+                          loadingWidget: const SizedBox(),
+                          child: buildReportCard(),
                         ),
                       ),
-                    ),
-                    IntrinsicHeight(
-                      child: FloorLoaderOverlay(
-                        loading: true,
-                        disableBackButton: false,
-                        loadingWidget: const SizedBox(),
-                        child: FloorAttachmentCard(
-                          title: 'Bericht',
-                          iconData: Icons.auto_awesome,
-                          iconText: 'Generieren',
-                          onPickFiles: () async => null,
-                          onRemoveFile: (_, __) => null,
-                        ),
-                      ),
-                    ),
-                    IntrinsicHeight(
-                      child: FloorLoaderOverlay(
-                        loading: true,
-                        disableBackButton: false,
-                        loadingWidget: const SizedBox(),
-                        child: FloorFilledButton(
-                          iconData: Icons.lock,
-                          text: 'Abschließen',
-                          onPressed: () {},
-                        ),
-                      ),
-                    ),
+                    // IntrinsicHeight(
+                    //   child: FloorLoaderOverlay(
+                    //     loading: true,
+                    //     disableBackButton: false,
+                    //     loadingWidget: const SizedBox(),
+                    //     child: FloorFilledButton(
+                    //       iconData: Icons.lock,
+                    //       text: 'Abschließen',
+                    //       onPressed: () {},
+                    //     ),
+                    //   ),
+                    // ),
                   ],
                 ),
               ),

@@ -5,6 +5,7 @@ class DocumentForm {
   String title;
   String notes;
   List<FileDto> captures;
+  List<FileDto> scans;
   DateTime? createdAt;
   DateTime? modifiedAt;
 
@@ -13,6 +14,7 @@ class DocumentForm {
     this.title = '',
     this.notes = '',
     required this.captures,
+    required this.scans,
     this.createdAt,
     this.modifiedAt,
   });

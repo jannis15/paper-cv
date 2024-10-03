@@ -10,4 +10,5 @@ const _$FileTypeEnumMap = {
   FileType.attachment: 0,
   FileType.capture: 1,
   FileType.report: 2,
+  FileType.scan: 3,
 };

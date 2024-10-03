@@ -21,6 +21,15 @@ class FloorCV(ABC):
         return cv.subtract(img1, img2)
 
     @staticmethod
+    def get_column_widths(vertical_lines: np.ndarray) -> List[float]:
+        line_strings = [LineString([(x1, y1), (x2, y2)]) for x1, y1, x2, y2 in vertical_lines]
+        column_widths = [
+            line_strings[i].distance(line_strings[i + 1])
+            for i in range(len(line_strings) - 1)
+        ]
+        return column_widths
+
+    @staticmethod
     def read_grayscale_img(filename: str) -> np.ndarray:
         return cv.imread(filename, cv.IMREAD_GRAYSCALE)
 

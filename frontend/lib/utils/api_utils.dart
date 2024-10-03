@@ -15,12 +15,12 @@ class RestApi {
     _baseUrl = baseUrl;
   }
 
-  Future<void> uploadFile({required String route, required FileDto file}) async {
+  Future<Response<T>> uploadFile<T>({required String route, required FileDto file}) async {
     final multiPartFile = await MultipartFile.fromBytes(file.data, filename: file.filename);
     final formData = FormData.fromMap({
       'file': multiPartFile,
     });
-    await _client.post(
+    return _client.post<T>(
       _baseUrl + route,
       data: formData,
       options: Options(

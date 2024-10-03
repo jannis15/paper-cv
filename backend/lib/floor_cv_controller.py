@@ -3,6 +3,7 @@ from pathlib import Path
 import numpy as np
 from google.cloud import vision
 from lib.floor_cv import FloorCV
+from lib.schemas import ScanProperties
 
 
 class FloorCvController(ABC):
@@ -47,7 +48,6 @@ class FloorCvController(ABC):
         corners = FloorCV.get_table_corners(intersections)
 
         img_new_lines = FloorCV.add_lines_to_zeros_like_img(img_structure, lines)
-        FloorCV.log_image(root_dir, img_new_lines, 'new_lines1')
 
         img_straightened, lines, new_corners, perspective_transform = FloorCV.straighten_table(img_new_lines, lines,
                                                                                                corners)
@@ -69,13 +69,7 @@ class FloorCvController(ABC):
         img_new_lines = FloorCV.add_lines_to_zeros_like_img(img_structure, new_lines)
         print(f'New Lines: {len(new_lines)}')
         FloorCV.log_image(root_dir, img_new_lines, 'new_lines')
-        # lines = FloorCV.get_all_lines(img_straightened)
-        # FloorCV.extend_all_lines(img_straightened, lines)
 
-        # img_mask = FloorCV.create_rectangular_mask(img_new_lines, new_corners)
-        # FloorCV.log_image(root_dir, img_mask, 'raw_mask')
-        # img_masked_lines = FloorCV.apply_mask(img_new_lines, img_mask)
-        # FloorCV.log_image(root_dir, img_masked_lines, 'masked')
         cropped_img = img_new_lines[int(new_corners[0][1]):int(new_corners[2][1]),
                       int(new_corners[0][0]):int(new_corners[2][0])]
 
@@ -88,3 +82,11 @@ class FloorCvController(ABC):
         cells = FloorCV.find_cells(cropped_img)
         img_straightened_bgr = FloorCV.img_to_bgr(cropped_img)
         FloorCV.export_cells(root_dir, cells, img_straightened_bgr)
+        column_widths = FloorCV.get_column_widths(new_vertical_lines)
+
+        return ScanProperties(
+            column_widths=column_widths,
+            rows=len(new_horizontal_lines)-1,
+            avg_row_height=avg_vertical_distance,
+            cell_texts=[],
+        )
