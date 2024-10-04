@@ -2,20 +2,43 @@ import uuid
 from pathlib import Path
 import numpy as np
 import cv2 as cv
-from typing import List, Tuple
+from typing import List, Tuple, Any
 from shapely.geometry import LineString, Point, box
 from abc import ABC
 
 
 class Cell:
-    def __init__(self, x, y, width, height):
-        self.x = x
-        self.y = y
-        self.width = width
-        self.height = height
+    def __init__(self, x1, y1, x2, y2):
+        self.x1 = x1
+        self.y1 = y1
+        self.x2 = x2
+        self.y2 = y2
+
+    @property
+    def width(self):
+        return abs(self.x2 - self.x1)
+
+    @property
+    def height(self):
+        return abs(self.y2 - self.y1)
+
+    @property
+    def area(self):
+        return self.width * self.height
 
 
 class FloorCV(ABC):
+    @staticmethod
+    def make_2d_list(lst: list, n: int) -> list:
+        return [lst[i:i + n] for i in range(0, len(lst), n)]
+
+    @staticmethod
+    def ndarray_to_bytes(image: np.ndarray, file_format: str = '.png') -> bytes:
+        success, encoded_image = cv.imencode(file_format, image)
+        if not success:
+            raise ValueError("Image encoding failed.")
+        return encoded_image.tobytes()
+
     @staticmethod
     def subtract_images(img1: np.ndarray, img2: np.ndarray) -> np.ndarray:
         return cv.subtract(img1, img2)
@@ -160,11 +183,13 @@ class FloorCV(ABC):
         imh = cv.Canny(imh, 0, 0)
         contours, _ = cv.findContours(imh, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
         cells = []
+
         for contour in contours:
             x, y, width, height = cv.boundingRect(contour)
-            # Filter small rectangles that are not cells
-            if width > 12 and height > 12:  # Adjust this threshold as needed
-                cells.append(Cell(x, y, width, height))
+            x2 = x + width
+            y2 = y + height
+            if width > 12 and height > 12:
+                cells.append(Cell(x1=x, y1=y, x2=x2, y2=y2))
         cells.reverse()
         return cells
 
@@ -172,24 +197,21 @@ class FloorCV(ABC):
     def export_cells(root_dir: Path, cells: List[Cell], img: np.ndarray) -> None:
         annotated_image = img.copy()
         for idx, cell in enumerate(cells):
-            # Define the top-left and bottom-right corners of the rectangle
-            top_left = (cell.x, cell.y)
-            bottom_right = (cell.x + cell.width, cell.y + cell.height)
+            top_left = (cell.x1, cell.y1)
+            bottom_right = (cell.x2, cell.y2)
 
-            # Draw a light red rectangle around the cell
             color = (0, 0, 255)  # BGR format: red color
             thickness = 2  # Thickness of the rectangle border
             cv.rectangle(annotated_image, top_left, bottom_right, color, thickness)
 
-            # Put the index number in the center of the rectangle
-            center_x = cell.x + cell.width // 2
-            center_y = cell.y + cell.height // 2
+            center_x = (cell.x1 + cell.x2) // 2
+            center_y = (cell.y1 + cell.y2) // 2
+
             font = cv.FONT_HERSHEY_SIMPLEX
             font_scale = 0.7
             text_color = (0, 0, 255)  # Red color
             text_thickness = 2
-            cv.putText(annotated_image, str(idx + 1), (center_x - 10, center_y + 10), font, font_scale, text_color,
-                       text_thickness)
+            cv.putText(annotated_image, str(idx + 1), (center_x - 10, center_y + 10), font, font_scale, text_color, text_thickness)
         FloorCV.log_image(root_dir, annotated_image, 'annotated_image')
 
     @staticmethod

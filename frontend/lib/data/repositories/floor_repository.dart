@@ -1,3 +1,5 @@
+import 'package:collection/collection.dart';
+import 'package:drift/drift.dart';
 import 'package:floor_cv/data/models/floor_dto_models.dart';
 import 'package:floor_cv/data/sources/local/database.dart';
 import 'package:floor_cv/data/sources/remote/floor_cv_api.dart';
@@ -28,18 +30,19 @@ abstract class FloorRepository {
             border: pw.TableBorder.all(),
             children: List<pw.TableRow>.generate(
               dto.rows,
-              (index) {
-                return pw.TableRow(
-                  children: List<pw.Widget>.generate(
-                    dto.columnWidths.length,
-                    (cellIndex) => pw.Container(
-                      height: dto.avgRowHeight,
-                      alignment: pw.Alignment.center,
-                      child: pw.Text('Row $index Col $cellIndex'),
-                    ),
-                  ),
-                );
-              },
+              (y) => pw.TableRow(
+                children: dto.columnWidths
+                    .mapIndexed(
+                      (x, columnWidth) => pw.Container(
+                        height: dto.avgRowHeight,
+                        alignment: pw.Alignment.center,
+                        child: pw.Text(
+                          dto.cellTexts[y][x],
+                        ),
+                      ),
+                    )
+                    .toList(),
+              ),
             ),
           );
         },
