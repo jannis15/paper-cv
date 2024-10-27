@@ -311,6 +311,10 @@ class FloorCV(ABC):
         return straightened_lines
 
     @staticmethod
+    def sort_vertical_lines_by_x(vertical_lines: np.ndarray) -> np.ndarray:
+        return vertical_lines[vertical_lines[:, 0].argsort()]
+
+    @staticmethod
     def sort_horizontal_lines_by_y(horizontal_lines: np.ndarray) -> np.ndarray:
         return horizontal_lines[horizontal_lines[:, 1].argsort()]
 

@@ -1,4 +1,4 @@
-import 'package:floor_cv/utils/enum_utils.dart';
+import 'package:paper_cv/utils/enum_utils.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'floor_enums.g.dart';

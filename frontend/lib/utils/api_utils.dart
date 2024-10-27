@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
-import 'package:floor_cv/data/models/floor_dto_models.dart';
+import 'package:paper_cv/data/models/floor_dto_models.dart';
 
 typedef JsonObject = Map<String, dynamic>;
 typedef JsonArray = List<dynamic>;

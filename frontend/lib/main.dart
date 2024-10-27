@@ -1,6 +1,6 @@
-import 'package:floor_cv/config/system.dart';
-import 'package:floor_cv/config/text_theme.dart';
-import 'package:floor_cv/presentation/floor_main_screen.dart';
+import 'package:paper_cv/config/system.dart';
+import 'package:paper_cv/config/text_theme.dart';
+import 'package:paper_cv/presentation/floor_main_screen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -44,7 +44,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       navigatorKey: navigatorKey,
-      title: 'FloorCV',
+      title: 'PaperCV',
       theme: ThemeData(
         colorSchemeSeed: Colors.teal,
         textTheme: FloorTextTheme(),

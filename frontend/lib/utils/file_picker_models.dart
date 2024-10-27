@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:floor_cv/data/models/floor_dto_models.dart';
+import 'package:paper_cv/data/models/floor_dto_models.dart';
 
 enum FilePickerOption {
   camera,

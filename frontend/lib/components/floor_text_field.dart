@@ -1,5 +1,5 @@
-import 'package:floor_cv/config/config.dart';
-import 'package:floor_cv/utils/debouncer.dart';
+import 'package:paper_cv/config/config.dart';
+import 'package:paper_cv/utils/debouncer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 

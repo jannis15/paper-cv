@@ -1,5 +1,5 @@
-import 'package:floor_cv/config/config.dart';
-import 'package:floor_cv/utils/list_utils.dart';
+import 'package:paper_cv/config/config.dart';
+import 'package:paper_cv/utils/list_utils.dart';
 import 'package:flutter/material.dart';
 
 enum FloorButtonType {

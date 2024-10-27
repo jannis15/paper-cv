@@ -1,12 +1,12 @@
-import 'package:floor_cv/components/floor_app_bar.dart';
-import 'package:floor_cv/components/floor_card.dart';
-import 'package:floor_cv/config/config.dart';
-import 'package:floor_cv/data/models/floor_dto_models.dart';
-import 'package:floor_cv/data/repositories/floor_repository.dart';
-import 'package:floor_cv/presentation/floor_overview_screen.dart';
-import 'package:floor_cv/utils/alert_dialog.dart';
-import 'package:floor_cv/utils/list_utils.dart';
-import 'package:floor_cv/utils/widget_utils.dart';
+import 'package:paper_cv/components/floor_app_bar.dart';
+import 'package:paper_cv/components/floor_card.dart';
+import 'package:paper_cv/config/config.dart';
+import 'package:paper_cv/data/models/floor_dto_models.dart';
+import 'package:paper_cv/data/repositories/floor_repository.dart';
+import 'package:paper_cv/presentation/floor_overview_screen.dart';
+import 'package:paper_cv/utils/alert_dialog.dart';
+import 'package:paper_cv/utils/list_utils.dart';
+import 'package:paper_cv/utils/widget_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:timeago_flutter/timeago_flutter.dart';
 
@@ -87,9 +87,7 @@ class _FloorMainScreenState extends State<FloorMainScreen> {
         );
 
     return Scaffold(
-      appBar: FloorAppBar(
-        title: Text('FloorCV'),
-      ),
+      appBar: FloorAppBar(title: Text('PaperCV')),
       floatingActionButton: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: FloatingActionButton.extended(

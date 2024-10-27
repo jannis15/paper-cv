@@ -1,5 +1,5 @@
 import 'package:drift/drift.dart';
-import 'package:floor_cv/utils/enum_utils.dart';
+import 'package:paper_cv/utils/enum_utils.dart';
 
 class EnumConverter<T extends Enum> extends TypeConverter<IJsonEnum<T>, int> {
   final List<IJsonEnum<T>> values;

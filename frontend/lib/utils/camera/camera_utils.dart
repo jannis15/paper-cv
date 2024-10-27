@@ -1,5 +1,5 @@
 import 'package:camera/camera.dart';
-import 'package:floor_cv/utils/alert_dialog.dart';
+import 'package:paper_cv/utils/alert_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gal/gal.dart';

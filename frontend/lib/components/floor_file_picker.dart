@@ -1,5 +1,5 @@
-import 'package:floor_cv/utils/camera/camera_utils.dart';
-import 'package:floor_cv/utils/file_picker_models.dart';
+import 'package:paper_cv/utils/camera/camera_utils.dart';
+import 'package:paper_cv/utils/file_picker_models.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:image_picker/image_picker.dart';
 

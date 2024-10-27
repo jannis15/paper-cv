@@ -1,5 +1,5 @@
 import 'package:drift/drift.dart';
-import 'package:floor_cv/data/sources/local/database.dart';
+import 'package:paper_cv/data/sources/local/database.dart';
 
 extension Migration on FloorDatabase {
   int get version => 1;

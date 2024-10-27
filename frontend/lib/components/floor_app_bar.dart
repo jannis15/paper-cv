@@ -1,6 +1,6 @@
-import 'package:floor_cv/components/floor_buttons.dart';
-import 'package:floor_cv/config/config.dart';
-import 'package:floor_cv/utils/list_utils.dart';
+import 'package:paper_cv/components/floor_buttons.dart';
+import 'package:paper_cv/config/config.dart';
+import 'package:paper_cv/utils/list_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

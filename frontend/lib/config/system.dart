@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:drift/native.dart';
-import 'package:floor_cv/config/config.dart';
-import 'package:floor_cv/utils/list_utils.dart';
+import 'package:paper_cv/config/config.dart';
+import 'package:paper_cv/utils/list_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_logs/flutter_logs.dart';
 

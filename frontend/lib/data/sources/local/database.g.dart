@@ -769,61 +769,78 @@ typedef $$TbDocumentTableUpdateCompanionBuilder = TbDocumentCompanion Function({
 });
 
 class $$TbDocumentTableFilterComposer
-    extends FilterComposer<_$FloorDatabase, $TbDocumentTable> {
-  $$TbDocumentTableFilterComposer(super.$state);
-  ColumnFilters<String> get uuid => $state.composableBuilder(
-      column: $state.table.uuid,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
+    extends Composer<_$FloorDatabase, $TbDocumentTable> {
+  $$TbDocumentTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get uuid => $composableBuilder(
+      column: $table.uuid, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<String> get title => $state.composableBuilder(
-      column: $state.table.title,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
+  ColumnFilters<String> get title => $composableBuilder(
+      column: $table.title, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<String> get notes => $state.composableBuilder(
-      column: $state.table.notes,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
+  ColumnFilters<String> get notes => $composableBuilder(
+      column: $table.notes, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<DateTime> get createdAt => $state.composableBuilder(
-      column: $state.table.createdAt,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+      column: $table.createdAt, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<DateTime> get modifiedAt => $state.composableBuilder(
-      column: $state.table.modifiedAt,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
+  ColumnFilters<DateTime> get modifiedAt => $composableBuilder(
+      column: $table.modifiedAt, builder: (column) => ColumnFilters(column));
 }
 
 class $$TbDocumentTableOrderingComposer
-    extends OrderingComposer<_$FloorDatabase, $TbDocumentTable> {
-  $$TbDocumentTableOrderingComposer(super.$state);
-  ColumnOrderings<String> get uuid => $state.composableBuilder(
-      column: $state.table.uuid,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
+    extends Composer<_$FloorDatabase, $TbDocumentTable> {
+  $$TbDocumentTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get uuid => $composableBuilder(
+      column: $table.uuid, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<String> get title => $state.composableBuilder(
-      column: $state.table.title,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
+  ColumnOrderings<String> get title => $composableBuilder(
+      column: $table.title, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<String> get notes => $state.composableBuilder(
-      column: $state.table.notes,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
+  ColumnOrderings<String> get notes => $composableBuilder(
+      column: $table.notes, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<DateTime> get createdAt => $state.composableBuilder(
-      column: $state.table.createdAt,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+      column: $table.createdAt, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<DateTime> get modifiedAt => $state.composableBuilder(
-      column: $state.table.modifiedAt,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
+  ColumnOrderings<DateTime> get modifiedAt => $composableBuilder(
+      column: $table.modifiedAt, builder: (column) => ColumnOrderings(column));
+}
+
+class $$TbDocumentTableAnnotationComposer
+    extends Composer<_$FloorDatabase, $TbDocumentTable> {
+  $$TbDocumentTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get uuid =>
+      $composableBuilder(column: $table.uuid, builder: (column) => column);
+
+  GeneratedColumn<String> get title =>
+      $composableBuilder(column: $table.title, builder: (column) => column);
+
+  GeneratedColumn<String> get notes =>
+      $composableBuilder(column: $table.notes, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get modifiedAt => $composableBuilder(
+      column: $table.modifiedAt, builder: (column) => column);
 }
 
 class $$TbDocumentTableTableManager extends RootTableManager<
@@ -832,6 +849,7 @@ class $$TbDocumentTableTableManager extends RootTableManager<
     TbDocumentData,
     $$TbDocumentTableFilterComposer,
     $$TbDocumentTableOrderingComposer,
+    $$TbDocumentTableAnnotationComposer,
     $$TbDocumentTableCreateCompanionBuilder,
     $$TbDocumentTableUpdateCompanionBuilder,
     (
@@ -844,10 +862,12 @@ class $$TbDocumentTableTableManager extends RootTableManager<
       : super(TableManagerState(
           db: db,
           table: table,
-          filteringComposer:
-              $$TbDocumentTableFilterComposer(ComposerState(db, table)),
-          orderingComposer:
-              $$TbDocumentTableOrderingComposer(ComposerState(db, table)),
+          createFilteringComposer: () =>
+              $$TbDocumentTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$TbDocumentTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$TbDocumentTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback: ({
             Value<String> uuid = const Value.absent(),
             Value<String> title = const Value.absent(),
@@ -893,6 +913,7 @@ typedef $$TbDocumentTableProcessedTableManager = ProcessedTableManager<
     TbDocumentData,
     $$TbDocumentTableFilterComposer,
     $$TbDocumentTableOrderingComposer,
+    $$TbDocumentTableAnnotationComposer,
     $$TbDocumentTableCreateCompanionBuilder,
     $$TbDocumentTableUpdateCompanionBuilder,
     (
@@ -925,93 +946,107 @@ typedef $$TbFileTableUpdateCompanionBuilder = TbFileCompanion Function({
 });
 
 class $$TbFileTableFilterComposer
-    extends FilterComposer<_$FloorDatabase, $TbFileTable> {
-  $$TbFileTableFilterComposer(super.$state);
-  ColumnFilters<String> get uuid => $state.composableBuilder(
-      column: $state.table.uuid,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
+    extends Composer<_$FloorDatabase, $TbFileTable> {
+  $$TbFileTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get uuid => $composableBuilder(
+      column: $table.uuid, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<String> get refUuid => $state.composableBuilder(
-      column: $state.table.refUuid,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
+  ColumnFilters<String> get refUuid => $composableBuilder(
+      column: $table.refUuid, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<String> get filename => $state.composableBuilder(
-      column: $state.table.filename,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
+  ColumnFilters<String> get filename => $composableBuilder(
+      column: $table.filename, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<Uint8List> get data => $state.composableBuilder(
-      column: $state.table.data,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
+  ColumnFilters<Uint8List> get data => $composableBuilder(
+      column: $table.data, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<int> get index => $state.composableBuilder(
-      column: $state.table.index,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
+  ColumnFilters<int> get index => $composableBuilder(
+      column: $table.index, builder: (column) => ColumnFilters(column));
 
   ColumnWithTypeConverterFilters<IJsonEnum<FileType>, IJsonEnum<FileType>, int>
-      get fileType => $state.composableBuilder(
-          column: $state.table.fileType,
-          builder: (column, joinBuilders) => ColumnWithTypeConverterFilters(
-              column,
-              joinBuilders: joinBuilders));
+      get fileType => $composableBuilder(
+          column: $table.fileType,
+          builder: (column) => ColumnWithTypeConverterFilters(column));
 
-  ColumnFilters<DateTime> get createdAt => $state.composableBuilder(
-      column: $state.table.createdAt,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+      column: $table.createdAt, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<DateTime> get modifiedAt => $state.composableBuilder(
-      column: $state.table.modifiedAt,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
+  ColumnFilters<DateTime> get modifiedAt => $composableBuilder(
+      column: $table.modifiedAt, builder: (column) => ColumnFilters(column));
 }
 
 class $$TbFileTableOrderingComposer
-    extends OrderingComposer<_$FloorDatabase, $TbFileTable> {
-  $$TbFileTableOrderingComposer(super.$state);
-  ColumnOrderings<String> get uuid => $state.composableBuilder(
-      column: $state.table.uuid,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
+    extends Composer<_$FloorDatabase, $TbFileTable> {
+  $$TbFileTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get uuid => $composableBuilder(
+      column: $table.uuid, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<String> get refUuid => $state.composableBuilder(
-      column: $state.table.refUuid,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
+  ColumnOrderings<String> get refUuid => $composableBuilder(
+      column: $table.refUuid, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<String> get filename => $state.composableBuilder(
-      column: $state.table.filename,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
+  ColumnOrderings<String> get filename => $composableBuilder(
+      column: $table.filename, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<Uint8List> get data => $state.composableBuilder(
-      column: $state.table.data,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
+  ColumnOrderings<Uint8List> get data => $composableBuilder(
+      column: $table.data, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<int> get index => $state.composableBuilder(
-      column: $state.table.index,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
+  ColumnOrderings<int> get index => $composableBuilder(
+      column: $table.index, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<int> get fileType => $state.composableBuilder(
-      column: $state.table.fileType,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
+  ColumnOrderings<int> get fileType => $composableBuilder(
+      column: $table.fileType, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<DateTime> get createdAt => $state.composableBuilder(
-      column: $state.table.createdAt,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+      column: $table.createdAt, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<DateTime> get modifiedAt => $state.composableBuilder(
-      column: $state.table.modifiedAt,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
+  ColumnOrderings<DateTime> get modifiedAt => $composableBuilder(
+      column: $table.modifiedAt, builder: (column) => ColumnOrderings(column));
+}
+
+class $$TbFileTableAnnotationComposer
+    extends Composer<_$FloorDatabase, $TbFileTable> {
+  $$TbFileTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get uuid =>
+      $composableBuilder(column: $table.uuid, builder: (column) => column);
+
+  GeneratedColumn<String> get refUuid =>
+      $composableBuilder(column: $table.refUuid, builder: (column) => column);
+
+  GeneratedColumn<String> get filename =>
+      $composableBuilder(column: $table.filename, builder: (column) => column);
+
+  GeneratedColumn<Uint8List> get data =>
+      $composableBuilder(column: $table.data, builder: (column) => column);
+
+  GeneratedColumn<int> get index =>
+      $composableBuilder(column: $table.index, builder: (column) => column);
+
+  GeneratedColumnWithTypeConverter<IJsonEnum<FileType>, int> get fileType =>
+      $composableBuilder(column: $table.fileType, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get modifiedAt => $composableBuilder(
+      column: $table.modifiedAt, builder: (column) => column);
 }
 
 class $$TbFileTableTableManager extends RootTableManager<
@@ -1020,6 +1055,7 @@ class $$TbFileTableTableManager extends RootTableManager<
     TbFileData,
     $$TbFileTableFilterComposer,
     $$TbFileTableOrderingComposer,
+    $$TbFileTableAnnotationComposer,
     $$TbFileTableCreateCompanionBuilder,
     $$TbFileTableUpdateCompanionBuilder,
     (TbFileData, BaseReferences<_$FloorDatabase, $TbFileTable, TbFileData>),
@@ -1029,10 +1065,12 @@ class $$TbFileTableTableManager extends RootTableManager<
       : super(TableManagerState(
           db: db,
           table: table,
-          filteringComposer:
-              $$TbFileTableFilterComposer(ComposerState(db, table)),
-          orderingComposer:
-              $$TbFileTableOrderingComposer(ComposerState(db, table)),
+          createFilteringComposer: () =>
+              $$TbFileTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$TbFileTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$TbFileTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback: ({
             Value<String> uuid = const Value.absent(),
             Value<String?> refUuid = const Value.absent(),
@@ -1090,6 +1128,7 @@ typedef $$TbFileTableProcessedTableManager = ProcessedTableManager<
     TbFileData,
     $$TbFileTableFilterComposer,
     $$TbFileTableOrderingComposer,
+    $$TbFileTableAnnotationComposer,
     $$TbFileTableCreateCompanionBuilder,
     $$TbFileTableUpdateCompanionBuilder,
     (TbFileData, BaseReferences<_$FloorDatabase, $TbFileTable, TbFileData>),

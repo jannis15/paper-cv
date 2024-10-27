@@ -11,7 +11,10 @@ class FloorCvController(ABC):
     @staticmethod
     def __detect_handwriting(client: vision.ImageAnnotatorClient, content: bytes):
         image = vision.Image(content=content)
-        return client.text_detection(image=image)
+        image_context = vision.ImageContext(
+            language_hints=["en", "de"]
+        )
+        return client.text_detection(image=image,image_context=image_context)
 
     @staticmethod
     def scan_file(client: vision.ImageAnnotatorClient, file_bytes: bytes):
@@ -58,6 +61,7 @@ class FloorCvController(ABC):
         new_horizontal_lines, new_vertical_lines = FloorCV.filter_out_close_lines(lines)
 
         new_vertical_lines = FloorCV.straighten_vertical_lines(new_vertical_lines)
+        new_vertical_lines = FloorCV.sort_vertical_lines_by_x(new_vertical_lines)
         new_horizontal_lines = FloorCV.straighten_horizontal_lines(new_horizontal_lines)
         new_horizontal_lines = FloorCV.sort_horizontal_lines_by_y(new_horizontal_lines)
         avg_vertical_distance = FloorCV.average_vertical_distance(new_horizontal_lines)
@@ -114,7 +118,7 @@ class FloorCvController(ABC):
             best_fit_index = find_best_fit(cells, annotation_cell)
             if best_fit_index is not None:
                 if cell_texts[best_fit_index] != '':
-                    cell_texts[best_fit_index] += '\n'
+                    cell_texts[best_fit_index] += ' '
                 cell_texts[best_fit_index] += annotation.description
 
         rows = len(new_horizontal_lines) - 1

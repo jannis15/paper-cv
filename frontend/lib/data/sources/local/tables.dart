@@ -1,6 +1,6 @@
 import 'package:drift/drift.dart';
-import 'package:floor_cv/data/models/floor_enums.dart';
-import 'package:floor_cv/utils/type_converters.dart';
+import 'package:paper_cv/data/models/floor_enums.dart';
+import 'package:paper_cv/utils/type_converters.dart';
 import 'package:uuid/uuid.dart';
 
 class TbDocument extends Table {

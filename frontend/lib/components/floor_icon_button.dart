@@ -1,4 +1,4 @@
-import 'package:floor_cv/config/config.dart';
+import 'package:paper_cv/config/config.dart';
 import 'package:flutter/material.dart';
 
 class FloorIconButton extends StatelessWidget {

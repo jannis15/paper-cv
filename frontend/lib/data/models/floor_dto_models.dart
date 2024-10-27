@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:floor_cv/data/models/floor_enums.dart';
-import 'package:floor_cv/utils/api_utils.dart';
+import 'package:paper_cv/data/models/floor_enums.dart';
+import 'package:paper_cv/utils/api_utils.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:intl/intl.dart';
 

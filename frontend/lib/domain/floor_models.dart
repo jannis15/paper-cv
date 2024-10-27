@@ -1,4 +1,4 @@
-import 'package:floor_cv/data/models/floor_dto_models.dart';
+import 'package:paper_cv/data/models/floor_dto_models.dart';
 
 class DocumentForm {
   String? uuid;

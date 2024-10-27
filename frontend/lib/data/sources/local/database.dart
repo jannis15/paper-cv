@@ -1,13 +1,13 @@
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
-import 'package:floor_cv/data/models/floor_dto_models.dart';
-import 'package:floor_cv/data/models/floor_enums.dart';
-import 'package:floor_cv/data/sources/local/migration.dart';
-import 'package:floor_cv/data/sources/local/tables.dart';
-import 'package:floor_cv/domain/floor_models.dart';
-import 'package:floor_cv/utils/db_mixin.dart';
-import 'package:floor_cv/utils/enum_utils.dart';
-import 'package:floor_cv/utils/type_converters.dart';
+import 'package:paper_cv/data/models/floor_dto_models.dart';
+import 'package:paper_cv/data/models/floor_enums.dart';
+import 'package:paper_cv/data/sources/local/migration.dart';
+import 'package:paper_cv/data/sources/local/tables.dart';
+import 'package:paper_cv/domain/floor_models.dart';
+import 'package:paper_cv/utils/db_mixin.dart';
+import 'package:paper_cv/utils/enum_utils.dart';
+import 'package:paper_cv/utils/type_converters.dart';
 import 'package:uuid/uuid.dart';
 
 part 'database.g.dart';
@@ -30,7 +30,7 @@ class FloorDatabase extends _$FloorDatabase with DbMixin {
   static FloorDatabase get instance => _instance;
 
   static QueryExecutor _openConnection() {
-    return driftDatabase(name: 'floor_cv');
+    return driftDatabase(name: 'paper_cv');
   }
 
   DocumentPreviewDto _mapToDocumentPreviewDto(TbDocumentData row) => DocumentPreviewDto(
