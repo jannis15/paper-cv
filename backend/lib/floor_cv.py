@@ -319,12 +319,16 @@ class FloorCV(ABC):
         return horizontal_lines[horizontal_lines[:, 1].argsort()]
 
     @staticmethod
+    def __table_height(sorted_horizontal_lines: np.ndarray):
+        first_y = sorted_horizontal_lines[0, 1]
+        last_y = sorted_horizontal_lines[-1, 1]
+        return last_y-first_y
+
+    @staticmethod
     def average_vertical_distance(sorted_horizontal_lines: np.ndarray) -> float:
         if len(sorted_horizontal_lines) < 2:
             return 0.0
-        first_y = sorted_horizontal_lines[0, 1]
-        last_y = sorted_horizontal_lines[-1, 1]
-        return float((last_y - first_y) / (len(sorted_horizontal_lines) - 1))
+        return float((FloorCV.__table_height(sorted_horizontal_lines)) / (len(sorted_horizontal_lines) - 1))
 
     @staticmethod
     def adjust_horizontal_lines_by_avg_vertical_distance(avg_distance: float,
