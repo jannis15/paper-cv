@@ -3,7 +3,7 @@ part of 'camera_utils.dart';
 enum _SaveImageState { savable, saving, saved }
 
 class _CameraConfirmView extends StatefulWidget {
-  final XFile image;
+  final img.Image image;
 
   const _CameraConfirmView({required this.image});
 
@@ -12,12 +12,13 @@ class _CameraConfirmView extends StatefulWidget {
 }
 
 class _CameraConfirmViewState extends State<_CameraConfirmView> {
+  TransformationController _transformationController = TransformationController();
   _SaveImageState _saveImageState = _SaveImageState.savable;
   bool _isLoadingImage = true;
   late final Uint8List _imageBytes;
 
   Future<void> _loadImage() async {
-    _imageBytes = await widget.image.readAsBytes();
+    _imageBytes = img.encodeJpg(widget.image);
     _isLoadingImage = false;
     setState(() {});
   }
@@ -99,7 +100,7 @@ class _CameraConfirmViewState extends State<_CameraConfirmView> {
                 children: [
                   _isLoadingImage
                       ? const Center(child: CircularProgressIndicator())
-                      : InteractiveViewer(maxScale: 8, child: Image.memory(_imageBytes)),
+                      : InteractiveViewer(transformationController: _transformationController, maxScale: 8, child: Image.memory(_imageBytes)),
                   if (!_isLoadingImage)
                     Positioned(
                       left: 10,
@@ -124,10 +125,10 @@ class _CameraConfirmViewState extends State<_CameraConfirmView> {
             ),
             Padding(
               padding: const EdgeInsets.all(10),
-              child: Row(
+              child: RowGap(
+                gap: 10,
                 children: [
                   Expanded(child: FilledButton(onPressed: () => Navigator.of(context).pop<bool>(false), child: const Text('Wiederholen'))),
-                  const SizedBox(width: 10),
                   Expanded(child: FilledButton(onPressed: () => _onConfirm(), child: const Text('OK')))
                 ],
               ),

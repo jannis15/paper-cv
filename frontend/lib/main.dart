@@ -24,7 +24,6 @@ void main() async {
   };
   await dotenv.load();
   timeago.setLocaleMessages('de', timeago.DeMessages());
-  await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   runApp(
     ProviderScope(
       child: const MyApp(),

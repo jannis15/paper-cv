@@ -3,14 +3,20 @@ part of 'camera_utils.dart';
 class _CameraView extends StatefulWidget {
   final bool allowGalleryPictures;
   final bool allowMultiple;
+  final double? aspectRatioOverlay;
 
-  const _CameraView({required this.allowGalleryPictures, required this.allowMultiple});
+  const _CameraView({
+    required this.allowGalleryPictures,
+    required this.allowMultiple,
+    this.aspectRatioOverlay,
+  }) : assert(aspectRatioOverlay != null && aspectRatioOverlay >= 1, 'The aspect ratio overlay needs to be equal or above 1');
 
   @override
   State<_CameraView> createState() => _CameraViewState();
 }
 
 class _CameraViewState extends State<_CameraView> {
+  double? _cameraLayoutHeight;
   CameraController? _cameraController;
   CameraLensDirection _currentLensDirection = CameraLensDirection.back;
   bool _hasPermissionError = false;
@@ -32,7 +38,12 @@ class _CameraViewState extends State<_CameraView> {
   Future<void> _initCameraController({bool withOppositeLensDirection = false}) async {
     final camera = await _getDesiredCamera(withOppositeLensDirection ? oppositeLensDirection : _currentLensDirection);
     if (camera == null) return;
-    _cameraController = CameraController(camera, ResolutionPreset.max, enableAudio: false, imageFormatGroup: ImageFormatGroup.jpeg);
+    _cameraController = CameraController(
+      camera,
+      ResolutionPreset.max,
+      enableAudio: false,
+      imageFormatGroup: ImageFormatGroup.jpeg,
+    );
     try {
       await _cameraController!.initialize();
       try {
@@ -94,14 +105,40 @@ class _CameraViewState extends State<_CameraView> {
 
   Future<void> _takePicture() async {
     if (_isPerformingAction) return;
+    if (_cameraLayoutHeight == null) return;
 
     setState(() {
       _takingPicture = true;
     });
     try {
       final XFile image = await _cameraController!.takePicture();
+
+      // rotate image
+      final orientation = await OrientationHelper.getCameraOrientation();
+      final rotationAngle = OrientationHelper.getRotationAngle(orientation);
+      late final img.Image rotatedImage;
+      final imageBytes = await image.readAsBytes();
+      final originalImage = img.decodeImage(imageBytes)!;
+      if (rotationAngle != 0) {
+        rotatedImage = img.copyRotate(originalImage, angle: rotationAngle);
+      } else {
+        rotatedImage = originalImage;
+      }
+
+      // crop image
+      final finalToPreviewFactor = rotatedImage.height / _cameraLayoutHeight!;
+      final int cropHeight = (rotatedImage.height - ((cameraFeedOverlayMargin * 2) * finalToPreviewFactor)).round();
+      final int cropWidth = (cropHeight * (1 / widget.aspectRatioOverlay!)).round();
+      final croppedImage = img.copyCrop(
+        rotatedImage,
+        x: ((rotatedImage.width / 2) - (cropWidth / 2)).round(),
+        y: (cameraFeedOverlayMargin * finalToPreviewFactor).round(),
+        width: cropWidth,
+        height: cropHeight,
+      );
+
       if (mounted) {
-        bool? isAccepted = await Navigator.of(context).push<bool>(MaterialPageRoute(builder: (context) => _CameraConfirmView(image: image)));
+        bool? isAccepted = await Navigator.of(context).push<bool>(MaterialPageRoute(builder: (context) => _CameraConfirmView(image: croppedImage)));
         if (isAccepted != null && isAccepted) {
           if (mounted) Navigator.of(context).pop<List<XFile>>([image]);
         } else {
@@ -133,14 +170,14 @@ class _CameraViewState extends State<_CameraView> {
   }
 
   Future<void> _asyncInit() async {
-    await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp, DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight]);
+    await WakelockPlus.enable();
     await _initCameraController();
   }
 
   @override
   void dispose() {
+    WakelockPlus.disable();
     _disableCameraController();
-    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
     super.dispose();
   }
 
@@ -202,45 +239,65 @@ class _CameraViewState extends State<_CameraView> {
         body: OrientationBuilder(
           builder: (context, orientation) => Stack(
             alignment: Alignment.center,
+            fit: StackFit.expand,
             children: [
-              _hasPermissionError
-                  ? Center(
-                      child: SizedBox(
-                        width: 300,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            const Text('Kamera-Zugriff verweigert', textAlign: TextAlign.center),
-                            FilledButton.icon(
-                              onPressed: () {
-                                openAppSettings();
-                              },
-                              icon: const Icon(Icons.settings),
-                              label: const Text('App-Einstellungen öffnen'),
-                            ),
-                            FilledButton.icon(
-                              onPressed: () async {
-                                _hasPermissionError = false;
-                                setState(() {});
-                                WidgetsBinding.instance.addPostFrameCallback((_) async {
-                                  await _initCameraController();
-                                });
-                              },
-                              icon: const Icon(Icons.refresh),
-                              label: const Text('Erneut versuchen'),
-                            ),
-                          ],
+              if (_hasPermissionError)
+                Center(
+                  child: SizedBox(
+                    width: 300,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        const Text('Kamera-Zugriff verweigert', textAlign: TextAlign.center),
+                        FilledButton.icon(
+                          onPressed: () {
+                            openAppSettings();
+                          },
+                          icon: const Icon(Icons.settings),
+                          label: const Text('App-Einstellungen öffnen'),
                         ),
-                      ),
-                    )
-                  : ClipRRect(
-                      child: OverflowBox(
-                        maxWidth: orientation == Orientation.portrait ? double.infinity : null,
-                        maxHeight: orientation == Orientation.portrait ? null : double.infinity,
-                        child: _cameraController == null ? const SizedBox() : CameraPreview(_cameraController!),
-                      ),
+                        FilledButton.icon(
+                          onPressed: () async {
+                            _hasPermissionError = false;
+                            setState(() {});
+                            WidgetsBinding.instance.addPostFrameCallback((_) async {
+                              await _initCameraController();
+                            });
+                          },
+                          icon: const Icon(Icons.refresh),
+                          label: const Text('Erneut versuchen'),
+                        ),
+                      ],
                     ),
+                  ),
+                ),
+              if (!_hasPermissionError && _cameraController != null)
+                Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    CameraPreview(
+                      _cameraController!,
+                      child: widget.aspectRatioOverlay != null
+                          ? LayoutBuilder(
+                              builder: (context, constraints) {
+                                _cameraLayoutHeight = constraints.maxHeight;
+                                return CustomPaint(
+                                  size: Size(
+                                    constraints.maxWidth,
+                                    constraints.maxHeight,
+                                  ),
+                                  painter: CameraRectangularOverlayPainter(
+                                    context,
+                                    aspectRatio: widget.aspectRatioOverlay!,
+                                  ),
+                                );
+                              },
+                            )
+                          : null,
+                    ),
+                  ],
+                ),
               Positioned(
                 top: 16,
                 left: 16,
