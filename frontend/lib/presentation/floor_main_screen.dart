@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:paper_cv/components/floor_app_bar.dart';
 import 'package:paper_cv/components/floor_card.dart';
 import 'package:paper_cv/config/config.dart';
@@ -86,42 +87,60 @@ class _FloorMainScreenState extends State<FloorMainScreen> {
           },
         );
 
-    return Scaffold(
-      appBar: FloorAppBar(title: Text('PaperCV')),
-      floatingActionButton: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: FloatingActionButton.extended(
-          heroTag: UniqueKey(),
-          icon: Icon(Icons.post_add),
-          label: Text('Erfassen'),
-          onPressed: () async {
-            await Navigator.of(context).push(MaterialPageRoute(builder: (_) => FloorOverviewScreen()));
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) async {
+        if (!didPop) {
+          final alertResult = await showAlertDialog(
+            context,
+            title: 'App verlassen?',
+            optionData: [
+              AlertOptionData.cancel(),
+              AlertOptionData.yes(customText: 'Verlassen'),
+            ],
+          );
+          if (alertResult == AlertOption.yes) {
+            SystemNavigator.pop();
+          }
+        }
+      },
+      child: Scaffold(
+        appBar: FloorAppBar(title: Text('PaperCV')),
+        floatingActionButton: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: FloatingActionButton.extended(
+            heroTag: UniqueKey(),
+            icon: Icon(Icons.post_add),
+            label: Text('Erfassen'),
+            onPressed: () async {
+              await Navigator.of(context).push(MaterialPageRoute(builder: (_) => FloorOverviewScreen()));
+            },
+          ),
+        ),
+        body: StreamBuilder(
+          stream: _previewStream,
+          builder: (context, snapshot) {
+            if (snapshot.hasError) {
+              return Text(snapshot.error.toString(), style: TextStyle(color: colorScheme.error));
+            } else if (snapshot.connectionState == ConnectionState.waiting || !snapshot.hasData) {
+              return Center(child: CircularProgressIndicator());
+            } else {
+              final documentPreviews = snapshot.data!;
+              return SingleChildScrollView(
+                controller: _scrollController,
+                padding: EdgeInsets.all(AppSizes.kGap),
+                child: ColumnGap(
+                  gap: AppSizes.kSmallGap,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    ...documentPreviews.map(buildPreviewCard),
+                    SizedBox(height: 64),
+                  ],
+                ),
+              );
+            }
           },
         ),
-      ),
-      body: StreamBuilder(
-        stream: _previewStream,
-        builder: (context, snapshot) {
-          if (snapshot.hasError) {
-            return Text(snapshot.error.toString(), style: TextStyle(color: colorScheme.error));
-          } else if (snapshot.connectionState == ConnectionState.waiting || !snapshot.hasData) {
-            return Center(child: CircularProgressIndicator());
-          } else {
-            final documentPreviews = snapshot.data!;
-            return SingleChildScrollView(
-              controller: _scrollController,
-              padding: EdgeInsets.all(AppSizes.kGap),
-              child: ColumnGap(
-                gap: AppSizes.kSmallGap,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  ...documentPreviews.map(buildPreviewCard),
-                  SizedBox(height: 64),
-                ],
-              ),
-            );
-          }
-        },
       ),
     );
   }
