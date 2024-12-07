@@ -3,7 +3,7 @@ part of 'camera_utils.dart';
 enum _SaveImageState { savable, saving, saved }
 
 class _CameraConfirmView extends StatefulWidget {
-  final img.Image image;
+  final SelectedFile image;
 
   const _CameraConfirmView({required this.image});
 
@@ -14,13 +14,10 @@ class _CameraConfirmView extends StatefulWidget {
 class _CameraConfirmViewState extends State<_CameraConfirmView> {
   TransformationController _transformationController = TransformationController();
   _SaveImageState _saveImageState = _SaveImageState.savable;
-  bool _isLoadingImage = true;
   late final Uint8List _imageBytes;
 
-  Future<void> _loadImage() async {
-    _imageBytes = img.encodeJpg(widget.image);
-    _isLoadingImage = false;
-    setState(() {});
+  void _loadImage() {
+    _imageBytes = widget.image.bytes;
   }
 
   Future<AlertOption?> _showAppSettingsDialog() async {
@@ -98,28 +95,25 @@ class _CameraConfirmViewState extends State<_CameraConfirmView> {
               child: Stack(
                 fit: StackFit.expand,
                 children: [
-                  _isLoadingImage
-                      ? const Center(child: CircularProgressIndicator())
-                      : InteractiveViewer(transformationController: _transformationController, maxScale: 8, child: Image.memory(_imageBytes)),
-                  if (!_isLoadingImage)
-                    Positioned(
-                      left: 10,
-                      bottom: 0,
-                      child: FilledButton.icon(
-                        style: ButtonStyle(
-                          elevation: const WidgetStatePropertyAll(0),
-                          foregroundColor: const WidgetStatePropertyAll(Colors.white),
-                          backgroundColor: WidgetStatePropertyAll(Colors.black.withOpacity(.3)),
-                        ),
-                        onPressed: _saveImageState == _SaveImageState.savable
-                            ? () async {
-                                await _saveImage();
-                              }
-                            : null,
-                        icon: _getImageStateIcon(),
-                        label: _getImageStateText(),
+                  InteractiveViewer(transformationController: _transformationController, maxScale: 8, child: Image.memory(_imageBytes)),
+                  Positioned(
+                    left: 10,
+                    bottom: 0,
+                    child: FilledButton.icon(
+                      style: ButtonStyle(
+                        elevation: const WidgetStatePropertyAll(0),
+                        foregroundColor: const WidgetStatePropertyAll(Colors.white),
+                        backgroundColor: WidgetStatePropertyAll(Colors.black.withOpacity(.3)),
                       ),
+                      onPressed: _saveImageState == _SaveImageState.savable
+                          ? () async {
+                              await _saveImage();
+                            }
+                          : null,
+                      icon: _getImageStateIcon(),
+                      label: _getImageStateText(),
                     ),
+                  ),
                 ],
               ),
             ),

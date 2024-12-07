@@ -70,19 +70,31 @@ class _CameraViewState extends State<_CameraView> {
       _pickingFromGallery = true;
     });
     try {
-      final List<XFile> images = [];
+      final List<SelectedFile> images = [];
       try {
         if (widget.allowMultiple) {
-          images.addAll((await ImagePicker().pickMultiImage()));
+          final selectedFiles = await Future.wait(
+            (await ImagePicker().pickMultiImage()).map(
+              (xFile) async {
+                final fileBytes = await xFile.readAsBytes();
+                return SelectedFile(name: xFile.name, bytes: fileBytes);
+              },
+            ),
+          );
+          images.addAll((selectedFiles));
         } else {
           final image = await ImagePicker().pickImage(source: ImageSource.gallery);
-          if (image != null) images.add(image);
+          if (image != null) {
+            final fileBytes = await image.readAsBytes();
+            final selectedFile = SelectedFile(name: image.name, bytes: fileBytes);
+            images.add(selectedFile);
+          }
         }
         if (images.isEmpty) {
           await _initCameraController();
           if (mounted) setState(() {});
         } else {
-          if (mounted) Navigator.of(context).pop<List<XFile>>(images);
+          if (mounted) Navigator.of(context).pop<List<SelectedFile>>(images);
         }
       } on PlatformException catch (_) {
         if (mounted) {
@@ -136,11 +148,15 @@ class _CameraViewState extends State<_CameraView> {
         width: cropWidth,
         height: cropHeight,
       );
+      final selectedFile = SelectedFile(
+        name: image.name,
+        bytes: img.encodeJpg(croppedImage),
+      );
 
       if (mounted) {
-        bool? isAccepted = await Navigator.of(context).push<bool>(MaterialPageRoute(builder: (context) => _CameraConfirmView(image: croppedImage)));
+        bool? isAccepted = await Navigator.of(context).push<bool>(MaterialPageRoute(builder: (context) => _CameraConfirmView(image: selectedFile)));
         if (isAccepted != null && isAccepted) {
-          if (mounted) Navigator.of(context).pop<List<XFile>>([image]);
+          if (mounted) Navigator.of(context).pop<List<SelectedFile>>([selectedFile]);
         } else {
           if (mounted) setState(() {});
         }

@@ -2,10 +2,10 @@ import 'package:paper_cv/utils/camera/camera_utils.dart';
 import 'package:paper_cv/utils/file_picker_models.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:image/image.dart' as img;
 
 abstract class FloorFilePicker {
-  static Future<SelectedFile?> pickFile(
-    BuildContext context, {
+  static Future<SelectedFile?> pickFile(BuildContext context, {
     required FilePickerOption pickerOption,
   }) async {
     final List<SelectedFile>? result = await FloorFilePicker.pickFiles(
@@ -17,8 +17,7 @@ abstract class FloorFilePicker {
     return null;
   }
 
-  static Future<List<SelectedFile>?> pickFiles(
-    BuildContext context, {
+  static Future<List<SelectedFile>?> pickFiles(BuildContext context, {
     required FilePickerOption pickerOption,
     bool allowMultiple = true,
   }) async {
@@ -33,7 +32,7 @@ abstract class FloorFilePicker {
       }
       if (xFiles.isNotEmpty) {
         final List<Future<SelectedFile>> futures =
-            xFiles.map((file) async => SelectedFile(name: file.name, bytes: await file.readAsBytes())).toList();
+        xFiles.map((file) async => SelectedFile(name: file.name, bytes: await file.readAsBytes())).toList();
         return Future.wait(futures);
       } else {
         return null;
@@ -41,10 +40,9 @@ abstract class FloorFilePicker {
     }
 
     Future<List<SelectedFile>?> pickCameraFiles() async {
-      final List<XFile> xFiles = await CameraUtils.takePicture(context, allowMultiple: allowMultiple);
-      if (xFiles.isNotEmpty) {
-        final futures = xFiles.map((file) async => SelectedFile(name: file.name, bytes: await file.readAsBytes())).toList();
-        return Future.wait(futures);
+      final List<SelectedFile> selectedFiles = await CameraUtils.takePicture(context, allowMultiple: allowMultiple);
+      if (selectedFiles.isNotEmpty) {
+        return selectedFiles;
       } else {
         return null;
       }
