@@ -142,7 +142,7 @@ class _FloorAttachmentCardState extends State<FloorAttachmentCard> {
                   title: "'${preview.name}' entfernen?",
                   optionData: [
                     AlertOptionData.cancel(),
-                    AlertOptionData.yes(),
+                    AlertOptionData.yes(customText: 'Entfernen'),
                   ],
                 );
                 if (alertResult == AlertOption.yes) {

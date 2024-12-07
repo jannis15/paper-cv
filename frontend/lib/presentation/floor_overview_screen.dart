@@ -1,3 +1,4 @@
+import 'package:intl/intl.dart';
 import 'package:paper_cv/components/floor_app_bar.dart';
 import 'package:paper_cv/components/floor_attachment_card.dart';
 import 'package:paper_cv/components/floor_card.dart';
@@ -114,10 +115,11 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
             final pdfFile = FloorRepository.createPdf(scanProperties);
             final pdfData = await pdfFile.save();
             final now = DateTime.now();
+            final String formattedDate = DateFormat('dd.MM.yyyy HH:mm').format(now);
             final pdfFileDto = FileDto(
               uuid: null,
               refUuid: _form.uuid,
-              filename: '${Uuid().v4()}.pdf',
+              filename: 'Bericht $formattedDate.pdf',
               data: pdfData,
               index: null,
               fileType: FileType.report,
@@ -216,10 +218,11 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
                         final file = await FloorFilePicker.pickFile(context, pickerOption: FilePickerOption.camera);
                         if (file != null) {
                           final now = DateTime.now();
+                          final String formattedDate = DateFormat('dd.MM.yyyy HH:mm').format(now);
                           final fileDto = FileDto(
                             uuid: null,
                             refUuid: null,
-                            filename: file.name,
+                            filename: 'Aufnahme $formattedDate.jpg',
                             data: file.bytes,
                             index: null,
                             fileType: FileType.capture,

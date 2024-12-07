@@ -20,4 +20,6 @@ class DocumentForm {
     this.createdAt,
     this.modifiedAt,
   });
+
+  bool get isEmpty => title.trim().isEmpty && notes.trim().isEmpty && captures.isEmpty && scans.isEmpty && reports.isEmpty;
 }

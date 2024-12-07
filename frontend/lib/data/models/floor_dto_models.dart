@@ -50,12 +50,12 @@ class ScanPropertiesDto with _$ScanPropertiesDto {
 
   FileDto toFileDto({required String? formId}) {
     final now = DateTime.now();
-    final String formattedDate = DateFormat('dd-MM-yyyy-HH-mm').format(now);
+    final String formattedDate = DateFormat('dd.MM.yyyy HH:mm').format(now);
     final data = utf8.encode(jsonEncode(toJson()));
     return FileDto(
       uuid: uuid,
       refUuid: formId,
-      filename: 'scan-$formattedDate.json',
+      filename: 'Scan $formattedDate.json',
       data: data,
       index: null,
       fileType: FileType.scan,

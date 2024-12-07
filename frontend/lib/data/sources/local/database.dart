@@ -131,10 +131,10 @@ class FloorDatabase extends _$FloorDatabase with DbMixin {
     await transaction(
       () async {
         final DateTime now = DateTime.now();
-        final String newUuid = form.uuid ?? Uuid().v4().toString();
+        final String formUuid = form.uuid ?? Uuid().v4().toString();
         await into(tbDocument).insertOnConflictUpdate(
           TbDocumentCompanion(
-            uuid: Value(newUuid),
+            uuid: Value(formUuid),
             title: Value(form.title),
             notes: Value(form.notes),
             createdAt: Value(form.createdAt ?? now),
@@ -146,15 +146,15 @@ class FloorDatabase extends _$FloorDatabase with DbMixin {
           ...form.scans.map((e) => e.uuid),
           ...form.reports.map((e) => e.uuid),
         ].whereType<String>().toList();
-        await _deleteUnlinkedFiles(newUuid, existingfileIds);
+        await _deleteUnlinkedFiles(formUuid, existingfileIds);
         for (final capture in form.captures) {
-          await _saveDocumentFile(file: capture, documentId: newUuid);
+          await _saveDocumentFile(file: capture, documentId: formUuid);
         }
         for (final scan in form.scans) {
-          await _saveDocumentFile(file: scan, documentId: newUuid);
+          await _saveDocumentFile(file: scan, documentId: formUuid);
         }
         for (final reports in form.reports) {
-          await _saveDocumentFile(file: reports, documentId: newUuid);
+          await _saveDocumentFile(file: reports, documentId: formUuid);
         }
       },
     );
