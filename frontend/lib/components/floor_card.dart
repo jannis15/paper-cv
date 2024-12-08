@@ -6,13 +6,15 @@ class FloorCard extends StatefulWidget {
   final Future<bool?> Function(DismissDirection dismissDirection)? confirmDismiss;
   final void Function()? onTap;
   final Widget child;
+  final bool usePadding;
 
   const FloorCard({
     super.key,
+    this.usePadding = true,
     this.onDismissed,
     this.confirmDismiss,
-    required this.child,
     this.onTap,
+    required this.child,
   });
 
   @override
@@ -41,9 +43,11 @@ class _FloorCardState extends State<FloorCard> {
                   alignment: AlignmentDirectional.centerEnd,
                   child: Icon(Icons.delete, size: AppSizes.kIconSize, color: Colors.white),
                 ),
-                child: buildCardChild(),
+                child: widget.usePadding ? buildCardChild() : widget.child,
               )
-            : buildCardChild(),
+            : widget.usePadding
+                ? buildCardChild()
+                : widget.child,
       ),
     );
   }

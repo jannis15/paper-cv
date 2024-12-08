@@ -4,6 +4,7 @@ import 'package:paper_cv/components/floor_card.dart';
 import 'package:paper_cv/config/config.dart';
 import 'package:paper_cv/data/models/floor_dto_models.dart';
 import 'package:paper_cv/data/repositories/floor_repository.dart';
+import 'package:paper_cv/presentation/floor_contact_banner.dart';
 import 'package:paper_cv/presentation/floor_overview_screen.dart';
 import 'package:paper_cv/utils/alert_dialog.dart';
 import 'package:paper_cv/utils/list_utils.dart';
@@ -19,6 +20,7 @@ class FloorMainScreen extends StatefulWidget {
 }
 
 class _FloorMainScreenState extends State<FloorMainScreen> {
+  bool _showBanner = true;
   final ScrollController _scrollController = ScrollController();
   late final _previewStream = FloorRepository.watchDocumentPreviews();
 
@@ -117,29 +119,45 @@ class _FloorMainScreenState extends State<FloorMainScreen> {
             },
           ),
         ),
-        body: StreamBuilder(
-          stream: _previewStream,
-          builder: (context, snapshot) {
-            if (snapshot.hasError) {
-              return Text(snapshot.error.toString(), style: TextStyle(color: colorScheme.error));
-            } else if (snapshot.connectionState == ConnectionState.waiting || !snapshot.hasData) {
-              return Center(child: CircularProgressIndicator());
-            } else {
-              final documentPreviews = snapshot.data!;
-              return SingleChildScrollView(
-                controller: _scrollController,
-                padding: EdgeInsets.all(AppSizes.kGap),
-                child: ColumnGap(
-                  gap: AppSizes.kSmallGap,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    ...documentPreviews.map(buildPreviewCard),
-                    SizedBox(height: 64),
-                  ],
-                ),
-              );
-            }
-          },
+        body: SingleChildScrollView(
+          controller: _scrollController,
+          padding: EdgeInsets.all(AppSizes.kGap),
+          child: ColumnGap(
+            gap: AppSizes.kGap,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              AnimatedSize(
+                duration: Duration(milliseconds: 200),
+                curve: Curves.easeIn,
+                child: _showBanner
+                    ? FloorContactBanner(
+                        onCloseBanner: () => setState(() {
+                              _showBanner = false;
+                            }))
+                    : SizedBox(),
+              ),
+              StreamBuilder(
+                stream: _previewStream,
+                builder: (context, snapshot) {
+                  if (snapshot.hasError) {
+                    return Text(snapshot.error.toString(), style: TextStyle(color: colorScheme.error));
+                  } else if (snapshot.connectionState == ConnectionState.waiting || !snapshot.hasData) {
+                    return Center(child: CircularProgressIndicator());
+                  } else {
+                    final documentPreviews = snapshot.data!;
+                    return ColumnGap(
+                      gap: AppSizes.kSmallGap,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        ...documentPreviews.map(buildPreviewCard),
+                        SizedBox(height: 64),
+                      ],
+                    );
+                  }
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );
