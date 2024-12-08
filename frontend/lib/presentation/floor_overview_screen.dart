@@ -71,6 +71,8 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
     _isSaving = true;
     if (mounted) setState(() {});
     try {
+      _form.title = _form.title.trim();
+      _form.notes = _form.notes.trim();
       await FloorRepository.saveDocumentForm(_form);
     } finally {
       _isSaving = false;
