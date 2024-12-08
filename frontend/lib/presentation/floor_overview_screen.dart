@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:intl/intl.dart';
 import 'package:paper_cv/components/floor_app_bar.dart';
 import 'package:paper_cv/components/floor_attachment_card.dart';
@@ -30,6 +31,7 @@ class FloorOverviewScreen extends StatefulWidget {
 }
 
 class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
+  final CancelToken _cancelToken = CancelToken();
   late bool _isLoading;
   bool _isSaving = false;
   late DocumentForm _form;
@@ -48,6 +50,12 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
       _form = DocumentForm();
     }
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _cancelToken.cancel('Hochladen wurde abgebrochen');
+    super.dispose();
   }
 
   void _asyncInit() async {
@@ -109,9 +117,13 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
           iconData: Icons.cloud_upload,
           iconText: 'Hochladen',
           onPickFiles: () async {
-            final scanProperties = await FloorRepository.scanCapture(_form.captures.first);
-            final newSelectedFile = scanProperties.toSelectedFile();
-            return [newSelectedFile];
+            final result = <SelectedFile>[];
+            for (final capture in _form.captures) {
+              final scanProperties = await FloorRepository.scanCapture(capture, cancelToken: _cancelToken);
+              final newSelectedFile = scanProperties.toSelectedFile();
+              result.add(newSelectedFile);
+            }
+            return result;
           },
           onAddFiles: (_) => setState(() {
             _setIsDirty();
@@ -128,8 +140,12 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
           iconData: Icons.auto_awesome,
           iconText: 'Generieren',
           onPickFiles: () async {
-            final scanProperties = ScanPropertiesDto.fromJson(jsonDecode(utf8.decode(_form.scans.first.data)));
-            final pdfData = await FloorRepository.createPdf(scanProperties);
+            final List<ScanPropertiesDto> scanPropertiesList = [];
+            for (final scan in _form.scans) {
+              final scanProperties = ScanPropertiesDto.fromJson(jsonDecode(utf8.decode(scan.data)));
+              scanPropertiesList.add(scanProperties);
+            }
+            final pdfData = await FloorRepository.createPdf(scanPropertiesList);
             final now = DateTime.now();
             final String formattedDate = DateFormat('dd.MM.yy HH:mm').format(now);
             final selectedFile = SelectedFile(

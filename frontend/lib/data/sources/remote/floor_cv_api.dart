@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:paper_cv/data/models/floor_dto_models.dart';
 import 'package:paper_cv/utils/api_utils.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -10,8 +11,8 @@ class FloorCvApi extends RestApi {
 
   static FloorCvApi get instance => _instance;
 
-  Future<ScanPropertiesDto> scanCapture(SelectedFile capture) async {
-    final response = await uploadFile<JsonObject>(route: '/scan', file: capture);
+  Future<ScanPropertiesDto> scanCapture(SelectedFile capture, {CancelToken? cancelToken}) async {
+    final response = await uploadFile<JsonObject>(route: '/scan', file: capture, cancelToken: cancelToken);
     return ScanPropertiesDto.fromJson(response.data!);
   }
 }

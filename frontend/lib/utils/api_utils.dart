@@ -14,19 +14,28 @@ class RestApi {
     _baseUrl = baseUrl;
   }
 
-  Future<Response<T>> uploadFile<T>({required String route, required SelectedFile file}) async {
+  Future<Response<T>> uploadFile<T>({required String route, required SelectedFile file, CancelToken? cancelToken}) async {
     final multiPartFile = await MultipartFile.fromBytes(file.data, filename: file.filename);
     final formData = FormData.fromMap({
       'file': multiPartFile,
     });
-    return _client.post<T>(
-      _baseUrl + route,
-      data: formData,
-      options: Options(
-        headers: {
-          HttpHeaders.contentTypeHeader: Headers.multipartFormDataContentType,
-        },
-      ),
-    );
+    try {
+      return _client.post<T>(
+        _baseUrl + route,
+        cancelToken: cancelToken,
+        data: formData,
+        options: Options(
+          headers: {
+            HttpHeaders.contentTypeHeader: Headers.multipartFormDataContentType,
+          },
+        ),
+      );
+    } on DioException catch (e) {
+      if ((cancelToken?.isCancelled ?? false) && cancelToken!.cancelError != null) {
+        throw cancelToken.cancelError!;
+      } else {
+        rethrow;
+      }
+    }
   }
 }

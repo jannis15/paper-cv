@@ -73,7 +73,7 @@ class FloorDatabase extends _$FloorDatabase with DbMixin {
   Future<List<SelectedFile>> _getFilesByDocumentId(String documentId) async {
     final query = select(tbFile).join([]);
     query.where(tbFile.refUuid.isValue(documentId));
-    query.orderBy([OrderingTerm.desc(tbFile.modifiedAt)]);
+    query.orderBy([OrderingTerm(expression: tbFile.modifiedAt)]);
     final result = await query.get();
     return result.map((row) => _mapToSelectedFile(row.readTable(tbFile))).toList();
   }
