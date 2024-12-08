@@ -134,18 +134,20 @@ class _FloorMainScreenState extends State<FloorMainScreen> {
         body: SingleChildScrollView(
           controller: _scrollController,
           padding: EdgeInsets.all(AppSizes.kGap),
-          child: ColumnGap(
-            gap: AppSizes.kGap,
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               AnimatedSize(
                 duration: Duration(milliseconds: 200),
                 curve: Curves.easeIn,
                 child: _showBanner
-                    ? FloorContactBanner(
-                        onCloseBanner: () => setState(() {
-                              _showBanner = false;
-                            }))
+                    ? Padding(
+                        padding: EdgeInsets.only(bottom: AppSizes.kGap),
+                        child: FloorContactBanner(
+                            onCloseBanner: () => setState(() {
+                                  _showBanner = false;
+                                })),
+                      )
                     : SizedBox(),
               ),
               StreamBuilder(

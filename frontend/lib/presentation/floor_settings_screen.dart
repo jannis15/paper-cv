@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:paper_cv/components/floor_app_bar.dart';
 import 'package:paper_cv/components/floor_card.dart';
 import 'package:paper_cv/config/config.dart';
@@ -29,8 +30,8 @@ class _FloorSettingsScreenState extends State<FloorSettingsScreen> {
               child: RowGap(
                 gap: AppSizes.kGap,
                 children: [
+                  Icon(FontAwesomeIcons.award),
                   Expanded(child: Text('Lizenzen')),
-                  Icon(Icons.chevron_right),
                 ],
               ),
             ),
