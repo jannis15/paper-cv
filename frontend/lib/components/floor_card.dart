@@ -5,6 +5,7 @@ class FloorCard extends StatefulWidget {
   final void Function(DismissDirection dismissDirection)? onDismissed;
   final Future<bool?> Function(DismissDirection dismissDirection)? confirmDismiss;
   final void Function()? onTap;
+  final void Function()? onLongPress;
   final Widget child;
   final bool usePadding;
 
@@ -14,6 +15,7 @@ class FloorCard extends StatefulWidget {
     this.onDismissed,
     this.confirmDismiss,
     this.onTap,
+    this.onLongPress,
     required this.child,
   });
 
@@ -30,6 +32,7 @@ class _FloorCardState extends State<FloorCard> {
       margin: EdgeInsets.zero,
       clipBehavior: Clip.hardEdge,
       child: InkWell(
+        onLongPress: widget.onLongPress,
         onTap: widget.onTap,
         child: widget.confirmDismiss != null
             ? Dismissible(
