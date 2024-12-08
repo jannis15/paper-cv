@@ -7,6 +7,7 @@ import 'package:paper_cv/data/sources/local/tables.dart';
 import 'package:paper_cv/domain/floor_models.dart';
 import 'package:paper_cv/utils/db_mixin.dart';
 import 'package:paper_cv/utils/enum_utils.dart';
+import 'package:paper_cv/utils/file_picker_models.dart';
 import 'package:paper_cv/utils/type_converters.dart';
 import 'package:uuid/uuid.dart';
 
@@ -40,9 +41,8 @@ class FloorDatabase extends _$FloorDatabase with DbMixin {
         modifiedAt: row.modifiedAt,
       );
 
-  FileDto _mapToFileDto(TbFileData row) => FileDto(
+  SelectedFile _mapToSelectedFile(TbFileData row) => SelectedFile(
         uuid: row.uuid,
-        refUuid: row.refUuid,
         filename: row.filename,
         data: row.data,
         index: row.index,
@@ -70,12 +70,12 @@ class FloorDatabase extends _$FloorDatabase with DbMixin {
     return query.map((row) => _mapToDocumentPreviewDto(row.readTable(tbDocument)!)).watch();
   }
 
-  Future<List<FileDto>> _getFilesByDocumentId(String documentId) async {
+  Future<List<SelectedFile>> _getFilesByDocumentId(String documentId) async {
     final query = select(tbFile).join([]);
     query.where(tbFile.refUuid.isValue(documentId));
     query.orderBy([OrderingTerm.desc(tbFile.modifiedAt)]);
     final result = await query.get();
-    return result.map((row) => _mapToFileDto(row.readTable(tbFile))).toList();
+    return result.map((row) => _mapToSelectedFile(row.readTable(tbFile))).toList();
   }
 
   Future<DocumentForm> getDocumentFormById(String documentId) async {
@@ -104,7 +104,7 @@ class FloorDatabase extends _$FloorDatabase with DbMixin {
     }
   }
 
-  Future<void> _saveDocumentFile({required FileDto file, required String documentId}) async {
+  Future<void> _saveDocumentFile({required SelectedFile file, required String documentId}) async {
     if (file.uuid != null) return;
     final String newUuid = Uuid().v4().toString();
     await into(tbFile).insert(

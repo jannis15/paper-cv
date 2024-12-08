@@ -15,7 +15,6 @@ import 'package:paper_cv/utils/list_utils.dart';
 import 'package:paper_cv/utils/widget_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:timeago_flutter/timeago_flutter.dart';
-import 'package:uuid/uuid.dart';
 import 'dart:convert';
 
 class FloorOverviewScreen extends StatefulWidget {
@@ -34,9 +33,6 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
   late bool _isLoading;
   bool _isSaving = false;
   late DocumentForm _form;
-  final List<SelectedFile> _initialCaptures = [];
-  final List<SelectedFile> _initialScans = [];
-  final List<SelectedFile> _initialReports = [];
 
   @override
   void initState() {
@@ -44,11 +40,7 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
     if (_isLoading) {
       _asyncInit();
     } else {
-      _form = DocumentForm(
-        captures: [],
-        scans: [],
-        reports: [],
-      );
+      _form = DocumentForm();
     }
     super.initState();
   }
@@ -56,9 +48,6 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
   void _asyncInit() async {
     try {
       _form = await FloorRepository.getDocumentFormById(widget.documentId!);
-      _initialCaptures.addAll(_form.captures.map((e) => e.toSelectedFile()));
-      _initialScans.addAll(_form.scans.map((e) => e.toSelectedFile()));
-      _initialReports.addAll(_form.reports.map((e) => e.toSelectedFile()));
     } finally {
       _isLoading = false;
       if (mounted) setState(() {});
@@ -78,57 +67,53 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
 
   @override
   Widget build(BuildContext context) {
+    Widget buildCaptureCard() => FloorAttachmentCard(
+          title: 'Aufnahme',
+          files: _form.captures,
+          iconData: Icons.add_a_photo,
+          onPickFiles: () async {
+            final file = await FloorFilePicker.pickFile(context, pickerOption: FilePickerOption.camera);
+            if (file == null) return null;
+            final now = DateTime.now();
+            final String formattedDate = DateFormat('dd.MM.yy HH:mm').format(now);
+            file.filename = 'Aufnahme $formattedDate.jpg';
+            file.fileType = FileType.capture;
+            return [file];
+          },
+          onRemoveFile: (fileIndex, file) {},
+        );
+
     Widget buildScanCard() => FloorAttachmentCard(
           title: 'Scan',
-          initialFiles: _initialScans,
+          files: _form.scans,
           iconData: Icons.cloud_upload,
           iconText: 'Hochladen',
           onPickFiles: () async {
-            final ScanPropertiesDto scanProperties = await FloorRepository.scanCapture(_form.captures.first);
-            final newFile = scanProperties.toFileDto(formId: _form.uuid);
-            _form.scans.add(newFile);
-            if (mounted) setState(() {});
-            final newSelectedFile = newFile.toSelectedFile();
+            final scanProperties = await FloorRepository.scanCapture(_form.captures.first);
+            final newSelectedFile = scanProperties.toSelectedFile();
             return [newSelectedFile];
           },
-          onRemoveFile: (fileIndex, file) {
-            _form.scans.removeAt(fileIndex);
-            if (mounted) setState(() {});
-          },
+          onRemoveFile: (fileIndex, file) {},
         );
-
-    // Widget buildTemplateCard() => FloorAttachmentCard(
-    //       title: 'Vorlage',
-    //       iconData: Icons.calculate,
-    //       iconText: 'Auswählen',
-    //       onPickFiles: () async => null,
-    //       onRemoveFile: (_, __) => null,
-    //     );
 
     Widget buildReportCard() => FloorAttachmentCard(
           title: 'Bericht',
-          initialFiles: _initialReports,
+          files: _form.reports,
           iconData: Icons.auto_awesome,
           iconText: 'Generieren',
           onPickFiles: () async {
             final scanProperties = ScanPropertiesDto.fromJson(jsonDecode(utf8.decode(_form.scans.first.data)));
-            final pdfFile = FloorRepository.createPdf(scanProperties);
-            final pdfData = await pdfFile.save();
+            final pdfData = await FloorRepository.createPdf(scanProperties);
             final now = DateTime.now();
-            final String formattedDate = DateFormat('dd.MM.yyyy HH:mm').format(now);
-            final pdfFileDto = FileDto(
-              uuid: null,
-              refUuid: _form.uuid,
+            final String formattedDate = DateFormat('dd.MM.yy HH:mm').format(now);
+            final selectedFile = SelectedFile(
               filename: 'Bericht $formattedDate.pdf',
               data: pdfData,
-              index: null,
               fileType: FileType.report,
               createdAt: now,
               modifiedAt: now,
             );
-            _form.reports.add(pdfFileDto);
-            if (mounted) setState(() {});
-            return [pdfFileDto.toSelectedFile()];
+            return [selectedFile];
           },
           onRemoveFile: (fileIndex, file) {
             _form.reports.removeAt(fileIndex);
@@ -210,35 +195,7 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
                         ),
                       ],
                     ),
-                    FloorAttachmentCard(
-                      title: 'Aufnahme',
-                      initialFiles: _initialCaptures,
-                      iconData: Icons.add_a_photo,
-                      onPickFiles: () async {
-                        final file = await FloorFilePicker.pickFile(context, pickerOption: FilePickerOption.camera);
-                        if (file != null) {
-                          final now = DateTime.now();
-                          final String formattedDate = DateFormat('dd.MM.yyyy HH:mm').format(now);
-                          final fileDto = FileDto(
-                            uuid: null,
-                            refUuid: null,
-                            filename: 'Aufnahme $formattedDate.jpg',
-                            data: file.bytes,
-                            index: null,
-                            fileType: FileType.capture,
-                            createdAt: now,
-                            modifiedAt: now,
-                          );
-                          _form.captures.add(fileDto);
-                          if (mounted) setState(() {});
-                        }
-                        return [file].whereType<SelectedFile>().toList();
-                      },
-                      onRemoveFile: (fileIndex, file) {
-                        _form.captures.removeAt(fileIndex);
-                        if (mounted) setState(() {});
-                      },
-                    ),
+                    buildCaptureCard(),
                     if (_form.captures.isNotEmpty)
                       buildScanCard()
                     else
@@ -250,17 +207,6 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
                           child: buildScanCard(),
                         ),
                       ),
-                    // if (_form.scans.isNotEmpty)
-                    //   buildTemplateCard()
-                    // else
-                    //   IntrinsicHeight(
-                    //     child: FloorLoaderOverlay(
-                    //       loading: true,
-                    //       disableBackButton: false,
-                    //       loadingWidget: const SizedBox(),
-                    //       child: buildTemplateCard(),
-                    //     ),
-                    //   ),
                     if (_form.scans.isNotEmpty)
                       buildReportCard()
                     else
@@ -272,18 +218,6 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
                           child: buildReportCard(),
                         ),
                       ),
-                    // IntrinsicHeight(
-                    //   child: FloorLoaderOverlay(
-                    //     loading: true,
-                    //     disableBackButton: false,
-                    //     loadingWidget: const SizedBox(),
-                    //     child: FloorFilledButton(
-                    //       iconData: Icons.lock,
-                    //       text: 'Abschließen',
-                    //       onPressed: () {},
-                    //     ),
-                    //   ),
-                    // ),
                   ],
                 ),
               ),

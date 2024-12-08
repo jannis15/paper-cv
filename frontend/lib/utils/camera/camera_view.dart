@@ -77,7 +77,13 @@ class _CameraViewState extends State<_CameraView> {
             (await ImagePicker().pickMultiImage()).map(
               (xFile) async {
                 final fileBytes = await xFile.readAsBytes();
-                return SelectedFile(name: xFile.name, bytes: fileBytes);
+                final now = DateTime.now();
+                return SelectedFile(
+                  filename: xFile.name,
+                  data: fileBytes,
+                  createdAt: now,
+                  modifiedAt: now,
+                );
               },
             ),
           );
@@ -86,7 +92,13 @@ class _CameraViewState extends State<_CameraView> {
           final image = await ImagePicker().pickImage(source: ImageSource.gallery);
           if (image != null) {
             final fileBytes = await image.readAsBytes();
-            final selectedFile = SelectedFile(name: image.name, bytes: fileBytes);
+            final now = DateTime.now();
+            final selectedFile = SelectedFile(
+              filename: image.name,
+              data: fileBytes,
+              createdAt: now,
+              modifiedAt: now,
+            );
             images.add(selectedFile);
           }
         }
@@ -148,9 +160,12 @@ class _CameraViewState extends State<_CameraView> {
         width: cropWidth,
         height: cropHeight,
       );
+      final now = DateTime.now();
       final selectedFile = SelectedFile(
-        name: image.name,
-        bytes: img.encodeJpg(croppedImage),
+        filename: image.name,
+        data: img.encodeJpg(croppedImage),
+        createdAt: now,
+        modifiedAt: now,
       );
 
       if (mounted) {

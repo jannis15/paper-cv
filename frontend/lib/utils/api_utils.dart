@@ -1,7 +1,6 @@
 import 'dart:io';
-
 import 'package:dio/dio.dart';
-import 'package:paper_cv/data/models/floor_dto_models.dart';
+import 'package:paper_cv/utils/file_picker_models.dart';
 
 typedef JsonObject = Map<String, dynamic>;
 typedef JsonArray = List<dynamic>;
@@ -15,7 +14,7 @@ class RestApi {
     _baseUrl = baseUrl;
   }
 
-  Future<Response<T>> uploadFile<T>({required String route, required FileDto file}) async {
+  Future<Response<T>> uploadFile<T>({required String route, required SelectedFile file}) async {
     final multiPartFile = await MultipartFile.fromBytes(file.data, filename: file.filename);
     final formData = FormData.fromMap({
       'file': multiPartFile,

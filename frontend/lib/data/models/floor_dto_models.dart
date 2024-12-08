@@ -1,10 +1,9 @@
 import 'dart:convert';
-import 'dart:typed_data';
-
 import 'package:paper_cv/data/models/floor_enums.dart';
 import 'package:paper_cv/utils/api_utils.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:intl/intl.dart';
+import 'package:paper_cv/utils/file_picker_models.dart';
 
 part 'floor_dto_models.freezed.dart';
 
@@ -21,20 +20,6 @@ class DocumentPreviewDto with _$DocumentPreviewDto {
 }
 
 @freezed
-class FileDto with _$FileDto {
-  const factory FileDto({
-    required String? uuid,
-    required String? refUuid,
-    required String filename,
-    required Uint8List data,
-    required int? index,
-    required FileType fileType,
-    required DateTime createdAt,
-    required DateTime modifiedAt,
-  }) = _FileDto;
-}
-
-@freezed
 class ScanPropertiesDto with _$ScanPropertiesDto {
   ScanPropertiesDto._();
 
@@ -48,13 +33,12 @@ class ScanPropertiesDto with _$ScanPropertiesDto {
 
   factory ScanPropertiesDto.fromJson(JsonObject json) => _$ScanPropertiesDtoFromJson(json);
 
-  FileDto toFileDto({required String? formId}) {
+  SelectedFile toSelectedFile() {
     final now = DateTime.now();
-    final String formattedDate = DateFormat('dd.MM.yyyy HH:mm').format(now);
+    final String formattedDate = DateFormat('dd.MM.yy HH:mm').format(now);
     final data = utf8.encode(jsonEncode(toJson()));
-    return FileDto(
+    return SelectedFile(
       uuid: uuid,
-      refUuid: formId,
       filename: 'Scan $formattedDate.json',
       data: data,
       index: null,

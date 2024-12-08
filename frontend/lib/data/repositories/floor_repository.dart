@@ -1,10 +1,12 @@
 import 'dart:math';
+import 'dart:typed_data';
 
 import 'package:collection/collection.dart';
 import 'package:paper_cv/data/models/floor_dto_models.dart';
 import 'package:paper_cv/data/sources/local/database.dart';
 import 'package:paper_cv/data/sources/remote/floor_cv_api.dart';
 import 'package:paper_cv/domain/floor_models.dart';
+import 'package:paper_cv/utils/file_picker_models.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 
@@ -17,9 +19,9 @@ abstract class FloorRepository {
 
   static Future<void> saveDocumentForm(DocumentForm form) => FloorDatabase.instance.saveDocumentForm(form);
 
-  static Future<ScanPropertiesDto> scanCapture(FileDto capture) => FloorCvApi.instance.scanCapture(capture);
+  static Future<ScanPropertiesDto> scanCapture(SelectedFile capture) => FloorCvApi.instance.scanCapture(capture);
 
-  static pw.Document createPdf(ScanPropertiesDto dto) {
+  static Future<Uint8List> createPdf(ScanPropertiesDto dto) async {
     final pdf = pw.Document();
     final List<pw.FractionColumnWidth> widths = dto.columnWidths.map((width) => pw.FractionColumnWidth(width)).toList();
     const a4HeightCm = 29.7 * PdfPageFormat.cm;
@@ -62,7 +64,6 @@ abstract class FloorRepository {
         ),
       ),
     );
-
-    return pdf;
+    return pdf.save();
   }
 }

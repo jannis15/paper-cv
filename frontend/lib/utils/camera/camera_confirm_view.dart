@@ -17,7 +17,7 @@ class _CameraConfirmViewState extends State<_CameraConfirmView> {
   late final Uint8List _imageBytes;
 
   void _loadImage() {
-    _imageBytes = widget.image.bytes;
+    _imageBytes = widget.image.data;
   }
 
   Future<AlertOption?> _showAppSettingsDialog() async {

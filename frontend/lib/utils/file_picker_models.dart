@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:typed_data';
-
-import 'package:paper_cv/data/models/floor_dto_models.dart';
+import 'package:paper_cv/data/models/floor_enums.dart';
 
 enum FilePickerOption {
   camera,
@@ -9,23 +8,23 @@ enum FilePickerOption {
 }
 
 class SelectedFile {
-  String? id;
-  final String name;
-  final Uint8List bytes;
+  String? uuid;
+  String filename;
+  final Uint8List data;
+  final int? index;
+  FileType fileType;
+  final DateTime createdAt;
+  final DateTime modifiedAt;
 
-  String get base64String => base64Encode(bytes);
+  String get base64String => base64Encode(data);
 
   SelectedFile({
-    this.id,
-    required this.name,
-    required this.bytes,
+    this.uuid,
+    required this.filename,
+    required this.data,
+    this.index,
+    this.fileType = FileType.attachment,
+    required this.createdAt,
+    required this.modifiedAt,
   });
-}
-
-extension FileExtension on FileDto {
-  SelectedFile toSelectedFile() => SelectedFile(
-        id: this.uuid,
-        name: this.filename,
-        bytes: this.data,
-      );
 }

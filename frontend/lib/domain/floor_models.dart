@@ -1,12 +1,12 @@
-import 'package:paper_cv/data/models/floor_dto_models.dart';
+import 'package:paper_cv/utils/file_picker_models.dart';
 
 class DocumentForm {
   String? uuid;
   String title;
   String notes;
-  List<FileDto> captures;
-  List<FileDto> scans;
-  List<FileDto> reports;
+  List<SelectedFile> captures;
+  List<SelectedFile> scans = [];
+  List<SelectedFile> reports = [];
   DateTime? createdAt;
   DateTime? modifiedAt;
 
@@ -14,12 +14,12 @@ class DocumentForm {
     this.uuid,
     this.title = '',
     this.notes = '',
-    required this.captures,
-    required this.scans,
-    required this.reports,
+    List<SelectedFile>? captures,
+    List<SelectedFile>? scans,
+    List<SelectedFile>? reports,
     this.createdAt,
     this.modifiedAt,
-  });
-
-  bool get isEmpty => title.trim().isEmpty && notes.trim().isEmpty && captures.isEmpty && scans.isEmpty && reports.isEmpty;
+  })  : captures = captures ?? [],
+        scans = scans ?? [],
+        reports = reports ?? [];
 }
