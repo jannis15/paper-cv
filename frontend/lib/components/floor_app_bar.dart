@@ -25,10 +25,12 @@ class FloorAppBarIconButton extends StatelessWidget {
 class FloorAppBar extends ConsumerWidget implements PreferredSizeWidget {
   final Widget? title;
   final void Function()? customPop;
+  final List<Widget>? actions;
 
   FloorAppBar({
     this.title,
     this.customPop,
+    this.actions,
   });
 
   @override
@@ -42,7 +44,7 @@ class FloorAppBar extends ConsumerWidget implements PreferredSizeWidget {
       title: (noRouteBelow && title == null)
           ? null
           : RowGap(
-              gap: AppSizes.kGap,
+              gap: AppSizes.kSmallGap,
               children: [
                 if (!noRouteBelow)
                   FloorTransparentButton(
@@ -53,6 +55,7 @@ class FloorAppBar extends ConsumerWidget implements PreferredSizeWidget {
                 if (title != null) Expanded(child: title!),
               ],
             ),
+      actions: actions,
     );
   }
 

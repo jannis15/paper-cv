@@ -6,6 +6,7 @@ import 'package:paper_cv/data/models/floor_dto_models.dart';
 import 'package:paper_cv/data/repositories/floor_repository.dart';
 import 'package:paper_cv/presentation/floor_contact_banner.dart';
 import 'package:paper_cv/presentation/floor_overview_screen.dart';
+import 'package:paper_cv/presentation/floor_settings_screen.dart';
 import 'package:paper_cv/utils/alert_dialog.dart';
 import 'package:paper_cv/utils/list_utils.dart';
 import 'package:paper_cv/utils/widget_utils.dart';
@@ -107,7 +108,18 @@ class _FloorMainScreenState extends State<FloorMainScreen> {
         }
       },
       child: Scaffold(
-        appBar: FloorAppBar(title: Text('PaperCV')),
+        appBar: FloorAppBar(
+          title: Text('PaperCV'),
+          actions: [
+            FloorAppBarIconButton(
+              tooltip: 'Einstellungen',
+              iconData: Icons.settings,
+              onPressed: () {
+                Navigator.of(context).push(MaterialPageRoute(builder: (_) => FloorSettingsScreen()));
+              },
+            ),
+          ],
+        ),
         floatingActionButton: SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: FloatingActionButton.extended(
