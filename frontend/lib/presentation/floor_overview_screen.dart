@@ -73,6 +73,15 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
 
   @override
   Widget build(BuildContext context) {
+    Widget buildDisabledChild({required Widget child}) => IntrinsicHeight(
+          child: FloorLoaderOverlay(
+            loading: true,
+            disableBackButton: false,
+            loadingWidget: const SizedBox(),
+            child: child,
+          ),
+        );
+
     Widget buildCaptureCard() => FloorAttachmentCard(
           title: 'Aufnahme',
           files: _form.captures,
@@ -227,28 +236,8 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
                         ],
                       ),
                       buildCaptureCard(),
-                      if (_form.captures.isNotEmpty || _form.scans.isNotEmpty)
-                        buildScanCard()
-                      else
-                        IntrinsicHeight(
-                          child: FloorLoaderOverlay(
-                            loading: true,
-                            disableBackButton: false,
-                            loadingWidget: const SizedBox(),
-                            child: buildScanCard(),
-                          ),
-                        ),
-                      if (_form.scans.isNotEmpty || _form.reports.isNotEmpty)
-                        buildReportCard()
-                      else
-                        IntrinsicHeight(
-                          child: FloorLoaderOverlay(
-                            loading: true,
-                            disableBackButton: false,
-                            loadingWidget: const SizedBox(),
-                            child: buildReportCard(),
-                          ),
-                        ),
+                      if (_form.captures.isNotEmpty || _form.scans.isNotEmpty) buildScanCard() else buildDisabledChild(child: buildScanCard()),
+                      if (_form.scans.isNotEmpty || _form.reports.isNotEmpty) buildReportCard() else buildDisabledChild(child: buildReportCard()),
                     ],
                   ),
                 ),
