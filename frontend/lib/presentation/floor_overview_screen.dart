@@ -33,6 +33,11 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
   late bool _isLoading;
   bool _isSaving = false;
   late DocumentForm _form;
+  bool _isDirty = false; // if true, the form needs to be saved
+
+  void _setIsDirty() {
+    _isDirty = true;
+  }
 
   @override
   void initState() {
@@ -54,7 +59,7 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
     }
   }
 
-  Future<void> _saveForm() async {
+  Future<bool> _saveForm() async {
     _isSaving = true;
     if (mounted) setState(() {});
     try {
@@ -63,6 +68,7 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
       _isSaving = false;
       if (mounted) setState(() {});
     }
+    return true;
   }
 
   @override
@@ -80,8 +86,12 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
             file.fileType = FileType.capture;
             return [file];
           },
-          onAddFiles: (_) => setState(() {}),
-          onRemoveFile: (_) => setState(() {}),
+          onAddFiles: (_) => setState(() {
+            _setIsDirty();
+          }),
+          onRemoveFile: (_) => setState(() {
+            _setIsDirty();
+          }),
         );
 
     Widget buildScanCard() => FloorAttachmentCard(
@@ -94,8 +104,12 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
             final newSelectedFile = scanProperties.toSelectedFile();
             return [newSelectedFile];
           },
-          onAddFiles: (_) => setState(() {}),
-          onRemoveFile: (_) => setState(() {}),
+          onAddFiles: (_) => setState(() {
+            _setIsDirty();
+          }),
+          onRemoveFile: (_) => setState(() {
+            _setIsDirty();
+          }),
           disablePickFile: _form.captures.isEmpty,
         );
 
@@ -118,111 +132,127 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
             );
             return [selectedFile];
           },
-          onAddFiles: (_) => setState(() {}),
-          onRemoveFile: (_) => setState(() {}),
+          onAddFiles: (_) => setState(() {
+            _setIsDirty();
+          }),
+          onRemoveFile: (_) => setState(() {
+            _setIsDirty();
+          }),
           disablePickFile: _form.scans.isEmpty,
         );
 
-    return Scaffold(
-      appBar: FloorAppBar(
-        customPop: () async {
-          await _saveForm();
-          if (mounted) Navigator.of(context).pop();
-        },
-      ),
-      body: FloorLoaderOverlay(
-        loading: _isSaving,
-        child: _isLoading
-            ? Center(child: CircularProgressIndicator())
-            : SingleChildScrollView(
-                padding: EdgeInsets.all(AppSizes.kGap),
-                child: ColumnGap(
-                  gap: AppSizes.kGap,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    ColumnGap(
-                      gap: AppSizes.kSmallGap,
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        if (_form.modifiedAt != null)
-                          RowGap(
-                            gap: 4,
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              Icon(
-                                Icons.edit,
-                                color: colorScheme.outline,
-                                size: AppSizes.kSubIconSize,
-                              ),
-                              Timeago(
-                                locale: 'de',
-                                date: _form.modifiedAt!,
-                                builder: (context, value) => Text(
-                                  value,
-                                  style: textTheme.labelMedium?.copyWith(color: colorScheme.outline),
+    Future<void> tryCloseForm() async {
+      if (_isDirty) {
+        if (!(await _saveForm())) return;
+      }
+      if (mounted) Navigator.of(context).pop();
+    }
+
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) async {
+        if (!didPop) {
+          await tryCloseForm();
+        }
+      },
+      child: Scaffold(
+        appBar: FloorAppBar(customPop: tryCloseForm),
+        body: FloorLoaderOverlay(
+          loading: _isSaving,
+          child: _isLoading
+              ? Center(child: CircularProgressIndicator())
+              : SingleChildScrollView(
+                  padding: EdgeInsets.all(AppSizes.kGap),
+                  child: ColumnGap(
+                    gap: AppSizes.kGap,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      ColumnGap(
+                        gap: AppSizes.kSmallGap,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          if (_form.modifiedAt != null)
+                            RowGap(
+                              gap: 4,
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Icon(
+                                  Icons.edit,
+                                  color: colorScheme.outline,
+                                  size: AppSizes.kSubIconSize,
                                 ),
-                              ),
-                            ],
-                          ),
-                        FloorCard(
-                          child: ColumnGap(
-                            gap: AppSizes.kGap,
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              Text('Kopfdaten', style: textTheme.titleLarge),
-                              ColumnGap(
-                                gap: AppSizes.kSmallGap,
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                children: [
-                                  FloorTextField(
-                                    text: _form.title,
-                                    onChanged: (value) {
-                                      _form.title = value;
-                                    },
-                                    decoration: outlinedInputDecoration(labelText: 'Titel'),
+                                Timeago(
+                                  locale: 'de',
+                                  date: _form.modifiedAt!,
+                                  builder: (context, value) => Text(
+                                    value,
+                                    style: textTheme.labelMedium?.copyWith(color: colorScheme.outline),
                                   ),
-                                  FloorTextField(
-                                    text: _form.notes,
-                                    onChanged: (value) {
-                                      _form.notes = value;
-                                    },
-                                    decoration: outlinedInputDecoration(labelText: 'Notizen'),
-                                    minLines: 4,
-                                    maxLines: null,
-                                  ),
-                                ],
-                              ),
-                            ],
+                                ),
+                              ],
+                            ),
+                          FloorCard(
+                            child: ColumnGap(
+                              gap: AppSizes.kGap,
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                Text('Kopfdaten', style: textTheme.titleLarge),
+                                ColumnGap(
+                                  gap: AppSizes.kSmallGap,
+                                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                                  children: [
+                                    FloorTextField(
+                                      text: _form.title,
+                                      onChanged: (value) {
+                                        _form.title = value;
+                                        _setIsDirty();
+                                      },
+                                      decoration: outlinedInputDecoration(labelText: 'Titel'),
+                                    ),
+                                    FloorTextField(
+                                      text: _form.notes,
+                                      onChanged: (value) {
+                                        _form.notes = value;
+                                        _setIsDirty();
+                                      },
+                                      decoration: outlinedInputDecoration(labelText: 'Notizen'),
+                                      minLines: 4,
+                                      maxLines: null,
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      buildCaptureCard(),
+                      if (_form.captures.isNotEmpty || _form.scans.isNotEmpty)
+                        buildScanCard()
+                      else
+                        IntrinsicHeight(
+                          child: FloorLoaderOverlay(
+                            loading: true,
+                            disableBackButton: false,
+                            loadingWidget: const SizedBox(),
+                            child: buildScanCard(),
                           ),
                         ),
-                      ],
-                    ),
-                    buildCaptureCard(),
-                    if (_form.captures.isNotEmpty || _form.scans.isNotEmpty)
-                      buildScanCard()
-                    else
-                      IntrinsicHeight(
-                        child: FloorLoaderOverlay(
-                          loading: true,
-                          disableBackButton: false,
-                          loadingWidget: const SizedBox(),
-                          child: buildScanCard(),
+                      if (_form.scans.isNotEmpty || _form.reports.isNotEmpty)
+                        buildReportCard()
+                      else
+                        IntrinsicHeight(
+                          child: FloorLoaderOverlay(
+                            loading: true,
+                            disableBackButton: false,
+                            loadingWidget: const SizedBox(),
+                            child: buildReportCard(),
+                          ),
                         ),
-                      ),
-                    if (_form.scans.isNotEmpty || _form.reports.isNotEmpty)
-                      buildReportCard()
-                    else
-                      IntrinsicHeight(
-                        child: FloorLoaderOverlay(
-                          loading: true,
-                          disableBackButton: false,
-                          loadingWidget: const SizedBox(),
-                          child: buildReportCard(),
-                        ),
-                      ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
+        ),
       ),
     );
   }
