@@ -21,16 +21,20 @@ class FloorAttachmentCard extends StatefulWidget {
   final String title;
   final List<SelectedFile> files;
   final Future<List<SelectedFile>?> Function() onPickFiles;
-  final Function(int fileIndex, SelectedFile file) onRemoveFile;
+  final Function(List<SelectedFile> files) onAddFiles;
+  final Function(SelectedFile file) onRemoveFile;
   final IconData iconData;
   final String iconText;
+  final bool disablePickFile;
 
   const FloorAttachmentCard({
     super.key,
     required this.title,
     required this.files,
     required this.onPickFiles,
+    required this.onAddFiles,
     required this.onRemoveFile,
+    this.disablePickFile = false,
     this.iconData = Icons.add,
     this.iconText = 'Hinzufügen',
   });
@@ -144,9 +148,9 @@ class _FloorAttachmentCardState extends State<FloorAttachmentCard> {
                   ],
                 );
                 if (alertResult == AlertOption.yes) {
-                  await widget.onRemoveFile(index, file);
                   _files.removeAt(index);
                   _previewImages.removeAt(index);
+                  await widget.onRemoveFile(file);
                   if (context.mounted) setState(() {});
                 }
               },
@@ -176,20 +180,23 @@ class _FloorAttachmentCardState extends State<FloorAttachmentCard> {
                 iconData: widget.iconData,
                 text: widget.iconText,
                 loading: _isLoading || _isAttaching,
-                onPressed: () async {
-                  _isAttaching = true;
-                  setState(() {});
-                  try {
-                    final newFiles = await widget.onPickFiles();
-                    if (newFiles != null) {
-                      _files.addAll(newFiles);
-                      await _addPreviewImages(newFiles);
-                    }
-                  } finally {
-                    _isAttaching = false;
-                    if (context.mounted) setState(() {});
-                  }
-                },
+                onPressed: widget.disablePickFile
+                    ? null
+                    : () async {
+                        _isAttaching = true;
+                        setState(() {});
+                        try {
+                          final newFiles = await widget.onPickFiles();
+                          if (newFiles != null) {
+                            _files.addAll(newFiles);
+                            await _addPreviewImages(newFiles);
+                            widget.onAddFiles(newFiles);
+                          }
+                        } finally {
+                          _isAttaching = false;
+                          if (context.mounted) setState(() {});
+                        }
+                      },
               ),
             ],
           ),

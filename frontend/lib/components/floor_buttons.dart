@@ -12,7 +12,7 @@ abstract class FloorButton extends StatelessWidget {
   final bool loading;
   final IconData? iconData;
   final String text;
-  final void Function() onPressed;
+  final void Function()? onPressed;
   final Color? foregroundColor;
   final TextDecoration? textDecoration;
 
@@ -21,7 +21,7 @@ abstract class FloorButton extends StatelessWidget {
   FloorButton({
     this.iconData,
     required this.text,
-    required this.onPressed,
+    this.onPressed,
     this.loading = false,
     required this.type,
     this.foregroundColor,
@@ -33,13 +33,21 @@ abstract class FloorButton extends StatelessWidget {
     final ColorScheme colorScheme = Theme.of(context).colorScheme;
     final TextTheme textTheme = Theme.of(context).textTheme;
 
-    Color getBackgroundColor() => type == FloorButtonType.filled ? colorScheme.primary : Colors.transparent;
-    Color getForegroundColor() => foregroundColor != null
-        ? foregroundColor!
-        : type == FloorButtonType.filled
-            ? colorScheme.onPrimary
-            : colorScheme.onSurface;
-    Color getBorderColor() => colorScheme.outline;
+    Color getBackgroundColor() => type == FloorButtonType.filled
+        ? onPressed == null
+            ? Color.alphaBlend(colorScheme.surface.withOpacity(.5), colorScheme.primary)
+            : colorScheme.primary
+        : Colors.transparent;
+    Color getForegroundColor() {
+      final calcForegroundColor = foregroundColor != null
+          ? foregroundColor!
+          : type == FloorButtonType.filled
+              ? colorScheme.onPrimary
+              : colorScheme.onSurface;
+      return onPressed == null ? Color.alphaBlend(colorScheme.surface.withOpacity(.5), calcForegroundColor) : calcForegroundColor;
+    }
+
+    Color getBorderColor() => onPressed == null ? Color.alphaBlend(colorScheme.surface.withOpacity(.5), colorScheme.outline) : colorScheme.outline;
 
     return IgnorePointer(
       ignoring: loading,
@@ -88,7 +96,7 @@ class FloorTransparentButton extends FloorButton {
     super.iconData,
     super.foregroundColor,
     required super.text,
-    required super.onPressed,
+    super.onPressed,
     super.textDecoration,
     super.loading,
   }) : super(type: FloorButtonType.transparent);
@@ -98,7 +106,7 @@ class FloorOutlinedButton extends FloorButton {
   FloorOutlinedButton({
     super.iconData,
     required super.text,
-    required super.onPressed,
+    super.onPressed,
     super.textDecoration,
     super.loading,
   }) : super(type: FloorButtonType.outlined);
@@ -108,7 +116,7 @@ class FloorFilledButton extends FloorButton {
   FloorFilledButton({
     super.iconData,
     required super.text,
-    required super.onPressed,
+    super.onPressed,
     super.textDecoration,
     super.loading,
   }) : super(type: FloorButtonType.filled);

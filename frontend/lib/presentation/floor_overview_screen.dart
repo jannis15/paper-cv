@@ -80,7 +80,8 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
             file.fileType = FileType.capture;
             return [file];
           },
-          onRemoveFile: (fileIndex, file) {},
+          onAddFiles: (_) => setState(() {}),
+          onRemoveFile: (_) => setState(() {}),
         );
 
     Widget buildScanCard() => FloorAttachmentCard(
@@ -93,7 +94,9 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
             final newSelectedFile = scanProperties.toSelectedFile();
             return [newSelectedFile];
           },
-          onRemoveFile: (fileIndex, file) {},
+          onAddFiles: (_) => setState(() {}),
+          onRemoveFile: (_) => setState(() {}),
+          disablePickFile: _form.captures.isEmpty,
         );
 
     Widget buildReportCard() => FloorAttachmentCard(
@@ -115,10 +118,9 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
             );
             return [selectedFile];
           },
-          onRemoveFile: (fileIndex, file) {
-            _form.reports.removeAt(fileIndex);
-            if (mounted) setState(() {});
-          },
+          onAddFiles: (_) => setState(() {}),
+          onRemoveFile: (_) => setState(() {}),
+          disablePickFile: _form.scans.isEmpty,
         );
 
     return Scaffold(
@@ -196,7 +198,7 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
                       ],
                     ),
                     buildCaptureCard(),
-                    if (_form.captures.isNotEmpty)
+                    if (_form.captures.isNotEmpty || _form.scans.isNotEmpty)
                       buildScanCard()
                     else
                       IntrinsicHeight(
@@ -207,7 +209,7 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
                           child: buildScanCard(),
                         ),
                       ),
-                    if (_form.scans.isNotEmpty)
+                    if (_form.scans.isNotEmpty || _form.reports.isNotEmpty)
                       buildReportCard()
                     else
                       IntrinsicHeight(
