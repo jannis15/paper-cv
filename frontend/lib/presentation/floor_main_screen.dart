@@ -4,7 +4,7 @@ import 'package:paper_cv/components/floor_card.dart';
 import 'package:paper_cv/config/config.dart';
 import 'package:paper_cv/data/models/floor_dto_models.dart';
 import 'package:paper_cv/data/repositories/floor_repository.dart';
-import 'package:paper_cv/presentation/floor_contact_banner.dart';
+import 'package:paper_cv/components/floor_contact_banner.dart';
 import 'package:paper_cv/presentation/floor_overview_screen.dart';
 import 'package:paper_cv/presentation/floor_settings_screen.dart';
 import 'package:paper_cv/utils/alert_dialog.dart';
