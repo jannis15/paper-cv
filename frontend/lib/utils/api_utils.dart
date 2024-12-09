@@ -10,7 +10,7 @@ class RestApi {
   late final String _baseUrl;
 
   RestApi({required String baseUrl}) {
-    _client = Dio(BaseOptions(connectTimeout: Duration(seconds: 3)));
+    _client = Dio(BaseOptions(connectTimeout: Duration(seconds: 3), receiveTimeout: Duration(minutes: 1)));
     _baseUrl = baseUrl;
   }
 
