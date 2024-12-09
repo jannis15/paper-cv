@@ -26,11 +26,13 @@ class FloorAppBar extends ConsumerWidget implements PreferredSizeWidget {
   final Widget? title;
   final void Function()? customPop;
   final List<Widget>? actions;
+  final bool showBackButton;
 
   FloorAppBar({
     this.title,
     this.customPop,
     this.actions,
+    this.showBackButton = true,
   });
 
   @override
@@ -48,7 +50,7 @@ class FloorAppBar extends ConsumerWidget implements PreferredSizeWidget {
           : RowGap(
               gap: AppSizes.kSmallGap,
               children: [
-                if (!noRouteBelow)
+                if (!noRouteBelow && showBackButton)
                   FloorTransparentButton(
                     iconData: Icons.chevron_left,
                     text: 'Zurück',
