@@ -67,6 +67,13 @@ class _FloorMainScreenState extends State<FloorMainScreen> {
 
   String get _selectedText => '${_selectedDocuments.length} ${_selectedDocuments.length == 1 ? 'Dokument' : 'Dokumente'} ausgewählt';
 
+  void _openOverviewScreen() async => await Navigator.of(context).push(
+        PageRouteBuilder(
+          pageBuilder: (context, animation, secondaryAnimation) => FloorOverviewScreen(),
+          transitionDuration: Duration(seconds: 0),
+        ),
+      );
+
   @override
   Widget build(BuildContext context) {
     Widget buildPreviewCard(DocumentPreviewDto documentPreview) => FloorCard(
@@ -86,10 +93,9 @@ class _FloorMainScreenState extends State<FloorMainScreen> {
                 }
               : () async {
                   await Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (_) => FloorOverviewScreen(
-                        documentId: documentPreview.uuid,
-                      ),
+                    PageRouteBuilder(
+                      pageBuilder: (context, animation, secondaryAnimation) => FloorOverviewScreen(documentId: documentPreview.uuid),
+                      transitionDuration: Duration(seconds: 0),
                     ),
                   );
                 },
@@ -193,7 +199,12 @@ class _FloorMainScreenState extends State<FloorMainScreen> {
               tooltip: 'Einstellungen',
               iconData: Icons.settings,
               onPressed: () {
-                Navigator.of(context).push(MaterialPageRoute(builder: (_) => FloorSettingsScreen()));
+                Navigator.of(context).push(
+                  PageRouteBuilder(
+                    pageBuilder: (context, animation, secondaryAnimation) => FloorSettingsScreen(),
+                    transitionDuration: Duration(seconds: 0),
+                  ),
+                );
               },
             ),
           ],
@@ -231,18 +242,14 @@ class _FloorMainScreenState extends State<FloorMainScreen> {
                     heroTag: UniqueKey(),
                     icon: Icon(Icons.post_add),
                     label: Text('Erfassen'),
-                    onPressed: () async {
-                      await Navigator.of(context).push(MaterialPageRoute(builder: (_) => FloorOverviewScreen()));
-                    },
+                    onPressed: _openOverviewScreen,
                   ),
         body: FloorLayoutBody(
           sideChildren: [
             FloorOutlinedButton(
               text: 'Erfassen',
               iconData: Icons.post_add,
-              onPressed: () async {
-                await Navigator.of(context).push(MaterialPageRoute(builder: (_) => FloorOverviewScreen()));
-              },
+              onPressed: _openOverviewScreen,
             ),
           ],
           child: SingleChildScrollView(
