@@ -3,7 +3,6 @@ import 'package:paper_cv/config/text_theme.dart';
 import 'package:paper_cv/presentation/floor_main_screen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:timeago/timeago.dart' as timeago;

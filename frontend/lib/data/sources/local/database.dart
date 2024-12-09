@@ -1,5 +1,4 @@
 import 'package:drift/drift.dart';
-import 'package:drift_flutter/drift_flutter.dart';
 import 'package:paper_cv/data/models/floor_dto_models.dart';
 import 'package:paper_cv/data/models/floor_enums.dart';
 import 'package:paper_cv/data/sources/local/migration.dart';
@@ -10,6 +9,7 @@ import 'package:paper_cv/utils/enum_utils.dart';
 import 'package:paper_cv/utils/file_picker_models.dart';
 import 'package:paper_cv/utils/type_converters.dart';
 import 'package:uuid/uuid.dart';
+import 'mobile_database.dart' if (dart.library.html) 'web_database.dart';
 
 part 'database.g.dart';
 
@@ -18,7 +18,7 @@ part 'database.g.dart';
   TbFile,
 ])
 class FloorDatabase extends _$FloorDatabase with DbMixin {
-  FloorDatabase() : super(_openConnection());
+  FloorDatabase(QueryExecutor queryExecutor) : super(queryExecutor);
 
   @override
   int get schemaVersion => version;
@@ -26,13 +26,9 @@ class FloorDatabase extends _$FloorDatabase with DbMixin {
   @override
   MigrationStrategy get migration => getMigration;
 
-  static final _instance = FloorDatabase();
+  static final _instance = FloorDatabase(openConnection());
 
   static FloorDatabase get instance => _instance;
-
-  static QueryExecutor _openConnection() {
-    return driftDatabase(name: 'paper_cv');
-  }
 
   DocumentPreviewDto _mapToDocumentPreviewDto(TbDocumentData row) => DocumentPreviewDto(
         uuid: row.uuid,

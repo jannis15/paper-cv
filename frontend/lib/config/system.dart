@@ -1,45 +1,43 @@
 import 'package:dio/dio.dart';
-import 'package:drift/native.dart';
 import 'package:paper_cv/config/config.dart';
 import 'package:paper_cv/utils/list_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_logs/flutter_logs.dart';
+import 'mobile_system.dart' if (dart.library.html) 'web_system.dart';
 
 GlobalKey<NavigatorState> navigatorKey = GlobalKey();
 
 Future<void> logException(Object e, StackTrace stackTrace, {String subTag = ''}) async {
   late String logMessage;
   logMessage = 'EXCEPTION_RUNTIME_TYPE: ${e.runtimeType}\n';
-  switch (e) {
-    case DioException _:
-      logMessage += 'OPTIONS_PATH: ${e.requestOptions.path}\n'
-          'OPTIONS_HEADERS: ${e.requestOptions.headers}\n'
-          'OPTIONS_HTTP_METHOD: ${e.requestOptions.method}\n'
-          'RESPONSE_STATUS_CODE: ${e.response?.statusCode}\n'
-          'RESPONSE_STATUS_MESSAGE: ${e.response?.statusMessage}\n'
-          'RESPONSE_DATA: ${e.response?.data}\n'
-          'ERROR: ${e.error}\n'
-          'TYPE: ${e.type}\n'
-          'MESSAGE: ${e.message}\n'
-          'STACKTRACE:\n${e.stackTrace}';
-      break;
-    case SqliteException _:
-      logMessage += 'MESSAGE: ${e.message}\n'
-          'CAUSING_STATEMENT: ${e.causingStatement}\n'
-          'EXPLANATION: ${e.explanation}\n'
-          'OPERATION: ${e.operation}\n'
-          'PARAMETERS_TO_STATEMENT: ${e.parametersToStatement}\n'
-          'EXTENDED_RESULT_CODE: ${e.extendedResultCode}';
-      break;
-    case FlutterErrorDetails _:
-      logMessage += 'EXCEPTION: ${e.exception}\n'
-          'DIAGNOSTIC_MODE: ${e.context}\n'
-          'STACKTRACE:\n${e.stack}';
-      break;
-    default:
-      logMessage += e.toString();
-      break;
+  final String platformMessage = platformException(e);
+  if (platformMessage.isNotEmpty) {
+    logMessage += platformMessage;
+  } else {
+    switch (e) {
+      case DioException _:
+        logMessage += 'OPTIONS_PATH: ${e.requestOptions.path}\n'
+            'OPTIONS_HEADERS: ${e.requestOptions.headers}\n'
+            'OPTIONS_HTTP_METHOD: ${e.requestOptions.method}\n'
+            'RESPONSE_STATUS_CODE: ${e.response?.statusCode}\n'
+            'RESPONSE_STATUS_MESSAGE: ${e.response?.statusMessage}\n'
+            'RESPONSE_DATA: ${e.response?.data}\n'
+            'ERROR: ${e.error}\n'
+            'TYPE: ${e.type}\n'
+            'MESSAGE: ${e.message}\n'
+            'STACKTRACE:\n${e.stackTrace}';
+        break;
+      case FlutterErrorDetails _:
+        logMessage += 'EXCEPTION: ${e.exception}\n'
+            'DIAGNOSTIC_MODE: ${e.context}\n'
+            'STACKTRACE:\n${e.stack}';
+        break;
+      default:
+        logMessage += e.toString();
+        break;
+    }
   }
+
   if (e is! FlutterErrorDetails && e is! DioException) {
     logMessage += '\nSTACKTRACE: \n$stackTrace';
   }
