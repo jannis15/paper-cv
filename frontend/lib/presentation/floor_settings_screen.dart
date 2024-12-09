@@ -21,21 +21,27 @@ class _FloorSettingsScreenState extends State<FloorSettingsScreen> {
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(AppSizes.kGap),
-        child: ColumnGap(
-          gap: AppSizes.kSmallGap,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            FloorCard(
-              onTap: () => showLicensePage(context: context),
-              child: RowGap(
-                gap: AppSizes.kGap,
-                children: [
-                  Icon(FontAwesomeIcons.award),
-                  Expanded(child: Text('Lizenzen')),
-                ],
-              ),
+        child: Align(
+          alignment: Alignment.topCenter,
+          child: SizedBox(
+            width: AppSizes.kDesktopWidth,
+            child: ColumnGap(
+              gap: AppSizes.kSmallGap,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                FloorCard(
+                  onTap: () => showLicensePage(context: context),
+                  child: RowGap(
+                    gap: AppSizes.kGap,
+                    children: [
+                      Icon(FontAwesomeIcons.award),
+                      Expanded(child: Text('Lizenzen')),
+                    ],
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );

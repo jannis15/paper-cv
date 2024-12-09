@@ -190,73 +190,79 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
               ? Center(child: CircularProgressIndicator())
               : SingleChildScrollView(
                   padding: EdgeInsets.all(AppSizes.kGap),
-                  child: ColumnGap(
-                    gap: AppSizes.kGap,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      ColumnGap(
-                        gap: AppSizes.kSmallGap,
+                  child: Align(
+                    alignment: Alignment.topCenter,
+                    child: SizedBox(
+                      width: AppSizes.kDesktopWidth,
+                      child: ColumnGap(
+                        gap: AppSizes.kGap,
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          if (_form.modifiedAt != null)
-                            RowGap(
-                              gap: 4,
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                Icon(
-                                  Icons.edit,
-                                  color: colorScheme.outline,
-                                  size: AppSizes.kSubIconSize,
-                                ),
-                                Timeago(
-                                  locale: 'de',
-                                  date: _form.modifiedAt!,
-                                  builder: (context, value) => Text(
-                                    value,
-                                    style: textTheme.labelMedium?.copyWith(color: colorScheme.outline),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          FloorCard(
-                            child: ColumnGap(
-                              gap: AppSizes.kGap,
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [
-                                Text('Kopfdaten', style: textTheme.titleLarge),
-                                ColumnGap(
-                                  gap: AppSizes.kSmallGap,
-                                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                          ColumnGap(
+                            gap: AppSizes.kSmallGap,
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              if (_form.modifiedAt != null)
+                                RowGap(
+                                  gap: 4,
+                                  mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
-                                    FloorTextField(
-                                      text: _form.title,
-                                      onChanged: (value) {
-                                        _form.title = value;
-                                        _setIsDirty();
-                                      },
-                                      decoration: outlinedInputDecoration(labelText: 'Titel'),
+                                    Icon(
+                                      Icons.edit,
+                                      color: colorScheme.outline,
+                                      size: AppSizes.kSubIconSize,
                                     ),
-                                    FloorTextField(
-                                      text: _form.notes,
-                                      onChanged: (value) {
-                                        _form.notes = value;
-                                        _setIsDirty();
-                                      },
-                                      decoration: outlinedInputDecoration(labelText: 'Notizen'),
-                                      minLines: 4,
-                                      maxLines: null,
+                                    Timeago(
+                                      locale: 'de',
+                                      date: _form.modifiedAt!,
+                                      builder: (context, value) => Text(
+                                        value,
+                                        style: textTheme.labelMedium?.copyWith(color: colorScheme.outline),
+                                      ),
                                     ),
                                   ],
                                 ),
-                              ],
-                            ),
+                              FloorCard(
+                                child: ColumnGap(
+                                  gap: AppSizes.kGap,
+                                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                                  children: [
+                                    Text('Kopfdaten', style: textTheme.titleLarge),
+                                    ColumnGap(
+                                      gap: AppSizes.kSmallGap,
+                                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                                      children: [
+                                        FloorTextField(
+                                          text: _form.title,
+                                          onChanged: (value) {
+                                            _form.title = value;
+                                            _setIsDirty();
+                                          },
+                                          decoration: outlinedInputDecoration(labelText: 'Titel'),
+                                        ),
+                                        FloorTextField(
+                                          text: _form.notes,
+                                          onChanged: (value) {
+                                            _form.notes = value;
+                                            _setIsDirty();
+                                          },
+                                          decoration: outlinedInputDecoration(labelText: 'Notizen'),
+                                          minLines: 4,
+                                          maxLines: null,
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
                           ),
+                          buildCaptureCard(),
+                          if (_form.captures.isNotEmpty || _form.scans.isNotEmpty) buildScanCard() else buildDisabledChild(child: buildScanCard()),
+                          if (_form.scans.isNotEmpty || _form.reports.isNotEmpty) buildReportCard() else buildDisabledChild(child: buildReportCard()),
                         ],
                       ),
-                      buildCaptureCard(),
-                      if (_form.captures.isNotEmpty || _form.scans.isNotEmpty) buildScanCard() else buildDisabledChild(child: buildScanCard()),
-                      if (_form.scans.isNotEmpty || _form.reports.isNotEmpty) buildReportCard() else buildDisabledChild(child: buildReportCard()),
-                    ],
+                    ),
                   ),
                 ),
         ),

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 abstract class AppSizes {
+  static const double kDesktopWidth = 800.0;
+
   static const double kComponentHeight = 40.0;
 
   static const double kMediumBigGap = 24.0;

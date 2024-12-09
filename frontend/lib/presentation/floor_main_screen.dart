@@ -232,47 +232,53 @@ class _FloorMainScreenState extends State<FloorMainScreen> {
         body: SingleChildScrollView(
           controller: _scrollController,
           padding: EdgeInsets.all(AppSizes.kGap),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              AnimatedSize(
-                duration: Duration(milliseconds: 200),
-                curve: Curves.easeIn,
-                child: _showBanner
-                    ? Padding(
-                        padding: EdgeInsets.only(bottom: AppSizes.kGap),
-                        child: FloorContactBanner(
-                            onCloseBanner: () => setState(() {
-                                  _showBanner = false;
-                                })),
-                      )
-                    : SizedBox(),
+          child: Align(
+            alignment: Alignment.topCenter,
+            child: SizedBox(
+              width: AppSizes.kDesktopWidth,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  AnimatedSize(
+                    duration: Duration(milliseconds: 200),
+                    curve: Curves.easeIn,
+                    child: _showBanner
+                        ? Padding(
+                            padding: EdgeInsets.only(bottom: AppSizes.kGap),
+                            child: FloorContactBanner(
+                                onCloseBanner: () => setState(() {
+                                      _showBanner = false;
+                                    })),
+                          )
+                        : SizedBox(),
+                  ),
+                  StreamBuilder(
+                    stream: _previewStream,
+                    builder: (context, snapshot) {
+                      if (snapshot.hasError) {
+                        return Text(snapshot.error.toString(), style: TextStyle(color: colorScheme.error));
+                      } else if (snapshot.connectionState == ConnectionState.waiting || !snapshot.hasData) {
+                        return Center(child: CircularProgressIndicator());
+                      } else {
+                        final documentPreviews = snapshot.data!;
+                        if (documentPreviews.isEmpty) {
+                          return Text('Keine Dokumente vorhanden');
+                        } else {
+                          return ColumnGap(
+                            gap: AppSizes.kSmallGap,
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              ...documentPreviews.map(buildPreviewCard),
+                              SizedBox(height: 64),
+                            ],
+                          );
+                        }
+                      }
+                    },
+                  ),
+                ],
               ),
-              StreamBuilder(
-                stream: _previewStream,
-                builder: (context, snapshot) {
-                  if (snapshot.hasError) {
-                    return Text(snapshot.error.toString(), style: TextStyle(color: colorScheme.error));
-                  } else if (snapshot.connectionState == ConnectionState.waiting || !snapshot.hasData) {
-                    return Center(child: CircularProgressIndicator());
-                  } else {
-                    final documentPreviews = snapshot.data!;
-                    if (documentPreviews.isEmpty) {
-                      return Text('Keine Dokumente vorhanden');
-                    } else {
-                      return ColumnGap(
-                        gap: AppSizes.kSmallGap,
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          ...documentPreviews.map(buildPreviewCard),
-                          SizedBox(height: 64),
-                        ],
-                      );
-                    }
-                  }
-                },
-              ),
-            ],
+            ),
           ),
         ),
       ),
