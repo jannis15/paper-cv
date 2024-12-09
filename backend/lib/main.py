@@ -2,10 +2,23 @@ from fastapi import FastAPI, UploadFile
 from lib.floor_cv_controller import FloorCvController
 from dotenv import load_dotenv
 from google.cloud import vision
+from fastapi.middleware.cors import CORSMiddleware
 
 load_dotenv()
 app = FastAPI()
 client = vision.ImageAnnotatorClient()
+
+origins = [
+    "http://localhost:53767",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.post('/scan')
