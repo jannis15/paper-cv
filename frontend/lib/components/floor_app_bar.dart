@@ -35,8 +35,10 @@ class FloorAppBar extends ConsumerWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    bool useDesktopLayout() => MediaQuery.of(context).size.width >= AppSizes.kDesktopWidth;
     final bool noRouteBelow = (ModalRoute.of(context) == null || (ModalRoute.of(context)!.isFirst));
     return AppBar(
+      backgroundColor: useDesktopLayout() ? Theme.of(context).colorScheme.surfaceContainer : null,
       leadingWidth: 0,
       leading: SizedBox(),
       titleSpacing: AppSizes.kGap,
