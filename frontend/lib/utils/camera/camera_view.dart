@@ -32,7 +32,7 @@ class _CameraViewState extends State<_CameraView> {
   Future<CameraDescription?> _getDesiredCamera(CameraLensDirection direction) async {
     _currentLensDirection = direction;
     final List<CameraDescription> cameras = await availableCameras();
-    return cameras.where((element) => element.lensDirection == direction).firstOrNull;
+    return cameras.where((element) => element.lensDirection == direction).firstOrNull ?? cameras.firstOrNull;
   }
 
   Future<void> _initCameraController({bool withOppositeLensDirection = false}) async {
