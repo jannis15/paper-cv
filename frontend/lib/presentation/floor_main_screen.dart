@@ -327,7 +327,7 @@ class _FloorMainScreenState extends State<FloorMainScreen> {
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
                                 ...documentPreviews.map(buildPreviewCard),
-                                SizedBox(height: 64),
+                                if (!useDesktopLayout) SizedBox(height: 64),
                               ],
                             );
                           }
