@@ -1,6 +1,4 @@
-import 'dart:io';
 import 'dart:ui' as ui show Image;
-
 import 'package:collection/collection.dart';
 import 'package:file_icon/file_icon.dart';
 import 'package:paper_cv/components/floor_buttons.dart';
@@ -14,8 +12,7 @@ import 'package:paper_cv/utils/ui_image_extension.dart';
 import 'package:paper_cv/utils/widget_utils.dart';
 import "package:flutter/material.dart";
 import 'package:mime/mime.dart';
-import 'package:open_file/open_file.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:paper_cv/utils/mobile_access_file.dart' if (dart.library.html) 'package:paper_cv/utils/web_access_file.dart';
 
 class FloorAttachmentCard extends StatefulWidget {
   final String title;
@@ -68,8 +65,7 @@ class _FloorAttachmentCardState extends State<FloorAttachmentCard> {
   Future<void> _addPreviewImages(List<SelectedFile> files) async {
     for (final file in files) {
       ui.Image? tmpImage;
-      if (lookupMimeType('', headerBytes: file.data)?.contains('image') ??
-          false) {
+      if (lookupMimeType('', headerBytes: file.data)?.contains('image') ?? false) {
         tmpImage = await decodeImageFromList(file.data);
       }
       _previewImages.add(tmpImage);
@@ -89,11 +85,7 @@ class _FloorAttachmentCardState extends State<FloorAttachmentCard> {
         children: [
           GestureDetector(
             onTap: () async {
-              final directory = await getTemporaryDirectory();
-              final path = '${directory.path}/${file.filename}';
-              final tmpFile = File(path);
-              await tmpFile.writeAsBytes(file.data);
-              await OpenFile.open(path);
+              accessFile(file);
             },
             child: Container(
               margin: EdgeInsets.only(
@@ -208,9 +200,7 @@ class _FloorAttachmentCardState extends State<FloorAttachmentCard> {
               child: RowGap(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 gap: AppSizes.kSmallGap,
-                children: _previewImages
-                    .mapIndexed((index, _) => buildFilePreview(index))
-                    .toList(),
+                children: _previewImages.mapIndexed((index, _) => buildFilePreview(index)).toList(),
               ),
             ),
         ],
