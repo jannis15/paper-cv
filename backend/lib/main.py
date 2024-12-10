@@ -1,4 +1,4 @@
-from fastapi import FastAPI, UploadFile, Request
+from fastapi import FastAPI, UploadFile, Request, HTTPException, Depends
 from fastapi.responses import JSONResponse
 from lib.floor_cv_controller import FloorCvController
 from dotenv import load_dotenv
@@ -7,12 +7,39 @@ from fastapi.middleware.cors import CORSMiddleware
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
+from PIL import Image
+import io
 
 load_dotenv()
 app = FastAPI()
 limiter = Limiter(key_func=get_remote_address)
 app.state.limiter = limiter
 client = vision.ImageAnnotatorClient()
+
+MAX_FILE_SIZE_MB = 10
+MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024
+
+
+async def validate_file(request: Request, file: UploadFile = Depends()) -> bytes:
+    content_length = request.headers.get('Content-Length')
+
+    if content_length:
+        content_length = int(content_length)
+        if content_length > MAX_FILE_SIZE_BYTES:
+            raise HTTPException(status_code=400, detail="File size exceeds the 10 MB limit")
+
+    if not file.content_type.startswith('image/'):
+        raise HTTPException(status_code=400, detail="File is not an image")
+
+    file_bytes = await file.read()
+    try:
+        image = Image.open(io.BytesIO(file_bytes))
+        image.verify()
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invalid image file")
+
+    return file_bytes
+
 
 origins = [
     "http://localhost:53767",
@@ -26,6 +53,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.exception_handler(Exception)
+async def global_exception_handler(request, exc):
+    return JSONResponse(
+        status_code=500,
+        content={"detail": "An internal server error occurred"},
+    )
+
+
 @app.exception_handler(RateLimitExceeded)
 async def rate_limit_error(request, exc):
     return JSONResponse(
@@ -37,13 +72,8 @@ async def rate_limit_error(request, exc):
 @app.post('/scan')
 @limiter.limit('6/minute')
 async def scan_file(request: Request, file: UploadFile):
-    file_bytes = await file.read()
-    import os
-    file_path = os.path.join('outputs', 'scan.jpg')
-    with open(file_path, 'wb') as f:
-        f.write(file_bytes)
-    properties = FloorCvController.scan_file(client=client, file_bytes=file_bytes)
-    return properties
+    file_bytes = await validate_file(request, file)
+    return FloorCvController.scan_file(client=client, file_bytes=file_bytes)
 
 
 if __name__ == '__main__':

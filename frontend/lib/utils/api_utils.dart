@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:dio/dio.dart';
+import 'package:mime/mime.dart';
 import 'package:paper_cv/config/system.dart';
 import 'package:paper_cv/utils/file_picker_models.dart';
 
@@ -25,9 +26,12 @@ class RestApi {
   }
 
   Future<Response<T>> uploadFile<T>({required String route, required SelectedFile file, CancelToken? cancelToken}) async {
-    final multiPartFile = await MultipartFile.fromBytes(file.data, filename: file.filename);
     final formData = FormData.fromMap({
-      'file': multiPartFile,
+      'file': await MultipartFile.fromBytes(
+        file.data,
+        filename: file.filename,
+        contentType: DioMediaType.parse(lookupMimeType(file.filename) ?? ''),
+      ),
     });
     try {
       return await _client.post<T>(

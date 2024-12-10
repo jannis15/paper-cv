@@ -50,11 +50,11 @@ void showException(Object e) {
     if ([DioExceptionType.connectionTimeout, DioExceptionType.connectionError].contains(e.type)) {
       showError('Keine Verbindung zum Server', icon: Icons.wifi_off);
     } else {
-      final errorText = e.response?.data != null && e.response!.data!.toString().trim().isNotEmpty
-          ? e.response!.data.toString()
+      final errorText = e.response?.data != null && e.response!.data!['detail'] != null
+          ? e.response!.data['detail']
           : e.error != null && e.error!.toString().isNotEmpty
               ? e.error.toString()
-              : e.response?.statusMessage != null && e.response?.statusCode != null
+              : e.response?.statusCode != null
                   ? '${e.response?.statusCode} - ${e.response?.statusMessage}'
                   : 'Unbekannter Fehler';
       showError(errorText);
