@@ -48,7 +48,7 @@ Future<void> logException(Object e, StackTrace stackTrace, {String subTag = ''})
 void showException(Object e) {
   if (e is DioException) {
     if ([DioExceptionType.connectionTimeout, DioExceptionType.connectionError].contains(e.type)) {
-      showError('Keine Verbindung zur REST-API', icon: Icons.wifi_off);
+      showError('Keine Verbindung zum Server', icon: Icons.wifi_off);
     } else {
       final errorText = e.response?.data != null && e.response!.data!.toString().trim().isNotEmpty
           ? e.response!.data.toString()

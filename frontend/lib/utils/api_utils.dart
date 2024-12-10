@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:dio/dio.dart';
+import 'package:paper_cv/config/system.dart';
 import 'package:paper_cv/utils/file_picker_models.dart';
 
 typedef JsonObject = Map<String, dynamic>;
@@ -11,6 +12,15 @@ class RestApi {
 
   RestApi({required String baseUrl}) {
     _client = Dio(BaseOptions(connectTimeout: Duration(seconds: 3), receiveTimeout: Duration(minutes: 1)));
+    _client.interceptors.add(
+      InterceptorsWrapper(
+        onError: (error, handler) {
+          logException(error, StackTrace.current);
+          showException(error);
+          handler.next(error);
+        },
+      ),
+    );
     _baseUrl = baseUrl;
   }
 
@@ -20,7 +30,7 @@ class RestApi {
       'file': multiPartFile,
     });
     try {
-      return _client.post<T>(
+      return await _client.post<T>(
         _baseUrl + route,
         cancelToken: cancelToken,
         data: formData,
@@ -30,7 +40,7 @@ class RestApi {
           },
         ),
       );
-    } on DioException catch (e) {
+    } on DioException catch (_) {
       if ((cancelToken?.isCancelled ?? false) && cancelToken!.cancelError != null) {
         throw cancelToken.cancelError!;
       } else {
