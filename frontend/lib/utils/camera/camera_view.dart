@@ -23,6 +23,7 @@ class _CameraViewState extends State<_CameraView> {
   bool _takingPicture = false;
   bool _swappingCamera = false;
   bool _pickingFromGallery = false;
+  int _numberAvailableDirections = 0;
 
   CameraLensDirection get oppositeLensDirection =>
       _currentLensDirection == CameraLensDirection.front ? CameraLensDirection.back : CameraLensDirection.front;
@@ -32,11 +33,12 @@ class _CameraViewState extends State<_CameraView> {
   Future<CameraDescription?> _getDesiredCamera(CameraLensDirection direction) async {
     _currentLensDirection = direction;
     final List<CameraDescription> cameras = await availableCameras();
+    _numberAvailableDirections = cameras.map((camera) => camera.lensDirection).toSet().length;
     return cameras.where((element) => element.lensDirection == direction).firstOrNull ?? cameras.firstOrNull;
   }
 
-  Future<void> _initCameraController({bool withOppositeLensDirection = false}) async {
-    final camera = await _getDesiredCamera(withOppositeLensDirection ? oppositeLensDirection : _currentLensDirection);
+  Future<void> _initCameraController({bool useOppositeLensDirection = false}) async {
+    final camera = await _getDesiredCamera(useOppositeLensDirection ? oppositeLensDirection : _currentLensDirection);
     if (camera == null) return;
     _cameraController = CameraController(
       camera,
@@ -53,8 +55,8 @@ class _CameraViewState extends State<_CameraView> {
     } on CameraException catch (_) {
       await _disableCameraController();
       _hasPermissionError = true;
-      setState(() {});
     }
+    if (mounted) setState(() {});
   }
 
   Future<void> _disableCameraController() async {
@@ -104,7 +106,6 @@ class _CameraViewState extends State<_CameraView> {
         }
         if (images.isEmpty) {
           await _initCameraController();
-          if (mounted) setState(() {});
         } else {
           if (mounted) Navigator.of(context).pop<List<SelectedFile>>(images);
         }
@@ -138,8 +139,13 @@ class _CameraViewState extends State<_CameraView> {
       final XFile image = await _cameraController!.takePicture();
 
       // rotate image
-      final orientation = await OrientationHelper.getCameraOrientation();
-      final rotationAngle = OrientationHelper.getRotationAngle(orientation);
+      late final int rotationAngle;
+      try {
+        final orientation = await OrientationHelper.getCameraOrientation();
+        rotationAngle = OrientationHelper.getRotationAngle(orientation);
+      } catch (_) {
+        rotationAngle = 0;
+      }
       late final img.Image rotatedImage;
       final imageBytes = await image.readAsBytes();
       final originalImage = img.decodeImage(imageBytes)!;
@@ -188,7 +194,7 @@ class _CameraViewState extends State<_CameraView> {
       _swappingCamera = true;
     });
     try {
-      await _initCameraController(withOppositeLensDirection: true);
+      await _initCameraController(useOppositeLensDirection: true);
     } finally {
       _swappingCamera = false;
     }
@@ -216,51 +222,57 @@ class _CameraViewState extends State<_CameraView> {
   Widget build(BuildContext context) {
     List<Widget> buildActions() => [
           SizedBox(
-            width: 48,
+            height: AppSizes.kComponentHeight + AppSizes.kGap,
+            width: AppSizes.kComponentHeight + AppSizes.kGap,
             child: widget.allowGalleryPictures
                 ? IconButton(
                     tooltip: 'Galerie öffnen',
+                    padding: EdgeInsets.zero,
+                    icon: Icon(
+                      Icons.perm_media,
+                      color: Colors.white,
+                      size: AppSizes.kIconButtonSize,
+                    ),
                     onPressed: _pickFromGallery,
-                    icon: const Icon(Icons.perm_media, size: 32, color: Colors.white),
                   )
-                : const SizedBox(),
+                : null,
           ),
           !_hasPermissionError
               ? _takingPicture
                   ? const Center(child: CircularProgressIndicator(color: Colors.white))
-                  : GestureDetector(
-                      onTap: _takePicture,
-                      child: Container(
-                        padding: const EdgeInsets.all(4),
-                        decoration: const ShapeDecoration(
-                          shape: CircleBorder(
-                            side: BorderSide(width: 2, color: Colors.white),
-                          ),
-                        ),
-                        child: Container(
-                          width: 42,
-                          height: 42,
-                          decoration: const ShapeDecoration(
+                  : Container(
+                      padding: const EdgeInsets.all(AppSizes.kMinInputGap),
+                      decoration: const ShapeDecoration(shape: CircleBorder(side: BorderSide(color: Colors.white))),
+                      child: SizedBox(
+                        height: AppSizes.kComponentHeight + AppSizes.kGap,
+                        width: AppSizes.kComponentHeight + AppSizes.kGap,
+                        child: IconButton(
+                          padding: EdgeInsets.zero,
+                          icon: Icon(
+                            Icons.camera_alt,
                             color: Colors.white,
-                            shape: CircleBorder(),
+                            size: AppSizes.kIconButtonSize,
                           ),
+                          onPressed: _takePicture,
                         ),
                       ),
                     )
-              : const SizedBox(),
+              : SizedBox(),
           SizedBox(
-            width: 48,
-            child: _hasPermissionError
-                ? const SizedBox()
-                : IconButton(
+            height: AppSizes.kComponentHeight + AppSizes.kGap,
+            width: AppSizes.kComponentHeight + AppSizes.kGap,
+            child: !_hasPermissionError && _numberAvailableDirections > 1
+                ? IconButton(
                     tooltip: 'Kamera wechseln',
-                    onPressed: _cameraController?.value.isTakingPicture ?? true
-                        ? null
-                        : () async {
-                            await _swapCamera();
-                          },
-                    icon: const Icon(Icons.cameraswitch, size: 32, color: Colors.white),
-                  ),
+                    padding: EdgeInsets.zero,
+                    icon: Icon(
+                      Icons.cameraswitch,
+                      color: Colors.white,
+                      size: AppSizes.kIconButtonSize,
+                    ),
+                    onPressed: _cameraController?.value.isTakingPicture ?? true ? null : _swapCamera,
+                  )
+                : null,
           ),
         ];
 
@@ -330,40 +342,49 @@ class _CameraViewState extends State<_CameraView> {
                   ],
                 ),
               Positioned(
-                top: 16,
-                left: 16,
+                top: AppSizes.kGap,
+                left: AppSizes.kGap,
                 child: SafeArea(
                   child: Container(
-                    padding: const EdgeInsets.all(4),
+                    padding: const EdgeInsets.all(AppSizes.kSmallGap),
                     decoration: BoxDecoration(
                       color: Colors.black.withOpacity(.3),
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: BorderRadius.circular(AppSizes.kComponentHeight + AppSizes.kGap),
                     ),
-                    child: IconButton(
-                      tooltip: 'Zurück',
-                      onPressed: () {
-                        if (!_isPerformingAction) Navigator.of(context).pop();
-                      },
-                      icon: const Icon(Icons.chevron_left, size: 32, color: Colors.white),
+                    child: SizedBox(
+                      height: AppSizes.kComponentHeight + AppSizes.kGap,
+                      width: AppSizes.kComponentHeight + AppSizes.kGap,
+                      child: IconButton(
+                        padding: EdgeInsets.zero,
+                        tooltip: 'Zurück',
+                        onPressed: () {
+                          if (!_isPerformingAction) Navigator.of(context).pop();
+                        },
+                        icon: const Icon(
+                          Icons.chevron_left,
+                          size: AppSizes.kIconButtonSize,
+                          color: Colors.white,
+                        ),
+                      ),
                     ),
                   ),
                 ),
               ),
               Positioned(
-                left: orientation == Orientation.portrait ? 16 : null,
-                top: orientation == Orientation.portrait ? null : 16,
-                right: 16,
-                bottom: 16,
+                left: orientation == Orientation.portrait ? AppSizes.kGap : null,
+                top: orientation == Orientation.portrait ? null : AppSizes.kGap,
+                right: AppSizes.kGap,
+                bottom: AppSizes.kGap,
                 child: SafeArea(
                   child: Container(
-                    padding: const EdgeInsets.all(8),
+                    padding: const EdgeInsets.all(AppSizes.kSmallGap),
                     decoration: BoxDecoration(
                       color: Colors.black.withOpacity(.3),
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: BorderRadius.circular(AppSizes.kComponentHeight + AppSizes.kGap),
                     ),
                     child: SizedBox(
-                      height: orientation == Orientation.portrait ? 66 : null,
-                      width: orientation == Orientation.portrait ? null : 66,
+                      height: orientation == Orientation.portrait ? AppSizes.kComponentHeight + AppSizes.kGap : null,
+                      width: orientation == Orientation.portrait ? null : AppSizes.kComponentHeight + AppSizes.kGap,
                       child: Flex(
                         direction: orientation == Orientation.portrait ? Axis.horizontal : Axis.vertical,
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,

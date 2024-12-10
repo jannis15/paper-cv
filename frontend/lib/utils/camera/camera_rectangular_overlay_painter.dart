@@ -11,27 +11,31 @@ class CameraRectangularOverlayPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final double overlayHeight = size.height - (cameraFeedOverlayMargin * 2);
-    final double overlayWidth = overlayHeight * (1 / aspectRatio);
-    final Point topLeft = Point((size.width / 2) - (overlayWidth / 2), (size.height / 2) - (overlayHeight / 2));
+    final overlayPaint = Paint()
+      ..color = Colors.black.withOpacity(0.5)
+      ..style = PaintingStyle.fill;
 
-    canvas.drawPath(
-      Path.combine(
-        PathOperation.difference,
-        Path()..addRect(Rect.fromLTWH(0, 0, size.width, size.height)),
-        Path()..addRect(Rect.fromLTWH(topLeft.x as double, topLeft.y as double, overlayWidth, overlayHeight)),
-      ),
-      Paint()..color = Colors.black.withOpacity(.5),
-    );
-
-    final Paint borderPaint = Paint()
+    final borderPaint = Paint()
       ..color = Colors.white
       ..strokeWidth = 1
       ..style = PaintingStyle.stroke;
 
-    final Rect holeRect = Rect.fromLTWH(topLeft.x as double, topLeft.y as double, overlayWidth, overlayHeight);
+    final overlayHeight = size.height - (cameraFeedOverlayMargin * 2);
+    final overlayWidth = overlayHeight * (1 / aspectRatio);
 
-    canvas.drawRect(holeRect, borderPaint);
+    final topLeft = Offset(
+      (size.width / 2) - (overlayWidth / 2),
+      (size.height / 2) - (overlayHeight / 2),
+    );
+
+    final fullScreenRect = Rect.fromLTWH(0, 0, size.width, size.height);
+    canvas.drawRect(fullScreenRect, overlayPaint);
+
+    final overlayRect = Rect.fromLTWH(topLeft.dx, topLeft.dy, overlayWidth, overlayHeight);
+    final clearPaint = Paint()..blendMode = BlendMode.clear;
+    canvas.drawRect(overlayRect, clearPaint);
+
+    canvas.drawRect(overlayRect, borderPaint);
   }
 
   @override

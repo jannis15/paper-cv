@@ -19,23 +19,21 @@ class FloorIconButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Tooltip(
-      message: tooltip ?? '',
-      child: IconButton(
-        onPressed: onPressed,
-        icon: Icon(
-          iconData,
-          size: AppSizes.kMainIconSize,
-          color: foregroundColor ?? Theme.of(context).colorScheme.onSurfaceVariant,
-        ),
-        style: ButtonStyle(
-          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-          visualDensity: VisualDensity.compact,
-          padding: WidgetStatePropertyAll(EdgeInsets.zero),
-          elevation: WidgetStatePropertyAll(0),
-          foregroundColor: WidgetStatePropertyAll(foregroundColor ?? Theme.of(context).colorScheme.onSurfaceVariant),
-          backgroundColor: WidgetStatePropertyAll(backgroundColor ?? Theme.of(context).colorScheme.surfaceContainerHighest),
-        ),
+    return IconButton(
+      tooltip: tooltip,
+      onPressed: onPressed,
+      icon: Icon(
+        iconData,
+        size: AppSizes.kMainIconSize,
+        color: foregroundColor ?? Theme.of(context).colorScheme.onSurfaceVariant,
+      ),
+      style: ButtonStyle(
+        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        visualDensity: VisualDensity.compact,
+        padding: WidgetStatePropertyAll(EdgeInsets.zero),
+        elevation: WidgetStatePropertyAll(0),
+        foregroundColor: WidgetStatePropertyAll(foregroundColor ?? Theme.of(context).colorScheme.onSurfaceVariant),
+        backgroundColor: WidgetStatePropertyAll(backgroundColor ?? Theme.of(context).colorScheme.surfaceContainerHighest),
       ),
     );
   }

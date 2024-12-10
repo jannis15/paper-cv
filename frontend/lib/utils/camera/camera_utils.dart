@@ -1,6 +1,10 @@
 import 'dart:math';
 
 import 'package:camera/camera.dart';
+import 'package:flutter/foundation.dart';
+import 'package:paper_cv/components/floor_app_bar.dart';
+import 'package:paper_cv/components/floor_icon_button.dart';
+import 'package:paper_cv/config/config.dart';
 import 'package:paper_cv/utils/alert_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
