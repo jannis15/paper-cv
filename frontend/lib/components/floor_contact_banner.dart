@@ -77,6 +77,7 @@ class _FloorContactBannerState extends State<FloorContactBanner> {
               top: 0,
               right: 0,
               child: IconButton(
+                tooltip: 'Schließen',
                 icon: Icon(Icons.close),
                 onPressed: widget.onCloseBanner,
               ),
