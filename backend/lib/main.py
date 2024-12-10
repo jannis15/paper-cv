@@ -1,11 +1,15 @@
-from fastapi import FastAPI, UploadFile
+from fastapi import FastAPI, UploadFile, Request
 from lib.floor_cv_controller import FloorCvController
 from dotenv import load_dotenv
 from google.cloud import vision
 from fastapi.middleware.cors import CORSMiddleware
+from slowapi import Limiter
+from slowapi.util import get_remote_address
 
 load_dotenv()
 app = FastAPI()
+limiter = Limiter(key_func=get_remote_address)
+app.state.limiter = limiter
 client = vision.ImageAnnotatorClient()
 
 origins = [
@@ -22,7 +26,8 @@ app.add_middleware(
 
 
 @app.post('/scan')
-async def scan_file(file: UploadFile):
+@limiter.limit('6/minute')
+async def scan_file(request: Request, file: UploadFile):
     file_bytes = await file.read()
     import os
     file_path = os.path.join('outputs', 'scan.jpg')
