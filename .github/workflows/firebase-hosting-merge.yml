@@ -3,31 +3,11 @@ on:
   push:
     branches:
       - main
-
 jobs:
-  build_and_deploy:
+  deploy:
     runs-on: ubuntu-latest
     steps:
-      # Checkout the code
       - uses: actions/checkout@v4
-
-      # Ensure Node.js and npm are installed
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 16 # Adjust this based on your project's requirements
-
-      # Install dependencies (generate package-lock.json if missing)
-      - name: Install dependencies
-        run: |
-          if [ ! -f package-lock.json ]; then
-            echo "package-lock.json missing. Running npm install to generate it..."
-            npm install
-          else
-            npm ci
-          fi
-
-      # Deploy to Firebase Hosting
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
