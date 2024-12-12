@@ -36,23 +36,29 @@ class _CameraConfirmViewState extends State<_CameraConfirmView> {
     setState(() {});
     bool result = false;
     try {
-      if (await Gal.requestAccess(toAlbum: true)) {
-        try {
-          await Gal.putImageBytes(_imageBytes);
-          _saveImageState = _SaveImageState.saved;
-          result = true;
-        } on GalException catch (e) {
-          if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${e.type.code}: ${e.type.message}')));
-          _saveImageState = _SaveImageState.savable;
-        }
+      if (kIsWeb) {
+        final now = DateTime.now();
+        accessFile(SelectedFile(filename: 'download.jpg', data: _imageBytes, createdAt: now, modifiedAt: now));
+        _saveImageState = _SaveImageState.saved;
       } else {
-        _saveImageState = _SaveImageState.savable;
-        if (mounted) await _showAppSettingsDialog();
+        if (await Gal.requestAccess(toAlbum: true)) {
+          try {
+            await Gal.putImageBytes(_imageBytes);
+            _saveImageState = _SaveImageState.saved;
+            result = true;
+          } on GalException catch (e) {
+            if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${e.type.code}: ${e.type.message}')));
+            _saveImageState = _SaveImageState.savable;
+          }
+        } else {
+          _saveImageState = _SaveImageState.savable;
+          if (mounted) await _showAppSettingsDialog();
+        }
       }
     } catch (_) {
       _saveImageState = _SaveImageState.savable;
     }
-    setState(() {});
+    if (mounted) setState(() {});
     return result;
   }
 

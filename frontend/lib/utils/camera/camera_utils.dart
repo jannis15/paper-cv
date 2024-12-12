@@ -1,9 +1,5 @@
-import 'dart:math';
-
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
-import 'package:paper_cv/components/floor_app_bar.dart';
-import 'package:paper_cv/components/floor_icon_button.dart';
 import 'package:paper_cv/config/config.dart';
 import 'package:paper_cv/utils/alert_dialog.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +11,7 @@ import 'package:paper_cv/utils/list_utils.dart';
 import 'package:paper_cv/utils/orientation_helper.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
+import 'package:paper_cv/utils/unimplemented_access_file.dart' if (dart.library.html) 'package:paper_cv/utils/web_access_file.dart';
 import 'package:image/image.dart' as img;
 
 part 'camera_confirm_view.dart';
