@@ -4,7 +4,7 @@ import 'package:paper_cv/utils/api_utils.dart';
 import 'package:paper_cv/utils/file_picker_models.dart';
 
 class FloorCvApi extends RestApi {
-  static final FloorCvApi _instance = FloorCvApi(baseUrl: 'http://192.168.178.46:443');
+  static final FloorCvApi _instance = FloorCvApi(baseUrl: 'https://floor-cv-670589174841.europe-west1.run.app');
 
   FloorCvApi({required super.baseUrl});
 
