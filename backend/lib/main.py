@@ -43,6 +43,7 @@ async def validate_file(request: Request, file: UploadFile = Depends()) -> bytes
 
 origins = [
     "http://localhost:53767",
+    "https://floor-cv.web.app",
 ]
 
 app.add_middleware(
