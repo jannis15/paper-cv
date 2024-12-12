@@ -1,11 +1,10 @@
 import 'package:dio/dio.dart';
 import 'package:paper_cv/data/models/floor_dto_models.dart';
 import 'package:paper_cv/utils/api_utils.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:paper_cv/utils/file_picker_models.dart';
 
 class FloorCvApi extends RestApi {
-  static final FloorCvApi _instance = FloorCvApi(baseUrl: dotenv.get('PAPER_CV_SCHEME') + dotenv.get('PAPER_CV_DOMAIN'));
+  static final FloorCvApi _instance = FloorCvApi(baseUrl: 'http://192.168.178.46:443');
 
   FloorCvApi({required super.baseUrl});
 
