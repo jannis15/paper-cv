@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:paper_cv/config/config.dart';
@@ -11,6 +13,7 @@ import 'package:paper_cv/utils/list_utils.dart';
 import 'package:paper_cv/utils/orientation_helper.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
+import 'mobile_camera_rectangular_overlay_painter.dart' if (dart.library.html) 'web_camera_rectangular_overlay_painter.dart';
 import 'package:paper_cv/utils/unimplemented_access_file.dart' if (dart.library.html) 'package:paper_cv/utils/web_access_file.dart';
 import 'package:image/image.dart' as img;
 
