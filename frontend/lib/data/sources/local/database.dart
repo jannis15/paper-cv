@@ -35,6 +35,7 @@ class FloorDatabase extends _$FloorDatabase with DbMixin {
         title: row.title,
         createdAt: row.createdAt,
         modifiedAt: row.modifiedAt,
+        isExample: row.isExample,
       );
 
   SelectedFile _mapToSelectedFile(TbFileData row) => SelectedFile(
@@ -123,7 +124,7 @@ class FloorDatabase extends _$FloorDatabase with DbMixin {
     await query.go();
   }
 
-  Future<void> saveDocumentForm(DocumentForm form) async {
+  Future<void> saveDocumentForm(DocumentForm form, {bool? isExample}) async {
     await transaction(
       () async {
         final DateTime now = DateTime.now();
@@ -135,6 +136,7 @@ class FloorDatabase extends _$FloorDatabase with DbMixin {
             notes: Value(form.notes),
             createdAt: Value(form.createdAt ?? now),
             modifiedAt: Value(now),
+            isExample: Value.absentIfNull(isExample),
           ),
         );
         final List<String> existingfileIds = [

@@ -14,6 +14,8 @@ class TbDocument extends Table {
 
   DateTimeColumn get modifiedAt => dateTime()();
 
+  BoolColumn get isExample => boolean().withDefault(Constant(false))();
+
   @override
   Set<Column> get primaryKey => {uuid};
 }

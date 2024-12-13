@@ -20,6 +20,7 @@ mixin _$DocumentPreviewDto {
   String get title => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
   DateTime get modifiedAt => throw _privateConstructorUsedError;
+  bool get isExample => throw _privateConstructorUsedError;
 
   /// Create a copy of DocumentPreviewDto
   /// with the given fields replaced by the non-null parameter values.
@@ -35,7 +36,11 @@ abstract class $DocumentPreviewDtoCopyWith<$Res> {
       _$DocumentPreviewDtoCopyWithImpl<$Res, DocumentPreviewDto>;
   @useResult
   $Res call(
-      {String? uuid, String title, DateTime createdAt, DateTime modifiedAt});
+      {String? uuid,
+      String title,
+      DateTime createdAt,
+      DateTime modifiedAt,
+      bool isExample});
 }
 
 /// @nodoc
@@ -57,6 +62,7 @@ class _$DocumentPreviewDtoCopyWithImpl<$Res, $Val extends DocumentPreviewDto>
     Object? title = null,
     Object? createdAt = null,
     Object? modifiedAt = null,
+    Object? isExample = null,
   }) {
     return _then(_value.copyWith(
       uuid: freezed == uuid
@@ -75,6 +81,10 @@ class _$DocumentPreviewDtoCopyWithImpl<$Res, $Val extends DocumentPreviewDto>
           ? _value.modifiedAt
           : modifiedAt // ignore: cast_nullable_to_non_nullable
               as DateTime,
+      isExample: null == isExample
+          ? _value.isExample
+          : isExample // ignore: cast_nullable_to_non_nullable
+              as bool,
     ) as $Val);
   }
 }
@@ -88,7 +98,11 @@ abstract class _$$DocumentPreviewDtoImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {String? uuid, String title, DateTime createdAt, DateTime modifiedAt});
+      {String? uuid,
+      String title,
+      DateTime createdAt,
+      DateTime modifiedAt,
+      bool isExample});
 }
 
 /// @nodoc
@@ -108,6 +122,7 @@ class __$$DocumentPreviewDtoImplCopyWithImpl<$Res>
     Object? title = null,
     Object? createdAt = null,
     Object? modifiedAt = null,
+    Object? isExample = null,
   }) {
     return _then(_$DocumentPreviewDtoImpl(
       uuid: freezed == uuid
@@ -126,6 +141,10 @@ class __$$DocumentPreviewDtoImplCopyWithImpl<$Res>
           ? _value.modifiedAt
           : modifiedAt // ignore: cast_nullable_to_non_nullable
               as DateTime,
+      isExample: null == isExample
+          ? _value.isExample
+          : isExample // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -137,7 +156,8 @@ class _$DocumentPreviewDtoImpl implements _DocumentPreviewDto {
       {required this.uuid,
       required this.title,
       required this.createdAt,
-      required this.modifiedAt});
+      required this.modifiedAt,
+      required this.isExample});
 
   @override
   final String? uuid;
@@ -147,10 +167,12 @@ class _$DocumentPreviewDtoImpl implements _DocumentPreviewDto {
   final DateTime createdAt;
   @override
   final DateTime modifiedAt;
+  @override
+  final bool isExample;
 
   @override
   String toString() {
-    return 'DocumentPreviewDto(uuid: $uuid, title: $title, createdAt: $createdAt, modifiedAt: $modifiedAt)';
+    return 'DocumentPreviewDto(uuid: $uuid, title: $title, createdAt: $createdAt, modifiedAt: $modifiedAt, isExample: $isExample)';
   }
 
   @override
@@ -163,12 +185,14 @@ class _$DocumentPreviewDtoImpl implements _DocumentPreviewDto {
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt) &&
             (identical(other.modifiedAt, modifiedAt) ||
-                other.modifiedAt == modifiedAt));
+                other.modifiedAt == modifiedAt) &&
+            (identical(other.isExample, isExample) ||
+                other.isExample == isExample));
   }
 
   @override
   int get hashCode =>
-      Object.hash(runtimeType, uuid, title, createdAt, modifiedAt);
+      Object.hash(runtimeType, uuid, title, createdAt, modifiedAt, isExample);
 
   /// Create a copy of DocumentPreviewDto
   /// with the given fields replaced by the non-null parameter values.
@@ -185,7 +209,8 @@ abstract class _DocumentPreviewDto implements DocumentPreviewDto {
       {required final String? uuid,
       required final String title,
       required final DateTime createdAt,
-      required final DateTime modifiedAt}) = _$DocumentPreviewDtoImpl;
+      required final DateTime modifiedAt,
+      required final bool isExample}) = _$DocumentPreviewDtoImpl;
 
   @override
   String? get uuid;
@@ -195,6 +220,8 @@ abstract class _DocumentPreviewDto implements DocumentPreviewDto {
   DateTime get createdAt;
   @override
   DateTime get modifiedAt;
+  @override
+  bool get isExample;
 
   /// Create a copy of DocumentPreviewDto
   /// with the given fields replaced by the non-null parameter values.

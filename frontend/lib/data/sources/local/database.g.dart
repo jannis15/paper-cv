@@ -38,9 +38,19 @@ class $TbDocumentTable extends TbDocument
   late final GeneratedColumn<DateTime> modifiedAt = GeneratedColumn<DateTime>(
       'modified_at', aliasedName, false,
       type: DriftSqlType.dateTime, requiredDuringInsert: true);
+  static const VerificationMeta _isExampleMeta =
+      const VerificationMeta('isExample');
+  @override
+  late final GeneratedColumn<bool> isExample = GeneratedColumn<bool>(
+      'is_example', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('CHECK ("is_example" IN (0, 1))'),
+      defaultValue: Constant(false));
   @override
   List<GeneratedColumn> get $columns =>
-      [uuid, title, notes, createdAt, modifiedAt];
+      [uuid, title, notes, createdAt, modifiedAt, isExample];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -81,6 +91,10 @@ class $TbDocumentTable extends TbDocument
     } else if (isInserting) {
       context.missing(_modifiedAtMeta);
     }
+    if (data.containsKey('is_example')) {
+      context.handle(_isExampleMeta,
+          isExample.isAcceptableOrUnknown(data['is_example']!, _isExampleMeta));
+    }
     return context;
   }
 
@@ -100,6 +114,8 @@ class $TbDocumentTable extends TbDocument
           .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
       modifiedAt: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}modified_at'])!,
+      isExample: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}is_example'])!,
     );
   }
 
@@ -115,12 +131,14 @@ class TbDocumentData extends DataClass implements Insertable<TbDocumentData> {
   final String notes;
   final DateTime createdAt;
   final DateTime modifiedAt;
+  final bool isExample;
   const TbDocumentData(
       {required this.uuid,
       required this.title,
       required this.notes,
       required this.createdAt,
-      required this.modifiedAt});
+      required this.modifiedAt,
+      required this.isExample});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -129,6 +147,7 @@ class TbDocumentData extends DataClass implements Insertable<TbDocumentData> {
     map['notes'] = Variable<String>(notes);
     map['created_at'] = Variable<DateTime>(createdAt);
     map['modified_at'] = Variable<DateTime>(modifiedAt);
+    map['is_example'] = Variable<bool>(isExample);
     return map;
   }
 
@@ -139,6 +158,7 @@ class TbDocumentData extends DataClass implements Insertable<TbDocumentData> {
       notes: Value(notes),
       createdAt: Value(createdAt),
       modifiedAt: Value(modifiedAt),
+      isExample: Value(isExample),
     );
   }
 
@@ -151,6 +171,7 @@ class TbDocumentData extends DataClass implements Insertable<TbDocumentData> {
       notes: serializer.fromJson<String>(json['notes']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       modifiedAt: serializer.fromJson<DateTime>(json['modifiedAt']),
+      isExample: serializer.fromJson<bool>(json['isExample']),
     );
   }
   @override
@@ -162,6 +183,7 @@ class TbDocumentData extends DataClass implements Insertable<TbDocumentData> {
       'notes': serializer.toJson<String>(notes),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'modifiedAt': serializer.toJson<DateTime>(modifiedAt),
+      'isExample': serializer.toJson<bool>(isExample),
     };
   }
 
@@ -170,13 +192,15 @@ class TbDocumentData extends DataClass implements Insertable<TbDocumentData> {
           String? title,
           String? notes,
           DateTime? createdAt,
-          DateTime? modifiedAt}) =>
+          DateTime? modifiedAt,
+          bool? isExample}) =>
       TbDocumentData(
         uuid: uuid ?? this.uuid,
         title: title ?? this.title,
         notes: notes ?? this.notes,
         createdAt: createdAt ?? this.createdAt,
         modifiedAt: modifiedAt ?? this.modifiedAt,
+        isExample: isExample ?? this.isExample,
       );
   TbDocumentData copyWithCompanion(TbDocumentCompanion data) {
     return TbDocumentData(
@@ -186,6 +210,7 @@ class TbDocumentData extends DataClass implements Insertable<TbDocumentData> {
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       modifiedAt:
           data.modifiedAt.present ? data.modifiedAt.value : this.modifiedAt,
+      isExample: data.isExample.present ? data.isExample.value : this.isExample,
     );
   }
 
@@ -196,13 +221,15 @@ class TbDocumentData extends DataClass implements Insertable<TbDocumentData> {
           ..write('title: $title, ')
           ..write('notes: $notes, ')
           ..write('createdAt: $createdAt, ')
-          ..write('modifiedAt: $modifiedAt')
+          ..write('modifiedAt: $modifiedAt, ')
+          ..write('isExample: $isExample')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(uuid, title, notes, createdAt, modifiedAt);
+  int get hashCode =>
+      Object.hash(uuid, title, notes, createdAt, modifiedAt, isExample);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -211,7 +238,8 @@ class TbDocumentData extends DataClass implements Insertable<TbDocumentData> {
           other.title == this.title &&
           other.notes == this.notes &&
           other.createdAt == this.createdAt &&
-          other.modifiedAt == this.modifiedAt);
+          other.modifiedAt == this.modifiedAt &&
+          other.isExample == this.isExample);
 }
 
 class TbDocumentCompanion extends UpdateCompanion<TbDocumentData> {
@@ -220,6 +248,7 @@ class TbDocumentCompanion extends UpdateCompanion<TbDocumentData> {
   final Value<String> notes;
   final Value<DateTime> createdAt;
   final Value<DateTime> modifiedAt;
+  final Value<bool> isExample;
   final Value<int> rowid;
   const TbDocumentCompanion({
     this.uuid = const Value.absent(),
@@ -227,6 +256,7 @@ class TbDocumentCompanion extends UpdateCompanion<TbDocumentData> {
     this.notes = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.modifiedAt = const Value.absent(),
+    this.isExample = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   TbDocumentCompanion.insert({
@@ -235,6 +265,7 @@ class TbDocumentCompanion extends UpdateCompanion<TbDocumentData> {
     required String notes,
     required DateTime createdAt,
     required DateTime modifiedAt,
+    this.isExample = const Value.absent(),
     this.rowid = const Value.absent(),
   })  : title = Value(title),
         notes = Value(notes),
@@ -246,6 +277,7 @@ class TbDocumentCompanion extends UpdateCompanion<TbDocumentData> {
     Expression<String>? notes,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? modifiedAt,
+    Expression<bool>? isExample,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -254,6 +286,7 @@ class TbDocumentCompanion extends UpdateCompanion<TbDocumentData> {
       if (notes != null) 'notes': notes,
       if (createdAt != null) 'created_at': createdAt,
       if (modifiedAt != null) 'modified_at': modifiedAt,
+      if (isExample != null) 'is_example': isExample,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -264,6 +297,7 @@ class TbDocumentCompanion extends UpdateCompanion<TbDocumentData> {
       Value<String>? notes,
       Value<DateTime>? createdAt,
       Value<DateTime>? modifiedAt,
+      Value<bool>? isExample,
       Value<int>? rowid}) {
     return TbDocumentCompanion(
       uuid: uuid ?? this.uuid,
@@ -271,6 +305,7 @@ class TbDocumentCompanion extends UpdateCompanion<TbDocumentData> {
       notes: notes ?? this.notes,
       createdAt: createdAt ?? this.createdAt,
       modifiedAt: modifiedAt ?? this.modifiedAt,
+      isExample: isExample ?? this.isExample,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -293,6 +328,9 @@ class TbDocumentCompanion extends UpdateCompanion<TbDocumentData> {
     if (modifiedAt.present) {
       map['modified_at'] = Variable<DateTime>(modifiedAt.value);
     }
+    if (isExample.present) {
+      map['is_example'] = Variable<bool>(isExample.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -307,6 +345,7 @@ class TbDocumentCompanion extends UpdateCompanion<TbDocumentData> {
           ..write('notes: $notes, ')
           ..write('createdAt: $createdAt, ')
           ..write('modifiedAt: $modifiedAt, ')
+          ..write('isExample: $isExample, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -757,6 +796,7 @@ typedef $$TbDocumentTableCreateCompanionBuilder = TbDocumentCompanion Function({
   required String notes,
   required DateTime createdAt,
   required DateTime modifiedAt,
+  Value<bool> isExample,
   Value<int> rowid,
 });
 typedef $$TbDocumentTableUpdateCompanionBuilder = TbDocumentCompanion Function({
@@ -765,6 +805,7 @@ typedef $$TbDocumentTableUpdateCompanionBuilder = TbDocumentCompanion Function({
   Value<String> notes,
   Value<DateTime> createdAt,
   Value<DateTime> modifiedAt,
+  Value<bool> isExample,
   Value<int> rowid,
 });
 
@@ -791,6 +832,9 @@ class $$TbDocumentTableFilterComposer
 
   ColumnFilters<DateTime> get modifiedAt => $composableBuilder(
       column: $table.modifiedAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get isExample => $composableBuilder(
+      column: $table.isExample, builder: (column) => ColumnFilters(column));
 }
 
 class $$TbDocumentTableOrderingComposer
@@ -816,6 +860,9 @@ class $$TbDocumentTableOrderingComposer
 
   ColumnOrderings<DateTime> get modifiedAt => $composableBuilder(
       column: $table.modifiedAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get isExample => $composableBuilder(
+      column: $table.isExample, builder: (column) => ColumnOrderings(column));
 }
 
 class $$TbDocumentTableAnnotationComposer
@@ -841,6 +888,9 @@ class $$TbDocumentTableAnnotationComposer
 
   GeneratedColumn<DateTime> get modifiedAt => $composableBuilder(
       column: $table.modifiedAt, builder: (column) => column);
+
+  GeneratedColumn<bool> get isExample =>
+      $composableBuilder(column: $table.isExample, builder: (column) => column);
 }
 
 class $$TbDocumentTableTableManager extends RootTableManager<
@@ -874,6 +924,7 @@ class $$TbDocumentTableTableManager extends RootTableManager<
             Value<String> notes = const Value.absent(),
             Value<DateTime> createdAt = const Value.absent(),
             Value<DateTime> modifiedAt = const Value.absent(),
+            Value<bool> isExample = const Value.absent(),
             Value<int> rowid = const Value.absent(),
           }) =>
               TbDocumentCompanion(
@@ -882,6 +933,7 @@ class $$TbDocumentTableTableManager extends RootTableManager<
             notes: notes,
             createdAt: createdAt,
             modifiedAt: modifiedAt,
+            isExample: isExample,
             rowid: rowid,
           ),
           createCompanionCallback: ({
@@ -890,6 +942,7 @@ class $$TbDocumentTableTableManager extends RootTableManager<
             required String notes,
             required DateTime createdAt,
             required DateTime modifiedAt,
+            Value<bool> isExample = const Value.absent(),
             Value<int> rowid = const Value.absent(),
           }) =>
               TbDocumentCompanion.insert(
@@ -898,6 +951,7 @@ class $$TbDocumentTableTableManager extends RootTableManager<
             notes: notes,
             createdAt: createdAt,
             modifiedAt: modifiedAt,
+            isExample: isExample,
             rowid: rowid,
           ),
           withReferenceMapper: (p0) => p0

@@ -134,7 +134,24 @@ class _FloorMainScreenState extends State<FloorMainScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(documentPreview.title.trim().isNotEmpty ? documentPreview.title : 'Gescanntes Dokument', style: textTheme.titleMedium),
+                    RowGap(
+                      gap: AppSizes.kSmallGap,
+                      crossAxisAlignment: CrossAxisAlignment.baseline,
+                      children: [
+                        Text(
+                          documentPreview.title.trim().isNotEmpty ? documentPreview.title : 'Gescanntes Dokument',
+                          style: textTheme.titleMedium,
+                        ),
+                        if (documentPreview.isExample)
+                          Container(
+                            padding: EdgeInsets.symmetric(horizontal: AppSizes.kSmallGap),
+                            decoration: ShapeDecoration(
+                              shape: StadiumBorder(side: BorderSide(color: colorScheme.outline)),
+                            ),
+                            child: Text('Beispiel', style: textTheme.titleMedium?.copyWith(color: colorScheme.outline)),
+                          ),
+                      ],
+                    ),
                     Timeago(
                       builder: (context, value) {
                         return Text(value, style: textTheme.titleMedium?.copyWith(color: colorScheme.outline));
