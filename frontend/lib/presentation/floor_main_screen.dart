@@ -8,6 +8,7 @@ import 'package:paper_cv/config/config.dart';
 import 'package:paper_cv/data/models/floor_dto_models.dart';
 import 'package:paper_cv/data/repositories/floor_repository.dart';
 import 'package:paper_cv/components/floor_contact_banner.dart';
+import 'package:paper_cv/presentation/floor_info_screen.dart';
 import 'package:paper_cv/presentation/floor_overview_screen.dart';
 import 'package:paper_cv/presentation/floor_settings_screen.dart';
 import 'package:paper_cv/utils/alert_dialog.dart';
@@ -66,6 +67,8 @@ class _FloorMainScreenState extends State<FloorMainScreen> {
   }
 
   String get _selectedText => '${_selectedDocuments.length} ${_selectedDocuments.length == 1 ? 'Dokument' : 'Dokumente'} ausgewählt';
+
+  void _seeInfo() async => showDialog(context: context, barrierLabel: 'ewfiji', builder: (_) => FloorInfoScreen());
 
   void _openOverviewScreen() async => await Navigator.of(context).push(
         PageRouteBuilder(
@@ -238,11 +241,26 @@ class _FloorMainScreenState extends State<FloorMainScreen> {
                       ),
                     ],
                   )
-                : FloatingActionButton.extended(
-                    heroTag: UniqueKey(),
-                    icon: Icon(Icons.post_add),
-                    label: Text('Erfassen'),
-                    onPressed: _openOverviewScreen,
+                : ColumnGap(
+                    gap: AppSizes.kGap,
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      FloatingActionButton.extended(
+                        heroTag: UniqueKey(),
+                        backgroundColor: colorScheme.surfaceContainer,
+                        foregroundColor: colorScheme.onSurface,
+                        onPressed: _seeInfo,
+                        icon: Icon(Icons.info),
+                        label: Text('Info'),
+                      ),
+                      FloatingActionButton.extended(
+                        heroTag: UniqueKey(),
+                        onPressed: _openOverviewScreen,
+                        icon: Icon(Icons.post_add),
+                        label: Text('Erfassen'),
+                      )
+                    ],
                   ),
         body: FloorLayoutBody(
           sideChildren: [
@@ -250,6 +268,11 @@ class _FloorMainScreenState extends State<FloorMainScreen> {
               text: 'Erfassen',
               iconData: Icons.post_add,
               onPressed: _openOverviewScreen,
+            ),
+            FloorTransparentButton(
+              text: 'Mehr erfahren',
+              iconData: Icons.info,
+              onPressed: _seeInfo,
             ),
           ],
           child: SingleChildScrollView(

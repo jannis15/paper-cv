@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:paper_cv/components/floor_card.dart';
 import 'package:paper_cv/config/config.dart';
+import 'package:paper_cv/utils/list_utils.dart';
 import 'package:paper_cv/utils/widget_utils.dart';
 
 class FloorLayoutBody extends StatefulWidget {
@@ -36,7 +37,8 @@ class _FloorLayoutBodyState extends State<FloorLayoutBody> {
                       width: 6 * AppSizes.kComponentHeight,
                       child: SingleChildScrollView(
                         padding: EdgeInsets.all(AppSizes.kGap),
-                        child: Column(
+                        child: ColumnGap(
+                          gap: AppSizes.kSmallGap,
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: widget.sideChildren,
                         ),
