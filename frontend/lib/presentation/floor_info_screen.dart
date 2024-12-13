@@ -29,7 +29,7 @@ class _FloorInfoScreenState extends State<FloorInfoScreen> {
                 textAlign: TextAlign.justify,
               ),
               Text(
-                'PaperCV ist eine App zur Digitalisierung von A4-Dokumenten. Mit Hilfe von Machine Learning und Handschrifterkennung können gescannte Dokumente analysiert und die Inhalte extrahiert werden. Das Ergebnis wird als neue PDF-Datei ausgegeben, die klar strukturiert und leicht weiterverwendbar ist.',
+                'PaperCV ist eine App zur Digitalisierung von A4-Dokumenten, die sich auf das Auslesen und Analysieren von Tabellen spezialisiert hat. Mit Hilfe von Machine Learning und Handschrifterkennung können Tabelleninhalte aus gescannten Dokumenten extrahiert und in einer neuen, klar strukturierten PDF-Datei gespeichert werden.',
                 textAlign: TextAlign.justify,
                 style: textTheme.bodyMedium,
               ),
