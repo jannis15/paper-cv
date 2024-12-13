@@ -13,7 +13,7 @@ extension Migration on FloorDatabase {
         onCreate: (migrator) async {
           await migrator.createAll();
           final now = DateTime.now();
-          final byteData = await rootBundle.load('example.jpg');
+          final byteData = await rootBundle.load('assets/example.jpg');
           final DocumentForm form = DocumentForm(
             title: 'Dokument',
             createdAt: now,
