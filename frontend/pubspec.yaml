@@ -44,6 +44,8 @@ dev_dependencies:
   json_serializable: ^6.8.0
   drift_dev: ^2.20.3
 flutter:
+  assets:
+    - assets/
   uses-material-design: true
   fonts:
     - family: Atkinson Hyperlegible
