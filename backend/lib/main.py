@@ -1,7 +1,6 @@
 from fastapi import FastAPI, UploadFile, Request, HTTPException, Depends
 from fastapi.responses import JSONResponse
 from lib.floor_cv_controller import FloorCvController
-from dotenv import load_dotenv
 from google.cloud import vision
 from fastapi.middleware.cors import CORSMiddleware
 from slowapi import Limiter
@@ -9,8 +8,8 @@ from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 from PIL import Image
 import io
+import os
 
-load_dotenv()
 app = FastAPI()
 limiter = Limiter(key_func=get_remote_address)
 app.state.limiter = limiter
@@ -79,5 +78,5 @@ async def scan_file(request: Request, file: UploadFile):
 
 if __name__ == '__main__':
     import uvicorn
-
-    uvicorn.run(app, host='0.0.0.0', port=443)
+    port = int(os.getenv('PORT', 8080))
+    uvicorn.run(app, host="0.0.0.0", port=port)
