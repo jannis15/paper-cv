@@ -1,5 +1,7 @@
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:paper_cv/config/system.dart';
 import 'package:paper_cv/config/text_theme.dart';
+import 'package:paper_cv/package_info.dart';
 import 'package:paper_cv/presentation/floor_main_screen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +11,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  packageInfo = await PackageInfo.fromPlatform();
   FlutterError.onError = (details) {
     if (details.exception.toString().contains('overflowed')) return;
     FlutterError.presentError(details);

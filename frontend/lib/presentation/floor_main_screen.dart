@@ -8,6 +8,7 @@ import 'package:paper_cv/config/config.dart';
 import 'package:paper_cv/data/models/floor_dto_models.dart';
 import 'package:paper_cv/data/repositories/floor_repository.dart';
 import 'package:paper_cv/components/floor_contact_banner.dart';
+import 'package:paper_cv/package_info.dart';
 import 'package:paper_cv/presentation/floor_info_screen.dart';
 import 'package:paper_cv/presentation/floor_overview_screen.dart';
 import 'package:paper_cv/presentation/floor_settings_screen.dart';
@@ -213,7 +214,19 @@ class _FloorMainScreenState extends State<FloorMainScreen> {
       child: Scaffold(
         backgroundColor: useDesktopLayout ? colorScheme.surfaceContainer : null,
         appBar: FloorAppBar(
-          title: Text(_isSelectionMode && !useDesktopLayout ? _selectedText : 'PaperCV'),
+          title: _isSelectionMode && !useDesktopLayout
+              ? Text(_selectedText)
+              : RowGap(
+                  gap: AppSizes.kSmallGap,
+                  crossAxisAlignment: CrossAxisAlignment.baseline,
+                  children: [
+                    Text('PaperCV'),
+                    Text(
+                      '${packageInfo.version}+${packageInfo.buildNumber}',
+                      style: textTheme.labelMedium?.copyWith(color: colorScheme.outline),
+                    ),
+                  ],
+                ),
           actions: [
             FloorAppBarIconButton(
               tooltip: 'Einstellungen',
