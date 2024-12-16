@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:mime/mime.dart';
 import 'package:paper_cv/config/system.dart';
 import 'package:paper_cv/utils/file_picker_models.dart';
@@ -41,6 +42,7 @@ class RestApi {
         options: Options(
           headers: {
             HttpHeaders.contentTypeHeader: Headers.multipartFormDataContentType,
+            if (!kDebugMode) HttpHeaders.accessControlAllowOriginHeader: 'true',
           },
         ),
       );
