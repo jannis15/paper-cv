@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:paper_cv/components/floor_app_bar.dart';
 import 'package:paper_cv/components/floor_buttons.dart';
@@ -28,6 +29,7 @@ class FloorMainScreen extends StatefulWidget {
 class _FloorMainScreenState extends State<FloorMainScreen> {
   final ScrollController _scrollController = ScrollController();
   late final _previewStream = FloorRepository.watchDocumentPreviews();
+  DocumentPreviewDto? _hoverDocumentPreview;
   bool _showBanner = true;
   bool _isSelectionMode = false;
   final Set<DocumentPreviewDto> _selectedDocuments = {};
@@ -35,6 +37,7 @@ class _FloorMainScreenState extends State<FloorMainScreen> {
   void _disableSelectionMode() {
     _isSelectionMode = false;
     _selectedDocuments.clear();
+    _hoverDocumentPreview = null;
   }
 
   void _selectDocument(DocumentPreviewDto document) {
@@ -81,15 +84,17 @@ class _FloorMainScreenState extends State<FloorMainScreen> {
   @override
   Widget build(BuildContext context) {
     Widget buildPreviewCard(DocumentPreviewDto documentPreview) => FloorCard(
-          onLongPress: () {
-            _isSelectionMode = !_isSelectionMode;
-            if (_isSelectionMode) {
-              _selectDocument(documentPreview);
-            } else {
-              _selectedDocuments.clear();
-            }
-            setState(() {});
-          },
+          onLongPress: kIsWeb
+              ? null
+              : () {
+                  _isSelectionMode = !_isSelectionMode;
+                  if (_isSelectionMode) {
+                    _selectDocument(documentPreview);
+                  } else {
+                    _selectedDocuments.clear();
+                  }
+                  setState(() {});
+                },
           onTap: _isSelectionMode
               ? () {
                   _selectDocument(documentPreview);
@@ -118,16 +123,33 @@ class _FloorMainScreenState extends State<FloorMainScreen> {
                           setState(() {});
                         },
                       )
-                    : Container(
-                        padding: EdgeInsets.all(AppSizes.kGap),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(AppSizes.kBorderRadius),
-                          color: colorScheme.secondaryContainer,
-                        ),
-                        child: Icon(
-                          Icons.article,
-                          size: AppSizes.kIconSize,
-                          color: colorScheme.onSecondaryContainer,
+                    : MouseRegion(
+                        onEnter: (event) {
+                          _hoverDocumentPreview = documentPreview;
+                          setState(() {});
+                        },
+                        onExit: (event) {
+                          _hoverDocumentPreview = null;
+                          setState(() {});
+                        },
+                        child: GestureDetector(
+                          onTap: () {
+                            _isSelectionMode = true;
+                            _selectDocument(documentPreview);
+                            setState(() {});
+                          },
+                          child: Container(
+                            padding: EdgeInsets.all(AppSizes.kGap),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(AppSizes.kBorderRadius),
+                              color: colorScheme.secondaryContainer,
+                            ),
+                            child: Icon(
+                              _hoverDocumentPreview == documentPreview ? Icons.check_box_outline_blank : Icons.article,
+                              size: AppSizes.kIconSize,
+                              color: colorScheme.onSecondaryContainer,
+                            ),
+                          ),
                         ),
                       ),
               ),
