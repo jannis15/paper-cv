@@ -84,7 +84,7 @@ class _FloorMainScreenState extends State<FloorMainScreen> {
   @override
   Widget build(BuildContext context) {
     Widget buildPreviewCard(DocumentPreviewDto documentPreview) => FloorCard(
-          onLongPress: kIsWeb
+          onLongPress: useDesktopLayout
               ? null
               : () {
                   _isSelectionMode = !_isSelectionMode;
@@ -145,7 +145,7 @@ class _FloorMainScreenState extends State<FloorMainScreen> {
                               color: colorScheme.secondaryContainer,
                             ),
                             child: Icon(
-                              _hoverDocumentPreview == documentPreview ? Icons.check_box_outline_blank : Icons.article,
+                              useDesktopLayout && _hoverDocumentPreview == documentPreview ? Icons.check_box_outline_blank : Icons.article,
                               size: AppSizes.kIconSize,
                               color: colorScheme.onSecondaryContainer,
                             ),
