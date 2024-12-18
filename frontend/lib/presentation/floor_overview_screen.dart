@@ -289,7 +289,7 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
                                                     decoration: outlinedInputDecoration(labelText: 'Titel'),
                                                   ),
                                                   FloorDatePicker(
-                                                    labelText: 'Arbeitstag',
+                                                    labelText: 'Dokumentdatum',
                                                     value: _form.documentDate,
                                                     onSetValue: (dateTime) {
                                                       _form.documentDate = dateTime;
