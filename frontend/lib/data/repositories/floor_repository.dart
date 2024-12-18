@@ -12,7 +12,14 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 
 abstract class FloorRepository {
-  static Stream<List<DocumentPreviewDto>> watchDocumentPreviews() => FloorDatabase.instance.watchDocumentPreviews();
+  static Stream<List<DocumentPreviewDto>> watchDocumentPreviews({
+    required DocumentSortType sortType,
+    required SortDirection sortDirection,
+  }) =>
+      FloorDatabase.instance.watchDocumentPreviews(
+        sortType: sortType,
+        sortDirection: sortDirection,
+      );
 
   static Future<void> deleteDocumentById(String documentId) => FloorDatabase.instance.deleteDocumentById(documentId);
 

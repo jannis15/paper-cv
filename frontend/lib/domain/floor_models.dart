@@ -1,5 +1,27 @@
 import 'package:paper_cv/utils/file_picker_models.dart';
 
+enum SortDirection {
+  descending,
+  ascending;
+
+  SortDirection get opposite => switch (this) {
+        SortDirection.descending => SortDirection.ascending,
+        SortDirection.ascending => SortDirection.descending,
+      };
+}
+
+enum DocumentSortType {
+  modifiedAt,
+  createdAt,
+  documentDate;
+
+  String get name => switch (this) {
+        DocumentSortType.modifiedAt => 'Bearbeitungsdatum',
+        DocumentSortType.createdAt => 'Erstelldatum',
+        DocumentSortType.documentDate => 'Dokumentdatum',
+      };
+}
+
 class DocumentForm {
   String? uuid;
   String title;

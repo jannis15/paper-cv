@@ -1,14 +1,15 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:paper_cv/components/floor_app_bar.dart';
 import 'package:paper_cv/components/floor_buttons.dart';
 import 'package:paper_cv/components/floor_card.dart';
+import 'package:paper_cv/components/floor_chip.dart';
 import 'package:paper_cv/components/floor_icon_button.dart';
 import 'package:paper_cv/components/floor_layout_body.dart';
 import 'package:paper_cv/config/config.dart';
 import 'package:paper_cv/data/models/floor_dto_models.dart';
 import 'package:paper_cv/data/repositories/floor_repository.dart';
 import 'package:paper_cv/components/floor_contact_banner.dart';
+import 'package:paper_cv/domain/floor_models.dart';
 import 'package:paper_cv/package_info.dart';
 import 'package:paper_cv/presentation/floor_info_screen.dart';
 import 'package:paper_cv/presentation/floor_overview_screen.dart';
@@ -28,11 +29,25 @@ class FloorMainScreen extends StatefulWidget {
 
 class _FloorMainScreenState extends State<FloorMainScreen> {
   final ScrollController _scrollController = ScrollController();
-  late final _previewStream = FloorRepository.watchDocumentPreviews();
+  late Stream<List<DocumentPreviewDto>> _previewStream;
   DocumentPreviewDto? _hoverDocumentPreview;
   bool _showBanner = true;
   bool _isSelectionMode = false;
   final Set<DocumentPreviewDto> _selectedDocuments = {};
+  DocumentSortType _sortType = DocumentSortType.modifiedAt;
+  SortDirection _sortDirection = SortDirection.descending;
+
+  String get _selectedText => '${_selectedDocuments.length} ${_selectedDocuments.length == 1 ? 'Dokument' : 'Dokumente'} ausgewählt';
+
+  @override
+  void initState() {
+    super.initState();
+    _assignPreviewStream();
+  }
+
+  void _assignPreviewStream() {
+    _previewStream = FloorRepository.watchDocumentPreviews(sortType: _sortType, sortDirection: _sortDirection);
+  }
 
   void _disableSelectionMode() {
     _isSelectionMode = false;
@@ -70,8 +85,6 @@ class _FloorMainScreenState extends State<FloorMainScreen> {
     }
   }
 
-  String get _selectedText => '${_selectedDocuments.length} ${_selectedDocuments.length == 1 ? 'Dokument' : 'Dokumente'} ausgewählt';
-
   void _seeInfo() async => showDialog(context: context, barrierLabel: 'ewfiji', builder: (_) => FloorInfoScreen());
 
   void _openOverviewScreen() async => await Navigator.of(context).push(
@@ -80,6 +93,16 @@ class _FloorMainScreenState extends State<FloorMainScreen> {
           transitionDuration: Duration(seconds: 0),
         ),
       );
+
+  void _changeSortType(DocumentSortType newSortType) {
+    if (_sortType == newSortType) {
+      _sortDirection = _sortDirection.opposite;
+    } else {
+      _sortType = newSortType;
+    }
+    _assignPreviewStream();
+    if (mounted) setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -385,6 +408,45 @@ class _FloorMainScreenState extends State<FloorMainScreen> {
                             )
                           : SizedBox(),
                     ),
+                    RowGap(
+                      gap: AppSizes.kGap,
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Sortiert nach',
+                          style: textTheme.labelMedium,
+                        ),
+                        Flexible(
+                          fit: FlexFit.loose,
+                          child: SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: RowGap(
+                                gap: AppSizes.kSmallGap,
+                                crossAxisAlignment: CrossAxisAlignment.baseline,
+                                children: DocumentSortType.values
+                                    .map(
+                                      (sortType) => AnimatedSize(
+                                        duration: Duration(milliseconds: 200),
+                                        curve: Curves.easeIn,
+                                        child: FloorChip(
+                                          iconData: sortType != _sortType
+                                              ? null
+                                              : _sortDirection == SortDirection.ascending
+                                                  ? Icons.arrow_upward
+                                                  : Icons.arrow_downward,
+                                          text: sortType.name,
+                                          isSelected: sortType == _sortType,
+                                          onPressed: () => _changeSortType(sortType),
+                                        ),
+                                      ),
+                                    )
+                                    .toList()),
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: AppSizes.kGap),
                     StreamBuilder(
                       stream: _previewStream,
                       builder: (context, snapshot) {

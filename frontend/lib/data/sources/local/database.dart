@@ -59,11 +59,21 @@ class FloorDatabase extends _$FloorDatabase with DbMixin {
     await optimizeSize();
   }
 
-  Stream<List<DocumentPreviewDto>> watchDocumentPreviews() {
+  Stream<List<DocumentPreviewDto>> watchDocumentPreviews({
+    required DocumentSortType sortType,
+    required SortDirection sortDirection,
+  }) {
     final query = select(tbDocument).join([]);
-    query.orderBy([
-      OrderingTerm.desc(tbDocument.modifiedAt),
-    ]);
+    final column = switch (sortType) {
+      DocumentSortType.modifiedAt => tbDocument.modifiedAt,
+      DocumentSortType.createdAt => tbDocument.createdAt,
+      DocumentSortType.documentDate => tbDocument.documentDate,
+    };
+    final orderTerm = switch (sortDirection) {
+      SortDirection.ascending => OrderingTerm.asc(column),
+      SortDirection.descending => OrderingTerm.desc(column),
+    };
+    query.orderBy([orderTerm]);
     return query.map((row) => _mapToDocumentPreviewDto(row.readTable(tbDocument)!)).watch();
   }
 
