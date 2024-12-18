@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'dart:ui' as ui;
 
+import 'package:paper_cv/utils/math_utils.dart';
+import 'package:paper_cv/utils/rect_extension.dart';
+
 void main() {
   runApp(MyApp());
 }
@@ -8,24 +11,20 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: SelectionCanvas(),
-    );
+    return MaterialApp(home: ImageLoader());
   }
 }
 
-class SelectionCanvas extends StatefulWidget {
+class ImageLoader extends StatefulWidget {
+  const ImageLoader({super.key});
+
   @override
-  _SelectionCanvasState createState() => _SelectionCanvasState();
+  State<ImageLoader> createState() => _ImageLoaderState();
 }
 
-class _SelectionCanvasState extends State<SelectionCanvas> {
-  Offset? _startDrag;
-  Offset? _currentDrag;
-  Offset? _finalStartDrag;
-  Offset? _finalCurrentDrag;
-  ui.Image? _image;
-  Rect? _imageBounds;
+class _ImageLoaderState extends State<ImageLoader> {
+  bool _isLoading = true;
+  late ui.Image _image;
 
   @override
   void initState() {
@@ -40,44 +39,66 @@ class _SelectionCanvasState extends State<SelectionCanvas> {
     final frame = await codec.getNextFrame();
     setState(() {
       _image = frame.image;
+      _isLoading = false;
     });
   }
 
-  Future<ui.Image?> cropImage() async {
-    if (_image == null || _finalStartDrag == null || _finalCurrentDrag == null) {
-      return null;
-    }
-
-    final left = _finalStartDrag!.dx;
-    final top = _finalStartDrag!.dy;
-    final right = _finalCurrentDrag!.dx;
-    final bottom = _finalCurrentDrag!.dy;
-
-    if (left >= right || top >= bottom) {
-      return null;
-    }
-
-    final srcRect = Rect.fromLTWH(
-      left,
-      top,
-      right - left,
-      bottom - top,
-    );
-
-    final recorder = ui.PictureRecorder();
-    final canvas = Canvas(recorder);
-
-    final paint = Paint();
-    canvas.drawImageRect(
-      _image!,
-      srcRect,
-      Rect.fromLTWH(0, 0, srcRect.width, srcRect.height),
-      paint,
-    );
-
-    final picture = recorder.endRecording();
-    return picture.toImage(srcRect.width.toInt(), srcRect.height.toInt());
+  @override
+  Widget build(BuildContext context) {
+    return _isLoading ? Placeholder() : SelectionCanvas(image: _image);
   }
+}
+
+class SelectionCanvas extends StatefulWidget {
+  final ui.Image image;
+
+  const SelectionCanvas({required this.image});
+
+  @override
+  _SelectionCanvasState createState() => _SelectionCanvasState();
+}
+
+class _SelectionCanvasState extends State<SelectionCanvas> {
+  late ui.Image _image = widget.image;
+  Offset? _startDrag;
+  Offset? _endDrag;
+  Rect? _oldImageRect;
+
+  // Future<ui.Image?> cropImage() async {
+  //   if (_startDrag == null || _currentDrag == null) {
+  //     return null;
+  //   }
+  //
+  //   final left = _startDrag!.dx;
+  //   final top = _startDrag!.dy;
+  //   final right = _currentDrag!.dx;
+  //   final bottom = _currentDrag!.dy;
+  //
+  //   if (left >= right || top >= bottom) {
+  //     return null;
+  //   }
+  //
+  //   final srcRect = Rect.fromLTWH(
+  //     left,
+  //     top,
+  //     right - left,
+  //     bottom - top,
+  //   );
+  //
+  //   final recorder = ui.PictureRecorder();
+  //   final canvas = Canvas(recorder);
+  //
+  //   final paint = Paint();
+  //   canvas.drawImageRect(
+  //     _image,
+  //     srcRect,
+  //     Rect.fromLTWH(0, 0, srcRect.width, srcRect.height),
+  //     paint,
+  //   );
+  //
+  //   final picture = recorder.endRecording();
+  //   return picture.toImage(srcRect.width.toInt(), srcRect.height.toInt());
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -85,67 +106,74 @@ class _SelectionCanvasState extends State<SelectionCanvas> {
       appBar: AppBar(title: Text('Rectangle Selection Canvas')),
       body: LayoutBuilder(
         builder: (context, constraints) {
+          final containerSize = Size(constraints.maxWidth, constraints.maxHeight);
+          final imageAspectRatio = _image.width / _image.height;
+          final containerAspectRatio = containerSize.width / containerSize.height;
+
+          double imageWidth, imageHeight;
+          if (imageAspectRatio > containerAspectRatio) {
+            imageWidth = containerSize.width;
+            imageHeight = containerSize.width / imageAspectRatio;
+          } else {
+            imageHeight = containerSize.height;
+            imageWidth = containerSize.height * imageAspectRatio;
+          }
+
+          final imageRect = Rect.fromLTWH(
+            (containerSize.width - imageWidth) / 2,
+            (containerSize.height - imageHeight) / 2,
+            imageWidth,
+            imageHeight,
+          );
+
+          if (_startDrag != null && _endDrag != null && _oldImageRect != null) {
+            final selectionRect = MathHelper.applyTransformToSelection(
+              oldRect: _oldImageRect!.translateToOrigin(),
+              newRect: imageRect.translateToOrigin(),
+              selectionRect: Rect.fromLTRB(
+                _startDrag!.dx - _oldImageRect!.left,
+                _startDrag!.dy - _oldImageRect!.top,
+                _endDrag!.dx - _oldImageRect!.left,
+                _endDrag!.dy - _oldImageRect!.top,
+              ),
+            );
+            _startDrag = Offset(selectionRect.left + imageRect.left, selectionRect.top + imageRect.top);
+            _endDrag = Offset(selectionRect.right + imageRect.left, selectionRect.bottom + imageRect.top);
+          }
+          _oldImageRect = imageRect;
+
           return GestureDetector(
             onPanStart: (details) {
-              if (_imageBounds?.contains(details.localPosition) ?? false) {
+              if (imageRect.contains(details.localPosition))
                 setState(() {
                   _startDrag = details.localPosition;
-                  _currentDrag = details.localPosition;
-                  _finalStartDrag = null;
-                  _finalCurrentDrag = null;
+                  _endDrag = details.localPosition;
                 });
-              }
             },
-            onPanUpdate: (details) {
-              if (_imageBounds?.contains(details.localPosition) ?? false) {
-                setState(() {
-                  // Clamp the drag position to the image bounds
-                  _currentDrag = Offset(
-                    details.localPosition.dx.clamp(_imageBounds!.left, _imageBounds!.right),
-                    details.localPosition.dy.clamp(_imageBounds!.top, _imageBounds!.bottom),
-                  );
-                });
-              } else {
-                // If the position is outside the image bounds, clamp the position to the image edges
-                setState(() {
-                  _currentDrag = Offset(
-                    details.localPosition.dx.clamp(_imageBounds!.left, _imageBounds!.right),
-                    details.localPosition.dy.clamp(_imageBounds!.top, _imageBounds!.bottom),
-                  );
-                });
-              }
-            },
+            onPanUpdate: (details) => setState(() {
+              _endDrag = Offset(
+                details.localPosition.dx.clamp(imageRect.left, imageRect.right),
+                details.localPosition.dy.clamp(imageRect.top, imageRect.bottom),
+              );
+            }),
             onPanEnd: (details) {
-              if (_startDrag != null && _currentDrag != null) {
+              if (_startDrag != null && _endDrag != null)
                 setState(() {
-                  _finalStartDrag = _startDrag;
-                  _finalCurrentDrag = _currentDrag;
+                  _startDrag = _startDrag;
+                  _endDrag = _endDrag;
                 });
-              }
-
-              setState(() {
-                _startDrag = null;
-                _currentDrag = null;
-              });
             },
-            onTapDown: (details) {
-              setState(() {
-                _finalStartDrag = null;
-                _finalCurrentDrag = null;
-              });
-            },
+            onTapDown: (details) => setState(() {
+              _startDrag = null;
+              _endDrag = null;
+            }),
             child: CustomPaint(
-              size: Size.infinite,
+              size: containerSize,
               painter: SelectionPainter(
                 image: _image,
-                containerSize: Size(constraints.maxWidth, constraints.maxHeight),
+                imageRect: imageRect,
                 startDrag: _startDrag,
-                currentDrag: _currentDrag,
-                finalStartDrag: _finalStartDrag,
-                finalCurrentDrag: _finalCurrentDrag,
-                onImageBoundsCalculated: (bounds) {
-                  _imageBounds = bounds;
-                },
+                endDrag: _endDrag,
               ),
             ),
           );
@@ -156,86 +184,52 @@ class _SelectionCanvasState extends State<SelectionCanvas> {
 }
 
 class SelectionPainter extends CustomPainter {
-  final ui.Image? image;
-  final Size containerSize;
+  final ui.Image image;
+  final Rect imageRect;
   final Offset? startDrag;
-  final Offset? currentDrag;
-  final Offset? finalStartDrag;
-  final Offset? finalCurrentDrag;
-  final void Function(Rect bounds)? onImageBoundsCalculated;
+  final Offset? endDrag;
 
   SelectionPainter({
     required this.image,
-    required this.containerSize,
+    required this.imageRect,
     required this.startDrag,
-    required this.currentDrag,
-    required this.finalStartDrag,
-    required this.finalCurrentDrag,
-    this.onImageBoundsCalculated,
+    required this.endDrag,
   });
 
   @override
   void paint(Canvas canvas, Size size) {
-    if (image != null) {
-      final imageAspectRatio = image!.width / image!.height;
-      final containerAspectRatio = containerSize.width / containerSize.height;
+    final srcRect = Rect.fromLTWH(0, 0, image.width.toDouble(), image.height.toDouble());
+    final paint = Paint();
+    canvas.drawImageRect(image, srcRect, imageRect, paint);
+    if (startDrag != null && endDrag != null) {
+      final rect = Rect.fromPoints(startDrag!, endDrag!);
+      final selectionPaint = Paint()
+        ..color = Colors.blue.withOpacity(0.3)
+        ..style = PaintingStyle.fill;
+      final borderPaint = Paint()
+        ..color = Colors.blue
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 2.0;
 
-      double imageWidth, imageHeight;
-      if (imageAspectRatio > containerAspectRatio) {
-        imageWidth = containerSize.width;
-        imageHeight = containerSize.width / imageAspectRatio;
-      } else {
-        imageHeight = containerSize.height;
-        imageWidth = containerSize.height * imageAspectRatio;
-      }
+      canvas.drawRect(rect, selectionPaint);
+      canvas.drawRect(rect, borderPaint);
+    }
 
-      final paint = Paint();
-      final srcRect = Rect.fromLTWH(0, 0, image!.width.toDouble(), image!.height.toDouble());
-      final dstRect = Rect.fromLTWH(
-        (containerSize.width - imageWidth) / 2,
-        (containerSize.height - imageHeight) / 2,
-        imageWidth,
-        imageHeight,
-      );
+    if (startDrag != null && endDrag != null) {
+      final rect = Rect.fromPoints(startDrag!, endDrag!);
+      final selectionPaint = Paint()
+        ..color = Colors.blue.withOpacity(0.3)
+        ..style = PaintingStyle.fill;
+      final borderPaint = Paint()
+        ..color = Colors.blue
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 2.0;
 
-      canvas.drawImageRect(image!, srcRect, dstRect, paint);
-
-      if (onImageBoundsCalculated != null) {
-        onImageBoundsCalculated!(dstRect);
-      }
-
-      if (startDrag != null && currentDrag != null) {
-        final rect = Rect.fromPoints(startDrag!, currentDrag!);
-        final selectionPaint = Paint()
-          ..color = Colors.blue.withOpacity(0.3)
-          ..style = PaintingStyle.fill;
-        final borderPaint = Paint()
-          ..color = Colors.blue
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = 2.0;
-
-        canvas.drawRect(rect, selectionPaint);
-        canvas.drawRect(rect, borderPaint);
-      }
-
-      if (finalStartDrag != null && finalCurrentDrag != null) {
-        final rect = Rect.fromPoints(finalStartDrag!, finalCurrentDrag!);
-        final selectionPaint = Paint()
-          ..color = Colors.blue.withOpacity(0.3)
-          ..style = PaintingStyle.fill;
-        final borderPaint = Paint()
-          ..color = Colors.blue
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = 2.0;
-
-        canvas.drawRect(rect, selectionPaint);
-        canvas.drawRect(rect, borderPaint);
-      }
+      canvas.drawRect(rect, selectionPaint);
+      canvas.drawRect(rect, borderPaint);
     }
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return true;
-  }
+  bool shouldRepaint(_) => true;
 }
