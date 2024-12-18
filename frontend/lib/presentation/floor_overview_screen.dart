@@ -16,6 +16,7 @@ import 'package:paper_cv/data/models/floor_dto_models.dart';
 import 'package:paper_cv/data/models/floor_enums.dart';
 import 'package:paper_cv/data/repositories/floor_repository.dart';
 import 'package:paper_cv/domain/floor_models.dart';
+import 'package:paper_cv/presentation/floor_table_selection_screen.dart';
 import 'package:paper_cv/utils/file_picker_models.dart';
 import 'package:paper_cv/utils/file_picker_utils.dart';
 import 'package:paper_cv/utils/list_utils.dart';
@@ -130,6 +131,9 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
           onRemoveFile: (_) => setState(() {
             _setIsDirty();
           }),
+          onTapFile: (_, image) {
+            if (image != null) Navigator.of(context).push(MaterialPageRoute(builder: (context) => FloorTableSelectionScreen(image: image)));
+          },
         );
 
     Widget buildScanCard() => FloorAttachmentCard(

@@ -21,6 +21,7 @@ class FloorAttachmentCard extends StatefulWidget {
   final Future<List<SelectedFile>?> Function()? onPickFiles2;
   final Function(List<SelectedFile> files) onAddFiles;
   final Function(SelectedFile file) onRemoveFile;
+  final Function(SelectedFile file, ui.Image? image)? onTapFile;
   final IconData iconData;
   final IconData? iconData2;
   final String iconText;
@@ -34,6 +35,7 @@ class FloorAttachmentCard extends StatefulWidget {
     this.onPickFiles2,
     required this.onAddFiles,
     required this.onRemoveFile,
+    this.onTapFile,
     this.disablePickFile = false,
     this.iconData = Icons.add,
     this.iconData2,
@@ -96,7 +98,7 @@ class _FloorAttachmentCardState extends State<FloorAttachmentCard> {
   Widget build(BuildContext context) {
     const double kRatio = 21 / 29.7;
     const double kAntiRatio = 1 / kRatio;
-    const double kMaxHeight = 100.0;
+    const double kMaxHeight = 150.0;
     Widget buildFilePreview(int index) {
       final ui.Image? previewImage = _previewImages[index];
       final SelectedFile file = _files[index];
@@ -104,9 +106,7 @@ class _FloorAttachmentCardState extends State<FloorAttachmentCard> {
         alignment: Alignment.center,
         children: [
           GestureDetector(
-            onTap: () async {
-              accessFile(file);
-            },
+            onTap: widget.onTapFile != null ? () => widget.onTapFile!(file, _previewImages[index]) : () => accessFile(file),
             child: Container(
               margin: EdgeInsets.only(
                 top: AppSizes.kIconButtonSize / 2,
@@ -119,28 +119,31 @@ class _FloorAttachmentCardState extends State<FloorAttachmentCard> {
                   : kMaxHeight,
               height: kMaxHeight,
               decoration: BoxDecoration(color: colorScheme.surface),
-              child: previewImage != null
-                  ? FittedBox(
-                      fit: BoxFit.contain,
-                      alignment: Alignment.center,
-                      child: RawImage(image: previewImage),
-                    )
-                  : Padding(
-                      padding: const EdgeInsets.all(AppSizes.kSmallGap),
-                      child: ColumnGap(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        gap: 4,
-                        children: [
-                          FileIcon(file.filename, size: 32),
-                          Text(
-                            file.filename,
-                            textAlign: TextAlign.center,
-                            maxLines: 2,
-                            style: textTheme.labelSmall,
-                          ),
-                        ],
+              child: MouseRegion(
+                cursor: SystemMouseCursors.click,
+                child: previewImage != null
+                    ? FittedBox(
+                        fit: BoxFit.contain,
+                        alignment: Alignment.center,
+                        child: RawImage(image: previewImage),
+                      )
+                    : Padding(
+                        padding: const EdgeInsets.all(AppSizes.kSmallGap),
+                        child: ColumnGap(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          gap: 4,
+                          children: [
+                            FileIcon(file.filename, size: 32),
+                            Text(
+                              file.filename,
+                              textAlign: TextAlign.center,
+                              maxLines: 2,
+                              style: textTheme.labelSmall,
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
+              ),
             ),
           ),
           Positioned(
