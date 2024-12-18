@@ -14,6 +14,8 @@ class TbDocument extends Table {
 
   DateTimeColumn get modifiedAt => dateTime()();
 
+  DateTimeColumn get documentDate => dateTime().nullable()();
+
   BoolColumn get isExample => boolean().withDefault(Constant(false))();
 
   @override

@@ -4,6 +4,8 @@ import 'package:paper_cv/components/floor_app_bar.dart';
 import 'package:paper_cv/components/floor_attachment_card.dart';
 import 'package:paper_cv/components/floor_buttons.dart';
 import 'package:paper_cv/components/floor_card.dart';
+import 'package:paper_cv/components/floor_date_picker.dart';
+import 'package:paper_cv/components/floor_date_picker_dialog.dart';
 import 'package:paper_cv/components/floor_file_picker.dart';
 import 'package:paper_cv/components/floor_icon_button.dart';
 import 'package:paper_cv/components/floor_layout_body.dart';
@@ -52,7 +54,8 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
     if (_isLoading) {
       _asyncInit();
     } else {
-      _form = DocumentForm();
+      final now = DateTime.now();
+      _form = DocumentForm(documentDate: now);
     }
     super.initState();
   }
@@ -284,6 +287,16 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
                                                       _setIsDirty();
                                                     },
                                                     decoration: outlinedInputDecoration(labelText: 'Titel'),
+                                                  ),
+                                                  FloorDatePicker(
+                                                    labelText: 'Arbeitstag',
+                                                    value: _form.documentDate,
+                                                    onSetValue: (dateTime) {
+                                                      _form.documentDate = dateTime;
+                                                      _setIsDirty();
+                                                      setState(() {});
+                                                    },
+                                                    overlayPicker: FloorDatePickerDialog(selectedDay: _form.documentDate),
                                                   ),
                                                   FloorTextField(
                                                     text: _form.notes,

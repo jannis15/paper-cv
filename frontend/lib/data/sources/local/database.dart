@@ -93,6 +93,7 @@ class FloorDatabase extends _$FloorDatabase with DbMixin {
         notes: tbDocumentRow.notes,
         createdAt: tbDocumentRow.createdAt,
         modifiedAt: tbDocumentRow.modifiedAt,
+        documentDate: tbDocumentRow.documentDate,
         captures: captures,
         scans: scans,
         reports: reports,
@@ -136,6 +137,7 @@ class FloorDatabase extends _$FloorDatabase with DbMixin {
             notes: Value(form.notes),
             createdAt: Value(form.createdAt ?? now),
             modifiedAt: Value(now),
+            documentDate: Value(form.documentDate),
             isExample: Value.absentIfNull(isExample),
           ),
         );

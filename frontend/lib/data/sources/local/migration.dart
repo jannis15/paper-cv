@@ -20,6 +20,7 @@ extension Migration on FloorDatabase {
             title: 'Dokument',
             createdAt: now,
             modifiedAt: now,
+            documentDate: now,
             captures: [
               SelectedFile(
                 filename: 'Beispiel.jpg',

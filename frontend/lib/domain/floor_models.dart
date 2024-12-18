@@ -9,6 +9,7 @@ class DocumentForm {
   List<SelectedFile> reports = [];
   DateTime? createdAt;
   DateTime? modifiedAt;
+  DateTime? documentDate;
 
   DocumentForm({
     this.uuid,
@@ -19,6 +20,7 @@ class DocumentForm {
     List<SelectedFile>? reports,
     this.createdAt,
     this.modifiedAt,
+    this.documentDate,
   })  : captures = captures ?? [],
         scans = scans ?? [],
         reports = reports ?? [];
