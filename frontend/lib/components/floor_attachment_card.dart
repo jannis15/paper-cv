@@ -94,7 +94,7 @@ class _FloorAttachmentCardState extends State<FloorAttachmentCard> {
 
   @override
   Widget build(BuildContext context) {
-    const double kRatio = 5 / 7;
+    const double kRatio = 21 / 29.7;
     const double kAntiRatio = 1 / kRatio;
     const double kMaxHeight = 100.0;
     Widget buildFilePreview(int index) {
@@ -121,7 +121,7 @@ class _FloorAttachmentCardState extends State<FloorAttachmentCard> {
               decoration: BoxDecoration(color: colorScheme.surface),
               child: previewImage != null
                   ? FittedBox(
-                      fit: BoxFit.cover,
+                      fit: BoxFit.contain,
                       alignment: Alignment.center,
                       child: RawImage(image: previewImage),
                     )
