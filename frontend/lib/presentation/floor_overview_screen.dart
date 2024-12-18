@@ -5,6 +5,7 @@ import 'package:paper_cv/components/floor_attachment_card.dart';
 import 'package:paper_cv/components/floor_buttons.dart';
 import 'package:paper_cv/components/floor_card.dart';
 import 'package:paper_cv/components/floor_file_picker.dart';
+import 'package:paper_cv/components/floor_icon_button.dart';
 import 'package:paper_cv/components/floor_layout_body.dart';
 import 'package:paper_cv/components/floor_loader_overlay.dart';
 import 'package:paper_cv/components/floor_text_field.dart';
@@ -14,6 +15,7 @@ import 'package:paper_cv/data/models/floor_enums.dart';
 import 'package:paper_cv/data/repositories/floor_repository.dart';
 import 'package:paper_cv/domain/floor_models.dart';
 import 'package:paper_cv/utils/file_picker_models.dart';
+import 'package:paper_cv/utils/file_picker_utils.dart';
 import 'package:paper_cv/utils/list_utils.dart';
 import 'package:paper_cv/utils/widget_utils.dart';
 import 'package:flutter/material.dart';
@@ -38,6 +40,7 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
   bool _isSaving = false;
   late DocumentForm _form;
   bool _isDirty = false; // if true, the form needs to be saved
+  bool _showDocumentDetails = false;
 
   void _setIsDirty() {
     _isDirty = true;
@@ -98,6 +101,7 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
           title: 'Aufnahme',
           files: _form.captures,
           iconData: Icons.add_a_photo,
+          iconData2: Icons.perm_media,
           onPickFiles: () async {
             final file = await FloorFilePicker.pickFile(context, pickerOption: FilePickerOption.camera);
             if (file == null) return null;
@@ -107,6 +111,7 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
             file.fileType = FileType.capture;
             return [file];
           },
+          onPickFiles2: () => FilePickerHelper.pickImageSelectedFile(context, allowMultiple: true),
           onAddFiles: (_) => setState(() {
             _setIsDirty();
           }),
@@ -187,7 +192,7 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
       child: Scaffold(
         backgroundColor: useDesktopLayout ? colorScheme.surfaceContainer : null,
         appBar: FloorAppBar(
-          title: Text('Dokument'),
+          title: useDesktopLayout ? Text('Dokument') : null,
           showBackButton: !useDesktopLayout,
           customPop: tryCloseForm,
         ),
@@ -238,34 +243,52 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
                                     ],
                                   ),
                                 FloorCard(
-                                  child: ColumnGap(
-                                    gap: AppSizes.kGap,
+                                  child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.stretch,
                                     children: [
-                                      Text('Kopfdaten', style: textTheme.titleLarge),
-                                      ColumnGap(
-                                        gap: AppSizes.kSmallGap,
-                                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                         children: [
-                                          FloorTextField(
-                                            text: _form.title,
-                                            onChanged: (value) {
-                                              _form.title = value;
-                                              _setIsDirty();
+                                          Text('Bemerkung', style: textTheme.titleLarge),
+                                          FloorIconButton(
+                                            iconData: _showDocumentDetails ? Icons.expand_less : Icons.expand_more,
+                                            onPressed: () {
+                                              _showDocumentDetails = !_showDocumentDetails;
+                                              setState(() {});
                                             },
-                                            decoration: outlinedInputDecoration(labelText: 'Titel'),
-                                          ),
-                                          FloorTextField(
-                                            text: _form.notes,
-                                            onChanged: (value) {
-                                              _form.notes = value;
-                                              _setIsDirty();
-                                            },
-                                            decoration: outlinedInputDecoration(labelText: 'Notizen'),
-                                            minLines: 4,
-                                            maxLines: null,
                                           ),
                                         ],
+                                      ),
+                                      if (_showDocumentDetails) SizedBox(height: AppSizes.kGap),
+                                      AnimatedSize(
+                                        duration: Duration(milliseconds: 200),
+                                        curve: Curves.easeIn,
+                                        child: _showDocumentDetails
+                                            ? ColumnGap(
+                                                gap: AppSizes.kSmallGap,
+                                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                                children: [
+                                                  FloorTextField(
+                                                    text: _form.title,
+                                                    onChanged: (value) {
+                                                      _form.title = value;
+                                                      _setIsDirty();
+                                                    },
+                                                    decoration: outlinedInputDecoration(labelText: 'Titel'),
+                                                  ),
+                                                  FloorTextField(
+                                                    text: _form.notes,
+                                                    onChanged: (value) {
+                                                      _form.notes = value;
+                                                      _setIsDirty();
+                                                    },
+                                                    decoration: outlinedInputDecoration(labelText: 'Notizen'),
+                                                    minLines: 4,
+                                                    maxLines: null,
+                                                  ),
+                                                ],
+                                              )
+                                            : SizedBox(),
                                       ),
                                     ],
                                   ),

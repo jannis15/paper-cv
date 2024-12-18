@@ -11,7 +11,7 @@ enum FloorButtonType {
 abstract class FloorButton extends StatelessWidget {
   final bool loading;
   final IconData? iconData;
-  final String text;
+  final String? text;
   final void Function()? onPressed;
   final Color? foregroundColor;
   final TextDecoration? textDecoration;
@@ -20,7 +20,7 @@ abstract class FloorButton extends StatelessWidget {
 
   FloorButton({
     this.iconData,
-    required this.text,
+    this.text,
     this.onPressed,
     this.loading = false,
     required this.type,
@@ -68,10 +68,11 @@ abstract class FloorButton extends StatelessWidget {
                 )
               else if (iconData != null)
                 SizedBox(width: AppSizes.kSubIconSize, child: Icon(iconData, size: AppSizes.kSubIconSize, color: getForegroundColor())),
-              Text(
-                text,
-                style: textTheme.labelLarge?.copyWith(color: getForegroundColor(), decoration: textDecoration),
-              ),
+              if (text != null)
+                Text(
+                  text!,
+                  style: textTheme.labelLarge?.copyWith(color: getForegroundColor(), decoration: textDecoration),
+                ),
             ],
           ),
           style: ButtonStyle(
@@ -82,7 +83,7 @@ abstract class FloorButton extends StatelessWidget {
             foregroundColor: WidgetStatePropertyAll(getForegroundColor()),
             backgroundColor: WidgetStatePropertyAll(getBackgroundColor()),
             padding: WidgetStatePropertyAll(
-              EdgeInsets.fromLTRB(AppSizes.kGap, 0, iconData != null ? AppSizes.kMediumBigGap : AppSizes.kGap, 0),
+              EdgeInsets.fromLTRB(AppSizes.kGap, 0, iconData != null && text != null ? AppSizes.kMediumBigGap : AppSizes.kGap, 0),
             ),
           ),
         ),
@@ -95,7 +96,7 @@ class FloorTransparentButton extends FloorButton {
   FloorTransparentButton({
     super.iconData,
     super.foregroundColor,
-    required super.text,
+    super.text,
     super.onPressed,
     super.textDecoration,
     super.loading,
@@ -105,7 +106,7 @@ class FloorTransparentButton extends FloorButton {
 class FloorOutlinedButton extends FloorButton {
   FloorOutlinedButton({
     super.iconData,
-    required super.text,
+    super.text,
     super.onPressed,
     super.textDecoration,
     super.loading,
@@ -115,7 +116,7 @@ class FloorOutlinedButton extends FloorButton {
 class FloorFilledButton extends FloorButton {
   FloorFilledButton({
     super.iconData,
-    required super.text,
+    super.text,
     super.onPressed,
     super.textDecoration,
     super.loading,

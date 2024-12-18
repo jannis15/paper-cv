@@ -18,9 +18,11 @@ class FloorAttachmentCard extends StatefulWidget {
   final String title;
   final List<SelectedFile> files;
   final Future<List<SelectedFile>?> Function() onPickFiles;
+  final Future<List<SelectedFile>?> Function()? onPickFiles2;
   final Function(List<SelectedFile> files) onAddFiles;
   final Function(SelectedFile file) onRemoveFile;
   final IconData iconData;
+  final IconData? iconData2;
   final String iconText;
   final bool disablePickFile;
 
@@ -29,12 +31,14 @@ class FloorAttachmentCard extends StatefulWidget {
     required this.title,
     required this.files,
     required this.onPickFiles,
+    this.onPickFiles2,
     required this.onAddFiles,
     required this.onRemoveFile,
     this.disablePickFile = false,
     this.iconData = Icons.add,
+    this.iconData2,
     this.iconText = 'Hinzufügen',
-  });
+  }) : assert((iconData2 == null && onPickFiles2 == null) || (iconData2 != null && onPickFiles2 != null), 'FloorAttachmentCard wrong parameters!');
 
   @override
   State<FloorAttachmentCard> createState() => _FloorAttachmentCardState();
@@ -69,6 +73,22 @@ class _FloorAttachmentCardState extends State<FloorAttachmentCard> {
         tmpImage = await decodeImageFromList(file.data);
       }
       _previewImages.add(tmpImage);
+    }
+  }
+
+  Future<void> _onPickFilesButtonPress(Future<List<SelectedFile>?> Function() onPickFiles) async {
+    _isAttaching = true;
+    setState(() {});
+    try {
+      final newFiles = await onPickFiles();
+      if (newFiles != null) {
+        _files.addAll(newFiles);
+        await _addPreviewImages(newFiles);
+        widget.onAddFiles(newFiles);
+      }
+    } finally {
+      _isAttaching = false;
+      if (context.mounted) setState(() {});
     }
   }
 
@@ -168,27 +188,23 @@ class _FloorAttachmentCardState extends State<FloorAttachmentCard> {
                   style: textTheme.titleLarge,
                 ),
               ),
-              FloorOutlinedButton(
-                iconData: widget.iconData,
-                text: widget.iconText,
-                loading: _isLoading || _isAttaching,
-                onPressed: widget.disablePickFile
-                    ? null
-                    : () async {
-                        _isAttaching = true;
-                        setState(() {});
-                        try {
-                          final newFiles = await widget.onPickFiles();
-                          if (newFiles != null) {
-                            _files.addAll(newFiles);
-                            await _addPreviewImages(newFiles);
-                            widget.onAddFiles(newFiles);
-                          }
-                        } finally {
-                          _isAttaching = false;
-                          if (context.mounted) setState(() {});
-                        }
-                      },
+              RowGap(
+                gap: AppSizes.kSmallGap,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  FloorOutlinedButton(
+                    iconData: widget.iconData,
+                    text: widget.iconText,
+                    loading: _isLoading || _isAttaching,
+                    onPressed: widget.disablePickFile ? null : () => _onPickFilesButtonPress(widget.onPickFiles),
+                  ),
+                  if (widget.iconData2 != null && widget.onPickFiles2 != null)
+                    FloorOutlinedButton(
+                      iconData: widget.iconData2,
+                      loading: _isLoading || _isAttaching,
+                      onPressed: widget.disablePickFile ? null : () => _onPickFilesButtonPress(widget.onPickFiles2!),
+                    ),
+                ],
               ),
             ],
           ),

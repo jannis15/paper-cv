@@ -72,56 +72,11 @@ class _CameraViewState extends State<_CameraView> {
       _pickingFromGallery = true;
     });
     try {
-      final List<SelectedFile> images = [];
-      try {
-        if (widget.allowMultiple) {
-          final selectedFiles = await Future.wait(
-            (await ImagePicker().pickMultiImage()).map(
-              (xFile) async {
-                final fileBytes = await xFile.readAsBytes();
-                final now = DateTime.now();
-                return SelectedFile(
-                  filename: xFile.name,
-                  data: fileBytes,
-                  createdAt: now,
-                  modifiedAt: now,
-                );
-              },
-            ),
-          );
-          images.addAll((selectedFiles));
-        } else {
-          final image = await ImagePicker().pickImage(source: ImageSource.gallery);
-          if (image != null) {
-            final fileBytes = await image.readAsBytes();
-            final now = DateTime.now();
-            final selectedFile = SelectedFile(
-              filename: image.name,
-              data: fileBytes,
-              createdAt: now,
-              modifiedAt: now,
-            );
-            images.add(selectedFile);
-          }
-        }
-        if (images.isEmpty) {
-          await _initCameraController();
-        } else {
-          if (mounted) Navigator.of(context).pop<List<SelectedFile>>(images);
-        }
-      } on PlatformException catch (_) {
-        if (mounted) {
-          final AlertOption? result = await showAlertDialog(
-            context,
-            title: 'Zugriff verweigert',
-            content: 'Die App benötigt die Berechtigung, um Fotos aus Ihrer Galerie nutzen zu können',
-            optionData: [AlertOptionData.yes(customText: 'Einstellungen öffnen')],
-            barrierDismissible: true,
-          );
-          if (result != null && result == AlertOption.yes) {
-            openAppSettings();
-          }
-        }
+      final images = await FilePickerHelper.pickImageSelectedFile(context, allowMultiple: widget.allowMultiple);
+      if (images.isEmpty) {
+        await _initCameraController();
+      } else {
+        if (mounted) Navigator.of(context).pop<List<SelectedFile>>(images);
       }
     } finally {
       _pickingFromGallery = false;

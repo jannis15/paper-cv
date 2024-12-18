@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:paper_cv/config/config.dart';
@@ -7,8 +5,8 @@ import 'package:paper_cv/utils/alert_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gal/gal.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:paper_cv/utils/file_picker_models.dart';
+import 'package:paper_cv/utils/file_picker_utils.dart';
 import 'package:paper_cv/utils/list_utils.dart';
 import 'package:paper_cv/utils/orientation_helper.dart';
 import 'package:permission_handler/permission_handler.dart';
