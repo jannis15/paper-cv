@@ -111,7 +111,16 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
             file.fileType = FileType.capture;
             return [file];
           },
-          onPickFiles2: () => FilePickerHelper.pickImageSelectedFile(context, allowMultiple: true),
+          onPickFiles2: () async {
+            final files = await FilePickerHelper.pickImageSelectedFile(context, allowMultiple: true);
+            for (final file in files) {
+              final now = DateTime.now();
+              final String formattedDate = DateFormat('dd.MM.yy HH:mm').format(now);
+              file.filename = 'Aufnahme $formattedDate.jpg';
+              file.fileType = FileType.capture;
+            }
+            return files;
+          },
           onAddFiles: (_) => setState(() {
             _setIsDirty();
           }),
