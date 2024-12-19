@@ -22,6 +22,25 @@ class TbDocument extends Table {
   Set<Column> get primaryKey => {uuid};
 }
 
+class TbSelection extends Table {
+  TextColumn get uuid => text().clientDefault(() => const Uuid().v4())();
+
+  TextColumn get documentId => text().references(TbDocument, #uuid, onDelete: KeyAction.cascade)();
+
+  TextColumn get fileId => text().references(TbFile, #uuid, onDelete: KeyAction.cascade)();
+
+  RealColumn get x1 => real()();
+
+  RealColumn get x2 => real()();
+
+  RealColumn get y1 => real()();
+
+  RealColumn get y2 => real()();
+
+  @override
+  Set<Column> get primaryKey => {uuid};
+}
+
 class TbFile extends Table {
   TextColumn get uuid => text().clientDefault(() => const Uuid().v4())();
 

@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:drift/drift.dart';
 import 'package:paper_cv/data/models/floor_dto_models.dart';
 import 'package:paper_cv/data/models/floor_enums.dart';
@@ -15,6 +16,7 @@ part 'database.g.dart';
 
 @DriftDatabase(tables: [
   TbDocument,
+  TbSelection,
   TbFile,
 ])
 class FloorDatabase extends _$FloorDatabase with DbMixin {
@@ -108,6 +110,9 @@ class FloorDatabase extends _$FloorDatabase with DbMixin {
         scans: scans,
         reports: reports,
       );
+
+      await _loadSelections(form);
+
       return form;
     }
   }
@@ -115,9 +120,10 @@ class FloorDatabase extends _$FloorDatabase with DbMixin {
   Future<void> _saveDocumentFile({required SelectedFile file, required String documentId}) async {
     if (file.uuid != null) return;
     final String newUuid = Uuid().v4().toString();
+    file.uuid ??= newUuid;
     await into(tbFile).insert(
       TbFileCompanion(
-        uuid: Value(newUuid),
+        uuid: Value(file.uuid!),
         refUuid: Value(documentId),
         filename: Value(file.filename),
         fileType: Value(file.fileType),
@@ -133,6 +139,40 @@ class FloorDatabase extends _$FloorDatabase with DbMixin {
     query.where((_) => tbFile.refUuid.isValue(refUuid));
     query.where((_) => tbFile.uuid.isNotIn(existingFileIds));
     await query.go();
+  }
+
+  Future<void> _deleteUnlinkedSelections(String documentId, List<String> existingSelectionIds) async {
+    final query = delete(tbSelection);
+    query.where((_) => tbSelection.documentId.isValue(documentId));
+    query.where((_) => tbSelection.uuid.isNotIn(existingSelectionIds));
+    await query.go();
+  }
+
+  Future<void> _loadSelections(DocumentForm form) async {
+    if (form.captures.isEmpty) return;
+    final query = select(tbSelection);
+    query.where((_) => tbSelection.documentId.isValue(form.uuid!));
+    final selections = await query.get();
+    for (final selection in selections) {
+      final capture = form.captures.firstWhereOrNull((capture) => capture.uuid! == selection.fileId);
+      if (capture == null) continue;
+      form.selections[capture] = Selection(x1: selection.x1, x2: selection.x2, y1: selection.y1, y2: selection.y2);
+    }
+  }
+
+  Future<void> _saveSelection({required String documentId, required String fileId, required Selection selection}) async {
+    selection.uuid ??= Uuid().v4().toString();
+    await into(tbSelection).insertOnConflictUpdate(
+      TbSelectionCompanion(
+        uuid: Value(selection.uuid!),
+        documentId: Value(documentId),
+        fileId: Value(fileId),
+        x1: Value(selection.x1),
+        x2: Value(selection.x2),
+        y1: Value(selection.y1),
+        y2: Value(selection.y2),
+      ),
+    );
   }
 
   Future<void> saveDocumentForm(DocumentForm form, {bool? isExample}) async {
@@ -165,6 +205,10 @@ class FloorDatabase extends _$FloorDatabase with DbMixin {
         }
         for (final reports in form.reports) {
           await _saveDocumentFile(file: reports, documentId: formUuid);
+        }
+        await _deleteUnlinkedSelections(formUuid, form.selections.values.map((selection) => formUuid).whereNotNull().toList());
+        for (final selectionEntry in form.selections.entries) {
+          await _saveSelection(documentId: formUuid, fileId: selectionEntry.key.uuid!, selection: selectionEntry.value);
         }
       },
     );

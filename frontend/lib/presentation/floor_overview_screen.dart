@@ -128,12 +128,40 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
           onAddFiles: (_) => setState(() {
             _setIsDirty();
           }),
-          onRemoveFile: (_) => setState(() {
+          onRemoveFile: (file) => setState(() {
+            _form.selections.remove(file);
             _setIsDirty();
           }),
-          onTapFile: (_, image) {
-            if (image != null) Navigator.of(context).push(MaterialPageRoute(builder: (context) => FloorTableSelectionScreen(image: image)));
+          onTapFile: (file, image) async {
+            if (image != null) {
+              final selectionResult = await Navigator.of(context).push<bool?>(
+                MaterialPageRoute(
+                  builder: (context) => FloorTableSelectionScreen(
+                    file: file,
+                    image: image,
+                    document: _form,
+                  ),
+                ),
+              );
+              if (mounted && selectionResult == true)
+                setState(() {
+                  _isDirty = true;
+                });
+            }
           },
+          fileStatusWidget: (file) => FloorIconButton(
+            iconData: _form.selections[file] != null ? Icons.check : Icons.document_scanner,
+            foregroundColor: _form.selections[file] != null ? Colors.white : Colors.black,
+            backgroundColor: _form.selections[file] != null ? Colors.green : Colors.amber,
+            onPressed: () {},
+          ),
+          // fileStatusWidget: (file) => Container(
+          //   padding: EdgeInsets.symmetric(horizontal: AppSizes.kSmallGap),
+          //   decoration: ShapeDecoration(
+          //     shape: StadiumBorder(side: BorderSide(color: colorScheme.outline)),
+          //   ),
+          //   child: Text(_form.selections[file] != null ? 'Bereit' : 'Fehlend', style: textTheme.titleMedium?.copyWith(color: colorScheme.outline)),
+          // ),
         );
 
     Widget buildScanCard() => FloorAttachmentCard(

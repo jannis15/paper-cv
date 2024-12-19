@@ -27,12 +27,14 @@ class FloorAppBar extends ConsumerWidget implements PreferredSizeWidget {
   final void Function()? customPop;
   final List<Widget>? actions;
   final bool showBackButton;
+  final Color? backgroundColor;
 
   FloorAppBar({
     this.title,
     this.customPop,
     this.actions,
     this.showBackButton = true,
+    this.backgroundColor,
   });
 
   @override
@@ -40,7 +42,7 @@ class FloorAppBar extends ConsumerWidget implements PreferredSizeWidget {
     bool useDesktopLayout() => MediaQuery.of(context).size.width >= AppSizes.kDesktopWidth;
     final bool noRouteBelow = (ModalRoute.of(context) == null || (ModalRoute.of(context)!.isFirst));
     return AppBar(
-      backgroundColor: useDesktopLayout() ? Theme.of(context).colorScheme.surfaceContainer : null,
+      backgroundColor: backgroundColor ?? (useDesktopLayout() ? Theme.of(context).colorScheme.surfaceContainer : null),
       leadingWidth: 0,
       leading: SizedBox(),
       titleSpacing: AppSizes.kGap,

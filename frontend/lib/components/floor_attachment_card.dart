@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:ui' as ui show Image;
 import 'package:collection/collection.dart';
 import 'package:file_icon/file_icon.dart';
@@ -19,9 +20,10 @@ class FloorAttachmentCard extends StatefulWidget {
   final List<SelectedFile> files;
   final Future<List<SelectedFile>?> Function() onPickFiles;
   final Future<List<SelectedFile>?> Function()? onPickFiles2;
-  final Function(List<SelectedFile> files) onAddFiles;
-  final Function(SelectedFile file) onRemoveFile;
-  final Function(SelectedFile file, ui.Image? image)? onTapFile;
+  final FutureOr<void> Function(List<SelectedFile> files) onAddFiles;
+  final FutureOr<void> Function(SelectedFile file) onRemoveFile;
+  final FutureOr<void> Function(SelectedFile file, ui.Image? image)? onTapFile;
+  final Widget Function(SelectedFile file)? fileStatusWidget;
   final IconData iconData;
   final IconData? iconData2;
   final String iconText;
@@ -36,6 +38,7 @@ class FloorAttachmentCard extends StatefulWidget {
     required this.onAddFiles,
     required this.onRemoveFile,
     this.onTapFile,
+    this.fileStatusWidget,
     this.disablePickFile = false,
     this.iconData = Icons.add,
     this.iconData2,
@@ -171,6 +174,14 @@ class _FloorAttachmentCardState extends State<FloorAttachmentCard> {
               },
             ),
           ),
+          if (widget.fileStatusWidget != null)
+            Positioned(
+              bottom: 0,
+              right: 0,
+              child: IgnorePointer(
+                child: widget.fileStatusWidget!(file),
+              ),
+            ),
         ],
       );
     }

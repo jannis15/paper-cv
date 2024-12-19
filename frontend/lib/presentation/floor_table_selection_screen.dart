@@ -1,12 +1,23 @@
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
+import 'package:paper_cv/components/floor_app_bar.dart';
+import 'package:paper_cv/components/floor_buttons.dart';
+import 'package:paper_cv/domain/floor_models.dart';
+import 'package:paper_cv/utils/file_picker_models.dart';
 import 'package:paper_cv/utils/math_utils.dart';
 import 'package:paper_cv/utils/rect_extension.dart';
+import 'package:paper_cv/utils/widget_utils.dart';
 
 class FloorTableSelectionScreen extends StatefulWidget {
+  final SelectedFile file;
   final ui.Image image;
+  final DocumentForm document;
 
-  const FloorTableSelectionScreen({required this.image});
+  const FloorTableSelectionScreen({
+    required this.file,
+    required this.image,
+    required this.document,
+  });
 
   @override
   _FloorTableSelectionScreenState createState() => _FloorTableSelectionScreenState();
@@ -17,6 +28,16 @@ class _FloorTableSelectionScreenState extends State<FloorTableSelectionScreen> {
   Offset? _startDrag;
   Offset? _endDrag;
   Rect? _oldImageRect;
+
+  @override
+  void initState() {
+    super.initState();
+    final selection = widget.document.selections[widget.file];
+    if (selection != null) {
+      _startDrag = ui.Offset(selection.x1, selection.y1);
+      _endDrag = ui.Offset(selection.x2, selection.y2);
+    }
+  }
 
   // Future<ui.Image?> cropImage() async {
   //   if (_startDrag == null || _currentDrag == null) {
@@ -57,7 +78,45 @@ class _FloorTableSelectionScreenState extends State<FloorTableSelectionScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Rectangle Selection Canvas')),
+      appBar: FloorAppBar(
+        backgroundColor: colorScheme.surface,
+        actions: [
+          FloorOutlinedButton(
+            iconData: Icons.check,
+            text: 'Bestätigen',
+            onPressed: () {
+              Selection? selection = widget.document.selections[widget.file];
+              bool shouldAssign = _startDrag != null &&
+                  _endDrag != null &&
+                  (selection == null ||
+                      (selection.x1 != _startDrag!.dx ||
+                          selection.y1 != _startDrag!.dy ||
+                          selection.x2 != _endDrag!.dx ||
+                          selection.y2 != _endDrag!.dy));
+              if (shouldAssign) {
+                if (selection == null) {
+                  widget.document.selections[widget.file] = Selection(
+                    x1: _startDrag!.dx,
+                    y1: _startDrag!.dy,
+                    x2: _endDrag!.dx,
+                    y2: _endDrag!.dy,
+                  );
+                } else {
+                  selection
+                    ..x1 = _startDrag!.dx
+                    ..y1 = _startDrag!.dy
+                    ..x2 = _endDrag!.dx
+                    ..y2 = _endDrag!.dy;
+                }
+              } else if (_startDrag == null && _endDrag == null && selection != null) {
+                widget.document.selections.remove(widget.file);
+                shouldAssign = true;
+              }
+              Navigator.of(context).pop<bool>(shouldAssign);
+            },
+          )
+        ],
+      ),
       body: LayoutBuilder(
         builder: (context, constraints) {
           final containerSize = Size(constraints.maxWidth, constraints.maxHeight);

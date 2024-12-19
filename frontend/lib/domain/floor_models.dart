@@ -22,6 +22,22 @@ enum DocumentSortType {
       };
 }
 
+class Selection {
+  String? uuid;
+  double x1;
+  double x2;
+  double y1;
+  double y2;
+
+  Selection({
+    this.uuid,
+    required this.x1,
+    required this.x2,
+    required this.y1,
+    required this.y2,
+  });
+}
+
 class DocumentForm {
   String? uuid;
   String title;
@@ -32,6 +48,7 @@ class DocumentForm {
   DateTime? createdAt;
   DateTime? modifiedAt;
   DateTime? documentDate;
+  Map<SelectedFile, Selection> selections;
 
   DocumentForm({
     this.uuid,
@@ -43,7 +60,9 @@ class DocumentForm {
     this.createdAt,
     this.modifiedAt,
     this.documentDate,
+    Map<SelectedFile, Selection>? selections,
   })  : captures = captures ?? [],
         scans = scans ?? [],
-        reports = reports ?? [];
+        reports = reports ?? [],
+        selections = selections ?? {};
 }
