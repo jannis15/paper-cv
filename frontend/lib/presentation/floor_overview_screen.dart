@@ -155,13 +155,6 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
             backgroundColor: _form.selections[file] != null ? Colors.green : Colors.amber,
             onPressed: () {},
           ),
-          // fileStatusWidget: (file) => Container(
-          //   padding: EdgeInsets.symmetric(horizontal: AppSizes.kSmallGap),
-          //   decoration: ShapeDecoration(
-          //     shape: StadiumBorder(side: BorderSide(color: colorScheme.outline)),
-          //   ),
-          //   child: Text(_form.selections[file] != null ? 'Bereit' : 'Fehlend', style: textTheme.titleMedium?.copyWith(color: colorScheme.outline)),
-          // ),
         );
 
     Widget buildScanCard() => FloorAttachmentCard(
