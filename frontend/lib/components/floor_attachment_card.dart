@@ -28,6 +28,7 @@ class FloorAttachmentCard extends StatefulWidget {
   final IconData? iconData2;
   final String iconText;
   final bool disablePickFile;
+  final Widget? infoWidget;
 
   const FloorAttachmentCard({
     super.key,
@@ -43,6 +44,7 @@ class FloorAttachmentCard extends StatefulWidget {
     this.iconData = Icons.add,
     this.iconData2,
     this.iconText = 'Hinzufügen',
+    this.infoWidget,
   }) : assert((iconData2 == null && onPickFiles2 == null) || (iconData2 != null && onPickFiles2 != null), 'FloorAttachmentCard wrong parameters!');
 
   @override
@@ -196,10 +198,18 @@ class _FloorAttachmentCardState extends State<FloorAttachmentCard> {
             gap: AppSizes.kSmallGap,
             children: [
               Flexible(
-                child: Text(
-                  widget.title,
-                  overflow: TextOverflow.ellipsis,
-                  style: textTheme.titleLarge,
+                child: RowGap(
+                  gap: AppSizes.kSmallGap,
+                  children: [
+                    Flexible(
+                      child: Text(
+                        widget.title,
+                        overflow: TextOverflow.ellipsis,
+                        style: textTheme.titleLarge,
+                      ),
+                    ),
+                    if (widget.infoWidget != null) widget.infoWidget!,
+                  ],
                 ),
               ),
               RowGap(

@@ -65,4 +65,6 @@ class DocumentForm {
         scans = scans ?? [],
         reports = reports ?? [],
         selections = selections ?? {};
+
+  bool get selectionsReady => selections.entries.length == captures.length;
 }

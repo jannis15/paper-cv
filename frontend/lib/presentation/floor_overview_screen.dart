@@ -177,7 +177,19 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
           onRemoveFile: (_) => setState(() {
             _setIsDirty();
           }),
-          disablePickFile: _form.captures.isEmpty,
+          disablePickFile: _form.captures.isEmpty || !_form.selectionsReady,
+          infoWidget: _form.captures.isNotEmpty && _form.scans.isEmpty
+              ? Container(
+                  padding: EdgeInsets.symmetric(horizontal: AppSizes.kSmallGap),
+                  decoration: ShapeDecoration(
+                    shape: StadiumBorder(side: BorderSide(color: _form.selectionsReady ? Colors.green : Colors.amber)),
+                  ),
+                  child: Text(
+                    _form.selectionsReady ? 'Bereit' : 'Selektion erforderlich',
+                    style: textTheme.titleMedium?.copyWith(color: _form.selectionsReady ? Colors.green : Colors.amber),
+                  ),
+                )
+              : null,
         );
 
     Widget buildReportCard() => FloorAttachmentCard(
