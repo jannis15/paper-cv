@@ -409,7 +409,7 @@ class _FloorMainScreenState extends State<FloorMainScreen> {
                           : SizedBox(),
                     ),
                     RowGap(
-                      gap: AppSizes.kGap,
+                      gap: AppSizes.kSmallGap,
                       mainAxisAlignment: MainAxisAlignment.end,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
@@ -421,27 +421,32 @@ class _FloorMainScreenState extends State<FloorMainScreen> {
                           fit: FlexFit.loose,
                           child: SingleChildScrollView(
                             scrollDirection: Axis.horizontal,
-                            child: RowGap(
-                                gap: AppSizes.kSmallGap,
-                                crossAxisAlignment: CrossAxisAlignment.baseline,
-                                children: DocumentSortType.values
-                                    .map(
-                                      (sortType) => AnimatedSize(
-                                        duration: Duration(milliseconds: 200),
-                                        curve: Curves.easeIn,
-                                        child: FloorChip(
-                                          iconData: sortType != _sortType
-                                              ? null
-                                              : _sortDirection == SortDirection.ascending
-                                                  ? Icons.arrow_upward
-                                                  : Icons.arrow_downward,
-                                          text: sortType.name,
-                                          isSelected: sortType == _sortType,
-                                          onPressed: () => _changeSortType(sortType),
-                                        ),
-                                      ),
-                                    )
-                                    .toList()),
+                            child: Row(
+                              children: [
+                                SizedBox(width: AppSizes.kSmallGap),
+                                RowGap(
+                                    gap: AppSizes.kSmallGap,
+                                    crossAxisAlignment: CrossAxisAlignment.baseline,
+                                    children: DocumentSortType.values
+                                        .map(
+                                          (sortType) => AnimatedSize(
+                                            duration: Duration(milliseconds: 200),
+                                            curve: Curves.easeIn,
+                                            child: FloorChip(
+                                              iconData: sortType != _sortType
+                                                  ? null
+                                                  : _sortDirection == SortDirection.ascending
+                                                      ? Icons.arrow_upward
+                                                      : Icons.arrow_downward,
+                                              text: sortType.name,
+                                              isSelected: sortType == _sortType,
+                                              onPressed: () => _changeSortType(sortType),
+                                            ),
+                                          ),
+                                        )
+                                        .toList()),
+                              ],
+                            ),
                           ),
                         ),
                       ],
