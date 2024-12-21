@@ -65,31 +65,37 @@ abstract class FloorRepository {
       pdf.addPage(
         pw.Page(
           pageFormat: PdfPageFormat.a4,
-          build: (context) => pw.Padding(
-            padding: pw.EdgeInsets.all(documentMarginCm),
-            child: pw.Table(
-              tableWidth: pw.TableWidth.min,
-              columnWidths: {
-                for (int i = 0; i < widths.length; i++) i: widths[i],
-              },
-              border: pw.TableBorder.all(),
-              children: dto.cellTexts
-                  .mapIndexed(
-                    (y, row) => pw.TableRow(
-                      children: row
-                          .mapIndexed(
-                            (x, text) => pw.Container(
-                              alignment: y == 0 ? pw.Alignment.bottomCenter : pw.Alignment.bottomRight,
-                              padding: pw.EdgeInsets.all(.5 * PdfPageFormat.mm),
-                              height: scaledAvgRowHeight,
-                              child: pw.Text(text, style: pw.TextStyle(fontSize: fontSize)),
-                            ),
-                          )
-                          .toList(),
-                    ),
-                  )
-                  .toList(),
-            ),
+          margin: pw.EdgeInsets.zero,
+          build: (context) => pw.Stack(
+            children: [
+              pw.Positioned(
+                left: dto.tableX * PdfPageFormat.cm,
+                top: dto.tableY * PdfPageFormat.cm,
+                child: pw.Table(
+                  tableWidth: pw.TableWidth.min,
+                  columnWidths: {
+                    for (int i = 0; i < widths.length; i++) i: widths[i],
+                  },
+                  border: pw.TableBorder.all(),
+                  children: dto.cellTexts
+                      .mapIndexed(
+                        (y, row) => pw.TableRow(
+                          children: row
+                              .mapIndexed(
+                                (x, text) => pw.Container(
+                                  alignment: y == 0 ? pw.Alignment.bottomCenter : pw.Alignment.bottomRight,
+                                  padding: pw.EdgeInsets.all(.5 * PdfPageFormat.mm),
+                                  height: scaledAvgRowHeight,
+                                  child: pw.Text(text, style: pw.TextStyle(fontSize: fontSize)),
+                                ),
+                              )
+                              .toList(),
+                        ),
+                      )
+                      .toList(),
+                ),
+              ),
+            ],
           ),
         ),
       );

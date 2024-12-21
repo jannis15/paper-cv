@@ -147,9 +147,17 @@ class FloorCvController(ABC):
         for column_width in column_widths:
             column_widths_cm.append((column_width / img_width) * a4_width)
 
+        corner_x, corner_y = new_corners[0][0], new_corners[0][1]
+        abs_corner_x = selection.x1 + corner_x
+        abs_corner_y = selection.y1 + corner_y
+        corner_x_cm = (abs_corner_x / img_width) * a4_width
+        corner_y_cm = (abs_corner_y / img_height) * a4_height
+
         return ScanProperties(
             column_widths_cm=column_widths_cm,
             rows=rows,
+            table_x=corner_x_cm,
+            table_y=corner_y_cm,
             avg_row_height_cm=avg_vertical_distance_cm,
             cell_texts=cell_texts,
         )

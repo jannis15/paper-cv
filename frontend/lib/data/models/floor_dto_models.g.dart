@@ -15,6 +15,8 @@ _$ScanPropertiesDtoImpl _$$ScanPropertiesDtoImplFromJson(
           .toList(),
       rows: (json['rows'] as num).toInt(),
       avgRowHeightCm: (json['avg_row_height_cm'] as num).toDouble(),
+      tableX: (json['table_x'] as num).toDouble(),
+      tableY: (json['table_y'] as num).toDouble(),
       cellTexts: (json['cell_texts'] as List<dynamic>)
           .map((e) => (e as List<dynamic>).map((e) => e as String).toList())
           .toList(),
@@ -27,6 +29,8 @@ Map<String, dynamic> _$$ScanPropertiesDtoImplToJson(
       'column_widths_cm': instance.columnWidthsCm,
       'rows': instance.rows,
       'avg_row_height_cm': instance.avgRowHeightCm,
+      'table_x': instance.tableX,
+      'table_y': instance.tableY,
       'cell_texts': instance.cellTexts,
     };
 
