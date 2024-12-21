@@ -238,12 +238,12 @@ ScanPropertiesDto _$ScanPropertiesDtoFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$ScanPropertiesDto {
   String? get uuid => throw _privateConstructorUsedError;
-  @JsonKey(name: 'column_widths')
-  List<double> get columnWidths => throw _privateConstructorUsedError;
+  @JsonKey(name: 'column_widths_cm')
+  List<double> get columnWidthsCm => throw _privateConstructorUsedError;
   @JsonKey(name: 'rows')
   int get rows => throw _privateConstructorUsedError;
-  @JsonKey(name: 'avg_row_height')
-  double get avgRowHeight => throw _privateConstructorUsedError;
+  @JsonKey(name: 'avg_row_height_cm')
+  double get avgRowHeightCm => throw _privateConstructorUsedError;
   @JsonKey(name: 'cell_texts')
   List<List<String>> get cellTexts => throw _privateConstructorUsedError;
 
@@ -265,9 +265,9 @@ abstract class $ScanPropertiesDtoCopyWith<$Res> {
   @useResult
   $Res call(
       {String? uuid,
-      @JsonKey(name: 'column_widths') List<double> columnWidths,
+      @JsonKey(name: 'column_widths_cm') List<double> columnWidthsCm,
       @JsonKey(name: 'rows') int rows,
-      @JsonKey(name: 'avg_row_height') double avgRowHeight,
+      @JsonKey(name: 'avg_row_height_cm') double avgRowHeightCm,
       @JsonKey(name: 'cell_texts') List<List<String>> cellTexts});
 }
 
@@ -287,9 +287,9 @@ class _$ScanPropertiesDtoCopyWithImpl<$Res, $Val extends ScanPropertiesDto>
   @override
   $Res call({
     Object? uuid = freezed,
-    Object? columnWidths = null,
+    Object? columnWidthsCm = null,
     Object? rows = null,
-    Object? avgRowHeight = null,
+    Object? avgRowHeightCm = null,
     Object? cellTexts = null,
   }) {
     return _then(_value.copyWith(
@@ -297,17 +297,17 @@ class _$ScanPropertiesDtoCopyWithImpl<$Res, $Val extends ScanPropertiesDto>
           ? _value.uuid
           : uuid // ignore: cast_nullable_to_non_nullable
               as String?,
-      columnWidths: null == columnWidths
-          ? _value.columnWidths
-          : columnWidths // ignore: cast_nullable_to_non_nullable
+      columnWidthsCm: null == columnWidthsCm
+          ? _value.columnWidthsCm
+          : columnWidthsCm // ignore: cast_nullable_to_non_nullable
               as List<double>,
       rows: null == rows
           ? _value.rows
           : rows // ignore: cast_nullable_to_non_nullable
               as int,
-      avgRowHeight: null == avgRowHeight
-          ? _value.avgRowHeight
-          : avgRowHeight // ignore: cast_nullable_to_non_nullable
+      avgRowHeightCm: null == avgRowHeightCm
+          ? _value.avgRowHeightCm
+          : avgRowHeightCm // ignore: cast_nullable_to_non_nullable
               as double,
       cellTexts: null == cellTexts
           ? _value.cellTexts
@@ -327,9 +327,9 @@ abstract class _$$ScanPropertiesDtoImplCopyWith<$Res>
   @useResult
   $Res call(
       {String? uuid,
-      @JsonKey(name: 'column_widths') List<double> columnWidths,
+      @JsonKey(name: 'column_widths_cm') List<double> columnWidthsCm,
       @JsonKey(name: 'rows') int rows,
-      @JsonKey(name: 'avg_row_height') double avgRowHeight,
+      @JsonKey(name: 'avg_row_height_cm') double avgRowHeightCm,
       @JsonKey(name: 'cell_texts') List<List<String>> cellTexts});
 }
 
@@ -347,9 +347,9 @@ class __$$ScanPropertiesDtoImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? uuid = freezed,
-    Object? columnWidths = null,
+    Object? columnWidthsCm = null,
     Object? rows = null,
-    Object? avgRowHeight = null,
+    Object? avgRowHeightCm = null,
     Object? cellTexts = null,
   }) {
     return _then(_$ScanPropertiesDtoImpl(
@@ -357,17 +357,17 @@ class __$$ScanPropertiesDtoImplCopyWithImpl<$Res>
           ? _value.uuid
           : uuid // ignore: cast_nullable_to_non_nullable
               as String?,
-      columnWidths: null == columnWidths
-          ? _value._columnWidths
-          : columnWidths // ignore: cast_nullable_to_non_nullable
+      columnWidthsCm: null == columnWidthsCm
+          ? _value._columnWidthsCm
+          : columnWidthsCm // ignore: cast_nullable_to_non_nullable
               as List<double>,
       rows: null == rows
           ? _value.rows
           : rows // ignore: cast_nullable_to_non_nullable
               as int,
-      avgRowHeight: null == avgRowHeight
-          ? _value.avgRowHeight
-          : avgRowHeight // ignore: cast_nullable_to_non_nullable
+      avgRowHeightCm: null == avgRowHeightCm
+          ? _value.avgRowHeightCm
+          : avgRowHeightCm // ignore: cast_nullable_to_non_nullable
               as double,
       cellTexts: null == cellTexts
           ? _value._cellTexts
@@ -382,11 +382,12 @@ class __$$ScanPropertiesDtoImplCopyWithImpl<$Res>
 class _$ScanPropertiesDtoImpl extends _ScanPropertiesDto {
   _$ScanPropertiesDtoImpl(
       {this.uuid,
-      @JsonKey(name: 'column_widths') required final List<double> columnWidths,
+      @JsonKey(name: 'column_widths_cm')
+      required final List<double> columnWidthsCm,
       @JsonKey(name: 'rows') required this.rows,
-      @JsonKey(name: 'avg_row_height') required this.avgRowHeight,
+      @JsonKey(name: 'avg_row_height_cm') required this.avgRowHeightCm,
       @JsonKey(name: 'cell_texts') required final List<List<String>> cellTexts})
-      : _columnWidths = columnWidths,
+      : _columnWidthsCm = columnWidthsCm,
         _cellTexts = cellTexts,
         super._();
 
@@ -395,21 +396,21 @@ class _$ScanPropertiesDtoImpl extends _ScanPropertiesDto {
 
   @override
   final String? uuid;
-  final List<double> _columnWidths;
+  final List<double> _columnWidthsCm;
   @override
-  @JsonKey(name: 'column_widths')
-  List<double> get columnWidths {
-    if (_columnWidths is EqualUnmodifiableListView) return _columnWidths;
+  @JsonKey(name: 'column_widths_cm')
+  List<double> get columnWidthsCm {
+    if (_columnWidthsCm is EqualUnmodifiableListView) return _columnWidthsCm;
     // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_columnWidths);
+    return EqualUnmodifiableListView(_columnWidthsCm);
   }
 
   @override
   @JsonKey(name: 'rows')
   final int rows;
   @override
-  @JsonKey(name: 'avg_row_height')
-  final double avgRowHeight;
+  @JsonKey(name: 'avg_row_height_cm')
+  final double avgRowHeightCm;
   final List<List<String>> _cellTexts;
   @override
   @JsonKey(name: 'cell_texts')
@@ -421,7 +422,7 @@ class _$ScanPropertiesDtoImpl extends _ScanPropertiesDto {
 
   @override
   String toString() {
-    return 'ScanPropertiesDto(uuid: $uuid, columnWidths: $columnWidths, rows: $rows, avgRowHeight: $avgRowHeight, cellTexts: $cellTexts)';
+    return 'ScanPropertiesDto(uuid: $uuid, columnWidthsCm: $columnWidthsCm, rows: $rows, avgRowHeightCm: $avgRowHeightCm, cellTexts: $cellTexts)';
   }
 
   @override
@@ -431,10 +432,10 @@ class _$ScanPropertiesDtoImpl extends _ScanPropertiesDto {
             other is _$ScanPropertiesDtoImpl &&
             (identical(other.uuid, uuid) || other.uuid == uuid) &&
             const DeepCollectionEquality()
-                .equals(other._columnWidths, _columnWidths) &&
+                .equals(other._columnWidthsCm, _columnWidthsCm) &&
             (identical(other.rows, rows) || other.rows == rows) &&
-            (identical(other.avgRowHeight, avgRowHeight) ||
-                other.avgRowHeight == avgRowHeight) &&
+            (identical(other.avgRowHeightCm, avgRowHeightCm) ||
+                other.avgRowHeightCm == avgRowHeightCm) &&
             const DeepCollectionEquality()
                 .equals(other._cellTexts, _cellTexts));
   }
@@ -444,9 +445,9 @@ class _$ScanPropertiesDtoImpl extends _ScanPropertiesDto {
   int get hashCode => Object.hash(
       runtimeType,
       uuid,
-      const DeepCollectionEquality().hash(_columnWidths),
+      const DeepCollectionEquality().hash(_columnWidthsCm),
       rows,
-      avgRowHeight,
+      avgRowHeightCm,
       const DeepCollectionEquality().hash(_cellTexts));
 
   /// Create a copy of ScanPropertiesDto
@@ -469,9 +470,10 @@ class _$ScanPropertiesDtoImpl extends _ScanPropertiesDto {
 abstract class _ScanPropertiesDto extends ScanPropertiesDto {
   factory _ScanPropertiesDto(
       {final String? uuid,
-      @JsonKey(name: 'column_widths') required final List<double> columnWidths,
+      @JsonKey(name: 'column_widths_cm')
+      required final List<double> columnWidthsCm,
       @JsonKey(name: 'rows') required final int rows,
-      @JsonKey(name: 'avg_row_height') required final double avgRowHeight,
+      @JsonKey(name: 'avg_row_height_cm') required final double avgRowHeightCm,
       @JsonKey(name: 'cell_texts')
       required final List<List<String>> cellTexts}) = _$ScanPropertiesDtoImpl;
   _ScanPropertiesDto._() : super._();
@@ -482,14 +484,14 @@ abstract class _ScanPropertiesDto extends ScanPropertiesDto {
   @override
   String? get uuid;
   @override
-  @JsonKey(name: 'column_widths')
-  List<double> get columnWidths;
+  @JsonKey(name: 'column_widths_cm')
+  List<double> get columnWidthsCm;
   @override
   @JsonKey(name: 'rows')
   int get rows;
   @override
-  @JsonKey(name: 'avg_row_height')
-  double get avgRowHeight;
+  @JsonKey(name: 'avg_row_height_cm')
+  double get avgRowHeightCm;
   @override
   @JsonKey(name: 'cell_texts')
   List<List<String>> get cellTexts;
@@ -499,5 +501,209 @@ abstract class _ScanPropertiesDto extends ScanPropertiesDto {
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$ScanPropertiesDtoImplCopyWith<_$ScanPropertiesDtoImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+SelectionDto _$SelectionDtoFromJson(Map<String, dynamic> json) {
+  return _SelectionDto.fromJson(json);
+}
+
+/// @nodoc
+mixin _$SelectionDto {
+  double get x1 => throw _privateConstructorUsedError;
+  double get y1 => throw _privateConstructorUsedError;
+  double get x2 => throw _privateConstructorUsedError;
+  double get y2 => throw _privateConstructorUsedError;
+
+  /// Serializes this SelectionDto to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of SelectionDto
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $SelectionDtoCopyWith<SelectionDto> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $SelectionDtoCopyWith<$Res> {
+  factory $SelectionDtoCopyWith(
+          SelectionDto value, $Res Function(SelectionDto) then) =
+      _$SelectionDtoCopyWithImpl<$Res, SelectionDto>;
+  @useResult
+  $Res call({double x1, double y1, double x2, double y2});
+}
+
+/// @nodoc
+class _$SelectionDtoCopyWithImpl<$Res, $Val extends SelectionDto>
+    implements $SelectionDtoCopyWith<$Res> {
+  _$SelectionDtoCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of SelectionDto
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? x1 = null,
+    Object? y1 = null,
+    Object? x2 = null,
+    Object? y2 = null,
+  }) {
+    return _then(_value.copyWith(
+      x1: null == x1
+          ? _value.x1
+          : x1 // ignore: cast_nullable_to_non_nullable
+              as double,
+      y1: null == y1
+          ? _value.y1
+          : y1 // ignore: cast_nullable_to_non_nullable
+              as double,
+      x2: null == x2
+          ? _value.x2
+          : x2 // ignore: cast_nullable_to_non_nullable
+              as double,
+      y2: null == y2
+          ? _value.y2
+          : y2 // ignore: cast_nullable_to_non_nullable
+              as double,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$SelectionDtoImplCopyWith<$Res>
+    implements $SelectionDtoCopyWith<$Res> {
+  factory _$$SelectionDtoImplCopyWith(
+          _$SelectionDtoImpl value, $Res Function(_$SelectionDtoImpl) then) =
+      __$$SelectionDtoImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({double x1, double y1, double x2, double y2});
+}
+
+/// @nodoc
+class __$$SelectionDtoImplCopyWithImpl<$Res>
+    extends _$SelectionDtoCopyWithImpl<$Res, _$SelectionDtoImpl>
+    implements _$$SelectionDtoImplCopyWith<$Res> {
+  __$$SelectionDtoImplCopyWithImpl(
+      _$SelectionDtoImpl _value, $Res Function(_$SelectionDtoImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of SelectionDto
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? x1 = null,
+    Object? y1 = null,
+    Object? x2 = null,
+    Object? y2 = null,
+  }) {
+    return _then(_$SelectionDtoImpl(
+      x1: null == x1
+          ? _value.x1
+          : x1 // ignore: cast_nullable_to_non_nullable
+              as double,
+      y1: null == y1
+          ? _value.y1
+          : y1 // ignore: cast_nullable_to_non_nullable
+              as double,
+      x2: null == x2
+          ? _value.x2
+          : x2 // ignore: cast_nullable_to_non_nullable
+              as double,
+      y2: null == y2
+          ? _value.y2
+          : y2 // ignore: cast_nullable_to_non_nullable
+              as double,
+    ));
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$SelectionDtoImpl extends _SelectionDto {
+  _$SelectionDtoImpl(
+      {required this.x1, required this.y1, required this.x2, required this.y2})
+      : super._();
+
+  factory _$SelectionDtoImpl.fromJson(Map<String, dynamic> json) =>
+      _$$SelectionDtoImplFromJson(json);
+
+  @override
+  final double x1;
+  @override
+  final double y1;
+  @override
+  final double x2;
+  @override
+  final double y2;
+
+  @override
+  String toString() {
+    return 'SelectionDto(x1: $x1, y1: $y1, x2: $x2, y2: $y2)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$SelectionDtoImpl &&
+            (identical(other.x1, x1) || other.x1 == x1) &&
+            (identical(other.y1, y1) || other.y1 == y1) &&
+            (identical(other.x2, x2) || other.x2 == x2) &&
+            (identical(other.y2, y2) || other.y2 == y2));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, x1, y1, x2, y2);
+
+  /// Create a copy of SelectionDto
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$SelectionDtoImplCopyWith<_$SelectionDtoImpl> get copyWith =>
+      __$$SelectionDtoImplCopyWithImpl<_$SelectionDtoImpl>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$SelectionDtoImplToJson(
+      this,
+    );
+  }
+}
+
+abstract class _SelectionDto extends SelectionDto {
+  factory _SelectionDto(
+      {required final double x1,
+      required final double y1,
+      required final double x2,
+      required final double y2}) = _$SelectionDtoImpl;
+  _SelectionDto._() : super._();
+
+  factory _SelectionDto.fromJson(Map<String, dynamic> json) =
+      _$SelectionDtoImpl.fromJson;
+
+  @override
+  double get x1;
+  @override
+  double get y1;
+  @override
+  double get x2;
+  @override
+  double get y2;
+
+  /// Create a copy of SelectionDto
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$SelectionDtoImplCopyWith<_$SelectionDtoImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

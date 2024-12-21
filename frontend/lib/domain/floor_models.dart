@@ -1,3 +1,4 @@
+import 'package:paper_cv/data/models/floor_dto_models.dart';
 import 'package:paper_cv/utils/file_picker_models.dart';
 
 enum SortDirection {
@@ -36,6 +37,13 @@ class Selection {
     required this.y1,
     required this.y2,
   });
+
+  SelectionDto toDto() => SelectionDto(
+        x1: x1,
+        x2: x2,
+        y1: y1,
+        y2: y2,
+      );
 }
 
 class DocumentForm {

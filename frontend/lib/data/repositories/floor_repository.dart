@@ -27,50 +27,69 @@ abstract class FloorRepository {
 
   static Future<void> saveDocumentForm(DocumentForm form) => FloorDatabase.instance.saveDocumentForm(form);
 
-  static Future<ScanPropertiesDto> scanCapture(SelectedFile capture, {CancelToken? cancelToken}) =>
-      FloorCvApi.instance.scanCapture(capture, cancelToken: cancelToken);
+  static Future<ScanPropertiesDto> scanCapture(SelectedFile capture, SelectionDto selection, {CancelToken? cancelToken}) =>
+      FloorCvApi.instance.scanCapture(capture, selection, cancelToken: cancelToken);
 
   static Future<Uint8List> createPdf(List<ScanPropertiesDto> dtoList) async {
     final pdf = pw.Document();
     for (final dto in dtoList) {
-      final List<pw.FractionColumnWidth> widths = dto.columnWidths.map((width) => pw.FractionColumnWidth(width)).toList();
-      const a4HeightCm = 29.7 * PdfPageFormat.cm;
-      const documentMarginCm = 1.5 * PdfPageFormat.cm;
-      final maxTableHeightCm = a4HeightCm - (documentMarginCm * 2);
-      final tableHeightCm = dto.rows * dto.avgRowHeight; // implying that avgRowHeight is in cm
-      final constrainedTableHeightCm = min(maxTableHeightCm, tableHeightCm);
-      late final double shrinkingFactor;
-      if (tableHeightCm != constrainedTableHeightCm) {
-        shrinkingFactor = constrainedTableHeightCm / tableHeightCm;
-      } else {
-        shrinkingFactor = 1.0;
+      const a4HeightCm = 29.7;
+      const a4HWidthCm = 21;
+      const documentMarginCm = 1.0;
+
+      // constranin the table width
+      final maxTableWidthCm = a4HWidthCm - (documentMarginCm * 2);
+      final columnWidthsCm = List.of(dto.columnWidthsCm);
+      final tableWidthCm = columnWidthsCm.reduce((a, b) => a + b);
+      final constrainedTableWidthCm = min(maxTableWidthCm, tableWidthCm);
+      if (tableWidthCm != constrainedTableWidthCm) {
+        final double shrinkingWidthFactor = constrainedTableWidthCm / tableWidthCm;
+        for (int i = 0; i < columnWidthsCm.length; i++) {
+          columnWidthsCm[i] = columnWidthsCm[i] * shrinkingWidthFactor;
+        }
       }
-      final scaledAvgRowHeight = dto.avgRowHeight * shrinkingFactor;
+      final widths = columnWidthsCm.map((width) => pw.FixedColumnWidth(width * PdfPageFormat.cm)).toList();
+
+      // constrain the table height
+      final maxTableHeightCm = a4HeightCm - (documentMarginCm * 2);
+      final tableHeightCm = dto.rows * (dto.avgRowHeightCm);
+      final constrainedTableHeightCm = min(maxTableHeightCm, tableHeightCm);
+      double shrinkingHeightFactor = 1.0;
+      if (tableHeightCm != constrainedTableHeightCm) {
+        shrinkingHeightFactor = constrainedTableHeightCm / tableHeightCm;
+      }
+      final double scaledAvgRowHeight = dto.avgRowHeightCm * shrinkingHeightFactor * PdfPageFormat.cm;
+
+      final fontSize = 8.0;
 
       pdf.addPage(
         pw.Page(
           pageFormat: PdfPageFormat.a4,
-          margin: pw.EdgeInsets.all(documentMarginCm),
-          build: (context) => pw.Table(
-            columnWidths: {
-              for (int i = 0; i < widths.length; i++) i: widths[i],
-            },
-            border: pw.TableBorder.all(),
-            children: dto.cellTexts
-                .mapIndexed(
-                  (y, row) => pw.TableRow(
-                    children: row
-                        .mapIndexed(
-                          (x, text) => pw.Container(
-                            padding: pw.EdgeInsets.all(2 * PdfPageFormat.point),
-                            height: scaledAvgRowHeight,
-                            child: pw.Text(text),
-                          ),
-                        )
-                        .toList(),
-                  ),
-                )
-                .toList(),
+          build: (context) => pw.Padding(
+            padding: pw.EdgeInsets.all(documentMarginCm),
+            child: pw.Table(
+              tableWidth: pw.TableWidth.min,
+              columnWidths: {
+                for (int i = 0; i < widths.length; i++) i: widths[i],
+              },
+              border: pw.TableBorder.all(),
+              children: dto.cellTexts
+                  .mapIndexed(
+                    (y, row) => pw.TableRow(
+                      children: row
+                          .mapIndexed(
+                            (x, text) => pw.Container(
+                              alignment: y == 0 ? pw.Alignment.bottomCenter : pw.Alignment.bottomRight,
+                              padding: pw.EdgeInsets.all(.5 * PdfPageFormat.mm),
+                              height: scaledAvgRowHeight,
+                              child: pw.Text(text, style: pw.TextStyle(fontSize: fontSize)),
+                            ),
+                          )
+                          .toList(),
+                    ),
+                  )
+                  .toList(),
+            ),
           ),
         ),
       );

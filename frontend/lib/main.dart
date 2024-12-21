@@ -14,13 +14,20 @@ void main() async {
   packageInfo = await PackageInfo.fromPlatform();
   FlutterError.onError = (details) {
     if (details.exception.toString().contains('overflowed')) return;
-    FlutterError.presentError(details);
-    logException(details, StackTrace.current);
-    WidgetsBinding.instance.addPostFrameCallback((_) => showException(details.exception));
+    try {
+      logException(details, StackTrace.current);
+    } finally {
+      WidgetsBinding.instance.addPostFrameCallback((_) => showException(details.exception));
+
+      FlutterError.presentError(details);
+    }
   };
   PlatformDispatcher.instance.onError = (error, stackTrace) {
-    logException(error, stackTrace);
-    WidgetsBinding.instance.addPostFrameCallback((_) => showException(error));
+    try {
+      logException(error, stackTrace);
+    } finally {
+      WidgetsBinding.instance.addPostFrameCallback((_) => showException(error));
+    }
     return true;
   };
   timeago.setLocaleMessages('de', timeago.DeMessages());

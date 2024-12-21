@@ -1,4 +1,7 @@
+import json
+
 from fastapi import FastAPI, UploadFile, Request, HTTPException, Depends
+from fastapi.params import Form, File
 from fastapi.responses import JSONResponse
 from lib.floor_cv_controller import FloorCvController
 from google.cloud import vision
@@ -9,6 +12,8 @@ from slowapi.errors import RateLimitExceeded
 from PIL import Image
 import io
 import os
+
+from lib.schemas import Selection
 
 app = FastAPI()
 limiter = Limiter(key_func=get_remote_address)
@@ -53,6 +58,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 @app.exception_handler(Exception)
 async def global_exception_handler(request, exc):
     return JSONResponse(
@@ -71,12 +77,15 @@ async def rate_limit_error(request, exc):
 
 @app.post('/scan')
 @limiter.limit('6/minute')
-async def scan_file(request: Request, file: UploadFile):
+async def scan_file(request: Request, selection: str = Form(...), file: UploadFile = File(...)):
+    selection_data = json.loads(selection)
+    selection_model = Selection(**selection_data)
     file_bytes = await validate_file(request, file)
-    return FloorCvController.scan_file(client=client, file_bytes=file_bytes)
+    return FloorCvController.scan_file(client=client, file_bytes=file_bytes, selection=selection_model)
 
 
 if __name__ == '__main__':
     import uvicorn
+
     port = int(os.getenv('PORT', 8080))
     uvicorn.run(app, host="0.0.0.0", port=port)

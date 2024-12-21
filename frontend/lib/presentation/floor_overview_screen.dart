@@ -165,7 +165,7 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
           onPickFiles: () async {
             final result = <SelectedFile>[];
             for (final capture in _form.captures) {
-              final scanProperties = await FloorRepository.scanCapture(capture, cancelToken: _cancelToken);
+              final scanProperties = await FloorRepository.scanCapture(capture, _form.selections[capture]!.toDto(), cancelToken: _cancelToken);
               final newSelectedFile = scanProperties.toSelectedFile();
               result.add(newSelectedFile);
             }

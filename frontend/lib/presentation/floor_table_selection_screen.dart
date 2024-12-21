@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:paper_cv/components/floor_app_bar.dart';
 import 'package:paper_cv/components/floor_buttons.dart';
 import 'package:paper_cv/domain/floor_models.dart';
+import 'package:paper_cv/selection_extension.dart';
 import 'package:paper_cv/utils/file_picker_models.dart';
 import 'package:paper_cv/utils/math_utils.dart';
 import 'package:paper_cv/utils/rect_extension.dart';
@@ -28,52 +29,37 @@ class _FloorTableSelectionScreenState extends State<FloorTableSelectionScreen> {
   Offset? _startDrag;
   Offset? _endDrag;
   Rect? _oldImageRect;
+  bool _isFirstBuild = true;
 
-  @override
-  void initState() {
-    super.initState();
+  void _initSelection() {
     final selection = widget.document.selections[widget.file];
     if (selection != null) {
-      _startDrag = ui.Offset(selection.x1, selection.y1);
-      _endDrag = ui.Offset(selection.x2, selection.y2);
+      final transformedSelectionRect = MathHelper.applyTransformToSelection(
+        oldRect: Rect.fromLTRB(
+          0,
+          0,
+          _image.width.toDouble(),
+          _image.height.toDouble(),
+        ),
+        newRect: _oldImageRect!.translateToOrigin(),
+        selectionRect: selection.toRect(),
+      );
+
+      Selection tmpSelection = transformedSelectionRect.toSelection();
+      tmpSelection
+        ..x1 += _oldImageRect!.left
+        ..y1 += _oldImageRect!.top
+        ..x2 += _oldImageRect!.left
+        ..y2 += _oldImageRect!.top;
+
+      _startDrag = ui.Offset(tmpSelection.x1, tmpSelection.y1);
+      _endDrag = ui.Offset(tmpSelection.x2, tmpSelection.y2);
+    }
+    if (mounted) {
+      _isFirstBuild = false;
+      setState(() {});
     }
   }
-
-  // Future<ui.Image?> cropImage() async {
-  //   if (_startDrag == null || _currentDrag == null) {
-  //     return null;
-  //   }
-  //
-  //   final left = _startDrag!.dx;
-  //   final top = _startDrag!.dy;
-  //   final right = _currentDrag!.dx;
-  //   final bottom = _currentDrag!.dy;
-  //
-  //   if (left >= right || top >= bottom) {
-  //     return null;
-  //   }
-  //
-  //   final srcRect = Rect.fromLTWH(
-  //     left,
-  //     top,
-  //     right - left,
-  //     bottom - top,
-  //   );
-  //
-  //   final recorder = ui.PictureRecorder();
-  //   final canvas = Canvas(recorder);
-  //
-  //   final paint = Paint();
-  //   canvas.drawImageRect(
-  //     _image,
-  //     srcRect,
-  //     Rect.fromLTWH(0, 0, srcRect.width, srcRect.height),
-  //     paint,
-  //   );
-  //
-  //   final picture = recorder.endRecording();
-  //   return picture.toImage(srcRect.width.toInt(), srcRect.height.toInt());
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -94,19 +80,30 @@ class _FloorTableSelectionScreenState extends State<FloorTableSelectionScreen> {
                           selection.x2 != _endDrag!.dx ||
                           selection.y2 != _endDrag!.dy));
               if (shouldAssign) {
+                final transformedSelectionRect = MathHelper.applyTransformToSelection(
+                  oldRect: _oldImageRect!.translateToOrigin(),
+                  newRect: Rect.fromLTRB(
+                    0,
+                    0,
+                    _image.width.toDouble(),
+                    _image.height.toDouble(),
+                  ),
+                  selectionRect: Rect.fromLTRB(
+                    _startDrag!.dx - _oldImageRect!.left,
+                    _startDrag!.dy - _oldImageRect!.top,
+                    _endDrag!.dx - _oldImageRect!.left,
+                    _endDrag!.dy - _oldImageRect!.top,
+                  ),
+                );
+                Selection tmpSelection = transformedSelectionRect.toSelection();
                 if (selection == null) {
-                  widget.document.selections[widget.file] = Selection(
-                    x1: _startDrag!.dx,
-                    y1: _startDrag!.dy,
-                    x2: _endDrag!.dx,
-                    y2: _endDrag!.dy,
-                  );
+                  widget.document.selections[widget.file] = tmpSelection;
                 } else {
                   selection
-                    ..x1 = _startDrag!.dx
-                    ..y1 = _startDrag!.dy
-                    ..x2 = _endDrag!.dx
-                    ..y2 = _endDrag!.dy;
+                    ..x1 = tmpSelection.x1
+                    ..y1 = tmpSelection.y1
+                    ..x2 = tmpSelection.x2
+                    ..y2 = tmpSelection.y2;
                 }
               } else if (_startDrag == null && _endDrag == null && selection != null) {
                 widget.document.selections.remove(widget.file);
@@ -154,6 +151,8 @@ class _FloorTableSelectionScreenState extends State<FloorTableSelectionScreen> {
             _endDrag = Offset(selectionRect.right + imageRect.left, selectionRect.bottom + imageRect.top);
           }
           _oldImageRect = imageRect;
+
+          if (_isFirstBuild) WidgetsBinding.instance.addPostFrameCallback((_) => _initSelection());
 
           return GestureDetector(
             onPanStart: (details) {

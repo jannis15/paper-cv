@@ -26,9 +26,9 @@ class ScanPropertiesDto with _$ScanPropertiesDto {
 
   factory ScanPropertiesDto({
     String? uuid,
-    @JsonKey(name: 'column_widths') required List<double> columnWidths,
+    @JsonKey(name: 'column_widths_cm') required List<double> columnWidthsCm,
     @JsonKey(name: 'rows') required int rows,
-    @JsonKey(name: 'avg_row_height') required double avgRowHeight,
+    @JsonKey(name: 'avg_row_height_cm') required double avgRowHeightCm,
     @JsonKey(name: 'cell_texts') required List<List<String>> cellTexts,
   }) = _ScanPropertiesDto;
 
@@ -48,4 +48,18 @@ class ScanPropertiesDto with _$ScanPropertiesDto {
       modifiedAt: now,
     );
   }
+}
+
+@freezed
+class SelectionDto with _$SelectionDto {
+  SelectionDto._();
+
+  factory SelectionDto({
+    required double x1,
+    required double y1,
+    required double x2,
+    required double y2,
+  }) = _SelectionDto;
+
+  factory SelectionDto.fromJson(Map<String, dynamic> json) => _$SelectionDtoFromJson(json);
 }

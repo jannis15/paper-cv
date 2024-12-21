@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
@@ -26,14 +27,21 @@ class RestApi {
     _baseUrl = baseUrl;
   }
 
-  Future<Response<T>> uploadFile<T>({required String route, required SelectedFile file, CancelToken? cancelToken}) async {
+  Future<Response<T>> uploadFile<T>({
+    required String route,
+    required SelectedFile file,
+    Map<String, dynamic>? json,
+    CancelToken? cancelToken,
+  }) async {
     final formData = FormData.fromMap({
       'file': await MultipartFile.fromBytes(
         file.data,
         filename: file.filename,
         contentType: DioMediaType.parse(lookupMimeType(file.filename) ?? ''),
       ),
+      if (json != null) 'selection': jsonEncode(json),
     });
+
     try {
       return await _client.post<T>(
         _baseUrl + route,
