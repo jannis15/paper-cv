@@ -29,8 +29,10 @@ class ScanPropertiesDto with _$ScanPropertiesDto {
     @JsonKey(name: 'column_widths_cm') required List<double> columnWidthsCm,
     @JsonKey(name: 'rows') required int rows,
     @JsonKey(name: 'avg_row_height_cm') required double avgRowHeightCm,
-    @JsonKey(name: 'table_x') required double tableX,
-    @JsonKey(name: 'table_y') required double tableY,
+    @JsonKey(name: 'table_x_cm') required double tableXCm,
+    @JsonKey(name: 'table_y_cm') required double tableYCm,
+    @JsonKey(name: 'img_width_px') required double imgWidthPx,
+    @JsonKey(name: 'img_height_px') required double imgHeightPx,
     @JsonKey(name: 'cell_texts') required List<List<String>> cellTexts,
   }) = _ScanPropertiesDto;
 

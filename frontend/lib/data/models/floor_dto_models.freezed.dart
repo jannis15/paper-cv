@@ -244,10 +244,14 @@ mixin _$ScanPropertiesDto {
   int get rows => throw _privateConstructorUsedError;
   @JsonKey(name: 'avg_row_height_cm')
   double get avgRowHeightCm => throw _privateConstructorUsedError;
-  @JsonKey(name: 'table_x')
-  double get tableX => throw _privateConstructorUsedError;
-  @JsonKey(name: 'table_y')
-  double get tableY => throw _privateConstructorUsedError;
+  @JsonKey(name: 'table_x_cm')
+  double get tableXCm => throw _privateConstructorUsedError;
+  @JsonKey(name: 'table_y_cm')
+  double get tableYCm => throw _privateConstructorUsedError;
+  @JsonKey(name: 'img_width_px')
+  double get imgWidthPx => throw _privateConstructorUsedError;
+  @JsonKey(name: 'img_height_px')
+  double get imgHeightPx => throw _privateConstructorUsedError;
   @JsonKey(name: 'cell_texts')
   List<List<String>> get cellTexts => throw _privateConstructorUsedError;
 
@@ -272,8 +276,10 @@ abstract class $ScanPropertiesDtoCopyWith<$Res> {
       @JsonKey(name: 'column_widths_cm') List<double> columnWidthsCm,
       @JsonKey(name: 'rows') int rows,
       @JsonKey(name: 'avg_row_height_cm') double avgRowHeightCm,
-      @JsonKey(name: 'table_x') double tableX,
-      @JsonKey(name: 'table_y') double tableY,
+      @JsonKey(name: 'table_x_cm') double tableXCm,
+      @JsonKey(name: 'table_y_cm') double tableYCm,
+      @JsonKey(name: 'img_width_px') double imgWidthPx,
+      @JsonKey(name: 'img_height_px') double imgHeightPx,
       @JsonKey(name: 'cell_texts') List<List<String>> cellTexts});
 }
 
@@ -296,8 +302,10 @@ class _$ScanPropertiesDtoCopyWithImpl<$Res, $Val extends ScanPropertiesDto>
     Object? columnWidthsCm = null,
     Object? rows = null,
     Object? avgRowHeightCm = null,
-    Object? tableX = null,
-    Object? tableY = null,
+    Object? tableXCm = null,
+    Object? tableYCm = null,
+    Object? imgWidthPx = null,
+    Object? imgHeightPx = null,
     Object? cellTexts = null,
   }) {
     return _then(_value.copyWith(
@@ -317,13 +325,21 @@ class _$ScanPropertiesDtoCopyWithImpl<$Res, $Val extends ScanPropertiesDto>
           ? _value.avgRowHeightCm
           : avgRowHeightCm // ignore: cast_nullable_to_non_nullable
               as double,
-      tableX: null == tableX
-          ? _value.tableX
-          : tableX // ignore: cast_nullable_to_non_nullable
+      tableXCm: null == tableXCm
+          ? _value.tableXCm
+          : tableXCm // ignore: cast_nullable_to_non_nullable
               as double,
-      tableY: null == tableY
-          ? _value.tableY
-          : tableY // ignore: cast_nullable_to_non_nullable
+      tableYCm: null == tableYCm
+          ? _value.tableYCm
+          : tableYCm // ignore: cast_nullable_to_non_nullable
+              as double,
+      imgWidthPx: null == imgWidthPx
+          ? _value.imgWidthPx
+          : imgWidthPx // ignore: cast_nullable_to_non_nullable
+              as double,
+      imgHeightPx: null == imgHeightPx
+          ? _value.imgHeightPx
+          : imgHeightPx // ignore: cast_nullable_to_non_nullable
               as double,
       cellTexts: null == cellTexts
           ? _value.cellTexts
@@ -346,8 +362,10 @@ abstract class _$$ScanPropertiesDtoImplCopyWith<$Res>
       @JsonKey(name: 'column_widths_cm') List<double> columnWidthsCm,
       @JsonKey(name: 'rows') int rows,
       @JsonKey(name: 'avg_row_height_cm') double avgRowHeightCm,
-      @JsonKey(name: 'table_x') double tableX,
-      @JsonKey(name: 'table_y') double tableY,
+      @JsonKey(name: 'table_x_cm') double tableXCm,
+      @JsonKey(name: 'table_y_cm') double tableYCm,
+      @JsonKey(name: 'img_width_px') double imgWidthPx,
+      @JsonKey(name: 'img_height_px') double imgHeightPx,
       @JsonKey(name: 'cell_texts') List<List<String>> cellTexts});
 }
 
@@ -368,8 +386,10 @@ class __$$ScanPropertiesDtoImplCopyWithImpl<$Res>
     Object? columnWidthsCm = null,
     Object? rows = null,
     Object? avgRowHeightCm = null,
-    Object? tableX = null,
-    Object? tableY = null,
+    Object? tableXCm = null,
+    Object? tableYCm = null,
+    Object? imgWidthPx = null,
+    Object? imgHeightPx = null,
     Object? cellTexts = null,
   }) {
     return _then(_$ScanPropertiesDtoImpl(
@@ -389,13 +409,21 @@ class __$$ScanPropertiesDtoImplCopyWithImpl<$Res>
           ? _value.avgRowHeightCm
           : avgRowHeightCm // ignore: cast_nullable_to_non_nullable
               as double,
-      tableX: null == tableX
-          ? _value.tableX
-          : tableX // ignore: cast_nullable_to_non_nullable
+      tableXCm: null == tableXCm
+          ? _value.tableXCm
+          : tableXCm // ignore: cast_nullable_to_non_nullable
               as double,
-      tableY: null == tableY
-          ? _value.tableY
-          : tableY // ignore: cast_nullable_to_non_nullable
+      tableYCm: null == tableYCm
+          ? _value.tableYCm
+          : tableYCm // ignore: cast_nullable_to_non_nullable
+              as double,
+      imgWidthPx: null == imgWidthPx
+          ? _value.imgWidthPx
+          : imgWidthPx // ignore: cast_nullable_to_non_nullable
+              as double,
+      imgHeightPx: null == imgHeightPx
+          ? _value.imgHeightPx
+          : imgHeightPx // ignore: cast_nullable_to_non_nullable
               as double,
       cellTexts: null == cellTexts
           ? _value._cellTexts
@@ -414,8 +442,10 @@ class _$ScanPropertiesDtoImpl extends _ScanPropertiesDto {
       required final List<double> columnWidthsCm,
       @JsonKey(name: 'rows') required this.rows,
       @JsonKey(name: 'avg_row_height_cm') required this.avgRowHeightCm,
-      @JsonKey(name: 'table_x') required this.tableX,
-      @JsonKey(name: 'table_y') required this.tableY,
+      @JsonKey(name: 'table_x_cm') required this.tableXCm,
+      @JsonKey(name: 'table_y_cm') required this.tableYCm,
+      @JsonKey(name: 'img_width_px') required this.imgWidthPx,
+      @JsonKey(name: 'img_height_px') required this.imgHeightPx,
       @JsonKey(name: 'cell_texts') required final List<List<String>> cellTexts})
       : _columnWidthsCm = columnWidthsCm,
         _cellTexts = cellTexts,
@@ -442,11 +472,17 @@ class _$ScanPropertiesDtoImpl extends _ScanPropertiesDto {
   @JsonKey(name: 'avg_row_height_cm')
   final double avgRowHeightCm;
   @override
-  @JsonKey(name: 'table_x')
-  final double tableX;
+  @JsonKey(name: 'table_x_cm')
+  final double tableXCm;
   @override
-  @JsonKey(name: 'table_y')
-  final double tableY;
+  @JsonKey(name: 'table_y_cm')
+  final double tableYCm;
+  @override
+  @JsonKey(name: 'img_width_px')
+  final double imgWidthPx;
+  @override
+  @JsonKey(name: 'img_height_px')
+  final double imgHeightPx;
   final List<List<String>> _cellTexts;
   @override
   @JsonKey(name: 'cell_texts')
@@ -458,7 +494,7 @@ class _$ScanPropertiesDtoImpl extends _ScanPropertiesDto {
 
   @override
   String toString() {
-    return 'ScanPropertiesDto(uuid: $uuid, columnWidthsCm: $columnWidthsCm, rows: $rows, avgRowHeightCm: $avgRowHeightCm, tableX: $tableX, tableY: $tableY, cellTexts: $cellTexts)';
+    return 'ScanPropertiesDto(uuid: $uuid, columnWidthsCm: $columnWidthsCm, rows: $rows, avgRowHeightCm: $avgRowHeightCm, tableXCm: $tableXCm, tableYCm: $tableYCm, imgWidthPx: $imgWidthPx, imgHeightPx: $imgHeightPx, cellTexts: $cellTexts)';
   }
 
   @override
@@ -472,8 +508,14 @@ class _$ScanPropertiesDtoImpl extends _ScanPropertiesDto {
             (identical(other.rows, rows) || other.rows == rows) &&
             (identical(other.avgRowHeightCm, avgRowHeightCm) ||
                 other.avgRowHeightCm == avgRowHeightCm) &&
-            (identical(other.tableX, tableX) || other.tableX == tableX) &&
-            (identical(other.tableY, tableY) || other.tableY == tableY) &&
+            (identical(other.tableXCm, tableXCm) ||
+                other.tableXCm == tableXCm) &&
+            (identical(other.tableYCm, tableYCm) ||
+                other.tableYCm == tableYCm) &&
+            (identical(other.imgWidthPx, imgWidthPx) ||
+                other.imgWidthPx == imgWidthPx) &&
+            (identical(other.imgHeightPx, imgHeightPx) ||
+                other.imgHeightPx == imgHeightPx) &&
             const DeepCollectionEquality()
                 .equals(other._cellTexts, _cellTexts));
   }
@@ -486,8 +528,10 @@ class _$ScanPropertiesDtoImpl extends _ScanPropertiesDto {
       const DeepCollectionEquality().hash(_columnWidthsCm),
       rows,
       avgRowHeightCm,
-      tableX,
-      tableY,
+      tableXCm,
+      tableYCm,
+      imgWidthPx,
+      imgHeightPx,
       const DeepCollectionEquality().hash(_cellTexts));
 
   /// Create a copy of ScanPropertiesDto
@@ -514,8 +558,10 @@ abstract class _ScanPropertiesDto extends ScanPropertiesDto {
       required final List<double> columnWidthsCm,
       @JsonKey(name: 'rows') required final int rows,
       @JsonKey(name: 'avg_row_height_cm') required final double avgRowHeightCm,
-      @JsonKey(name: 'table_x') required final double tableX,
-      @JsonKey(name: 'table_y') required final double tableY,
+      @JsonKey(name: 'table_x_cm') required final double tableXCm,
+      @JsonKey(name: 'table_y_cm') required final double tableYCm,
+      @JsonKey(name: 'img_width_px') required final double imgWidthPx,
+      @JsonKey(name: 'img_height_px') required final double imgHeightPx,
       @JsonKey(name: 'cell_texts')
       required final List<List<String>> cellTexts}) = _$ScanPropertiesDtoImpl;
   _ScanPropertiesDto._() : super._();
@@ -535,11 +581,17 @@ abstract class _ScanPropertiesDto extends ScanPropertiesDto {
   @JsonKey(name: 'avg_row_height_cm')
   double get avgRowHeightCm;
   @override
-  @JsonKey(name: 'table_x')
-  double get tableX;
+  @JsonKey(name: 'table_x_cm')
+  double get tableXCm;
   @override
-  @JsonKey(name: 'table_y')
-  double get tableY;
+  @JsonKey(name: 'table_y_cm')
+  double get tableYCm;
+  @override
+  @JsonKey(name: 'img_width_px')
+  double get imgWidthPx;
+  @override
+  @JsonKey(name: 'img_height_px')
+  double get imgHeightPx;
   @override
   @JsonKey(name: 'cell_texts')
   List<List<String>> get cellTexts;

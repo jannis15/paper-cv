@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'dart:typed_data';
+import 'package:image/image.dart' as img;
 
 import 'package:collection/collection.dart';
 import 'package:dio/dio.dart';
@@ -30,7 +31,10 @@ abstract class FloorRepository {
   static Future<ScanPropertiesDto> scanCapture(SelectedFile capture, SelectionDto selection, {CancelToken? cancelToken}) =>
       FloorCvApi.instance.scanCapture(capture, selection, cancelToken: cancelToken);
 
-  static Future<Uint8List> createPdf(List<ScanPropertiesDto> dtoList) async {
+  static Future<Uint8List> createPdf(DocumentForm form, List<ScanPropertiesDto> dtoList) async {
+    img.Image cropImage(Uint8List imageData, int x1, int x2, int y1, int y2) =>
+        img.copyCrop(img.decodeImage(imageData)!, x: x1, y: y1, width: (x2 - x1).abs(), height: (y2 - y1).abs());
+
     final pdf = pw.Document();
     for (final dto in dtoList) {
       const a4HeightCm = 29.7;
@@ -62,15 +66,40 @@ abstract class FloorRepository {
 
       final fontSize = 8.0;
 
+      SelectedFile? capture;
+      Selection? selection;
+      if (form.selections[form.captures.first]?.isHSet == true) {
+        capture = form.captures.first;
+        selection = form.selections[capture]!;
+      }
+
       pdf.addPage(
         pw.Page(
           pageFormat: PdfPageFormat.a4,
           margin: pw.EdgeInsets.zero,
           build: (context) => pw.Stack(
             children: [
+              if (capture != null && selection != null)
+                pw.Positioned(
+                  left: ((selection.hX1! / dto.imgWidthPx) * a4HWidthCm) * PdfPageFormat.cm,
+                  top: ((selection.hY1! / dto.imgHeightPx) * a4HeightCm) * PdfPageFormat.cm,
+                  child: pw.Image(
+                    pw.ImageImage(
+                      cropImage(
+                        capture.data,
+                        selection.hX1!.round(),
+                        selection.hX2!.round(),
+                        selection.hY1!.round(),
+                        selection.hY2!.round(),
+                      ),
+                    ),
+                    width: ((selection.hX2! - selection.hX1!) / dto.imgWidthPx) * a4HWidthCm * PdfPageFormat.cm,
+                    height: ((selection.hY2! - selection.hY1!) / dto.imgHeightPx) * a4HeightCm * PdfPageFormat.cm,
+                  ),
+                ),
               pw.Positioned(
-                left: dto.tableX * PdfPageFormat.cm,
-                top: dto.tableY * PdfPageFormat.cm,
+                left: dto.tableXCm * PdfPageFormat.cm,
+                top: dto.tableYCm * PdfPageFormat.cm,
                 child: pw.Table(
                   tableWidth: pw.TableWidth.min,
                   columnWidths: {

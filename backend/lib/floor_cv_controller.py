@@ -156,8 +156,10 @@ class FloorCvController(ABC):
         return ScanProperties(
             column_widths_cm=column_widths_cm,
             rows=rows,
-            table_x=corner_x_cm,
-            table_y=corner_y_cm,
+            table_x_cm=corner_x_cm,
+            table_y_cm=corner_y_cm,
+            img_width_px=img_width,
+            img_height_px=img_height,
             avg_row_height_cm=avg_vertical_distance_cm,
             cell_texts=cell_texts,
         )

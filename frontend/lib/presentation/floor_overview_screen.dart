@@ -215,7 +215,7 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
               final scanProperties = ScanPropertiesDto.fromJson(jsonDecode(utf8.decode(scan.data)));
               scanPropertiesList.add(scanProperties);
             }
-            final pdfData = await FloorRepository.createPdf(scanPropertiesList);
+            final pdfData = await FloorRepository.createPdf(_form, scanPropertiesList);
             final now = DateTime.now();
             final String formattedDate = DateFormat('dd.MM.yy HH:mm').format(now);
             final selectedFile = SelectedFile(
