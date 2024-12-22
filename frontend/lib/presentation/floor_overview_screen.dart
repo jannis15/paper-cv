@@ -150,9 +150,9 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
             }
           },
           fileStatusWidget: (file) => FloorIconButton(
-            iconData: _form.selections[file] != null ? Icons.check : Icons.document_scanner,
-            foregroundColor: _form.selections[file] != null ? Colors.white : Colors.black,
-            backgroundColor: _form.selections[file] != null ? Colors.green : Colors.amber,
+            iconData: _form.selections[file]?.isSet == true ? Icons.check : Icons.document_scanner,
+            foregroundColor: _form.selections[file]?.isSet == true ? Colors.white : Colors.black,
+            backgroundColor: _form.selections[file]?.isSet == true ? Colors.green : Colors.amber,
             onPressed: () {},
           ),
         );
@@ -165,7 +165,7 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
           onPickFiles: () async {
             final result = <SelectedFile>[];
             for (final capture in _form.captures) {
-              final scanProperties = await FloorRepository.scanCapture(capture, _form.selections[capture]!.toDto(), cancelToken: _cancelToken);
+              final scanProperties = await FloorRepository.scanCapture(capture, _form.selections[capture]!.toTDto(), cancelToken: _cancelToken);
               final newSelectedFile = scanProperties.toSelectedFile();
               result.add(newSelectedFile);
             }

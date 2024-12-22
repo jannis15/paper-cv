@@ -2,9 +2,12 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:paper_cv/components/floor_app_bar.dart';
 import 'package:paper_cv/components/floor_buttons.dart';
+import 'package:paper_cv/config/config.dart';
+import 'package:paper_cv/data/models/floor_enums.dart';
 import 'package:paper_cv/domain/floor_models.dart';
 import 'package:paper_cv/selection_extension.dart';
 import 'package:paper_cv/utils/file_picker_models.dart';
+import 'package:paper_cv/utils/list_utils.dart';
 import 'package:paper_cv/utils/math_utils.dart';
 import 'package:paper_cv/utils/rect_extension.dart';
 import 'package:paper_cv/utils/widget_utils.dart';
@@ -24,17 +27,37 @@ class FloorTableSelectionScreen extends StatefulWidget {
   _FloorTableSelectionScreenState createState() => _FloorTableSelectionScreenState();
 }
 
+class _SelectionPaint {
+  Offset? startDrag;
+  Offset? endDrag;
+  final Color color;
+
+  _SelectionPaint(
+    this.startDrag,
+    this.endDrag,
+    this.color,
+  );
+
+  bool get isSet => startDrag != null && endDrag != null;
+
+  bool get isEmpty => startDrag == null && endDrag == null;
+
+  double get area => (startDrag == null || endDrag == null) ? 0 : (endDrag!.dx - startDrag!.dx).abs() * (endDrag!.dy - startDrag!.dy).abs();
+}
+
 class _FloorTableSelectionScreenState extends State<FloorTableSelectionScreen> {
   late ui.Image _image = widget.image;
-  Offset? _startDrag;
-  Offset? _endDrag;
+  late final _SelectionPaint _headerSelection;
+  late final _SelectionPaint _tableSelection;
   Rect? _oldImageRect;
+  SelectionType _selectionType = SelectionType.header;
   bool _isFirstBuild = true;
 
   void _initSelection() {
     final selection = widget.document.selections[widget.file];
-    if (selection != null) {
-      final transformedSelectionRect = MathHelper.applyTransformToSelection(
+
+    if (selection?.isTSet ?? false) {
+      Rect transformedSelectionRect = MathHelper.applyTransformToSelection(
         oldRect: Rect.fromLTRB(
           0,
           0,
@@ -42,24 +65,56 @@ class _FloorTableSelectionScreenState extends State<FloorTableSelectionScreen> {
           _image.height.toDouble(),
         ),
         newRect: _oldImageRect!.translateToOrigin(),
-        selectionRect: selection.toRect(),
+        selectionRect: selection!.toTRect(),
       );
+      transformedSelectionRect = transformedSelectionRect.translate(_oldImageRect!.left, _oldImageRect!.top);
 
-      Selection tmpSelection = transformedSelectionRect.toSelection();
-      tmpSelection
-        ..x1 += _oldImageRect!.left
-        ..y1 += _oldImageRect!.top
-        ..x2 += _oldImageRect!.left
-        ..y2 += _oldImageRect!.top;
-
-      _startDrag = ui.Offset(tmpSelection.x1, tmpSelection.y1);
-      _endDrag = ui.Offset(tmpSelection.x2, tmpSelection.y2);
+      _tableSelection = _SelectionPaint(
+        ui.Offset(transformedSelectionRect.left, transformedSelectionRect.top),
+        ui.Offset(transformedSelectionRect.right, transformedSelectionRect.bottom),
+        Colors.blue,
+      );
+    } else {
+      _tableSelection = _SelectionPaint(
+        null,
+        null,
+        Colors.blue,
+      );
     }
+
+    if (selection?.isHSet ?? false) {
+      Rect transformedSelectionRect = MathHelper.applyTransformToSelection(
+        oldRect: Rect.fromLTRB(
+          0,
+          0,
+          _image.width.toDouble(),
+          _image.height.toDouble(),
+        ),
+        newRect: _oldImageRect!.translateToOrigin(),
+        selectionRect: selection!.toHRect(),
+      );
+      transformedSelectionRect = transformedSelectionRect.translate(_oldImageRect!.left, _oldImageRect!.top);
+
+      _headerSelection = _SelectionPaint(
+        ui.Offset(transformedSelectionRect.left, transformedSelectionRect.top),
+        ui.Offset(transformedSelectionRect.right, transformedSelectionRect.bottom),
+        Colors.orange,
+      );
+    } else {
+      _headerSelection = _SelectionPaint(
+        null,
+        null,
+        Colors.orange,
+      );
+    }
+
     if (mounted) {
       _isFirstBuild = false;
       setState(() {});
     }
   }
+
+  _SelectionPaint get _currentSelectionPaint => _selectionType == SelectionType.header ? _headerSelection : _tableSelection;
 
   @override
   Widget build(BuildContext context) {
@@ -67,49 +122,92 @@ class _FloorTableSelectionScreenState extends State<FloorTableSelectionScreen> {
       appBar: FloorAppBar(
         backgroundColor: colorScheme.surface,
         actions: [
-          FloorOutlinedButton(
+          FloorButton(
+            type: !_isFirstBuild && (_headerSelection.isSet && _tableSelection.isSet) ? FloorButtonType.filled : FloorButtonType.outlined,
             iconData: Icons.check,
             text: 'Bestätigen',
             onPressed: () {
+              bool newAssign = true;
               Selection? selection = widget.document.selections[widget.file];
-              bool shouldAssign = _startDrag != null &&
-                  _endDrag != null &&
-                  (selection == null ||
-                      (selection.x1 != _startDrag!.dx ||
-                          selection.y1 != _startDrag!.dy ||
-                          selection.x2 != _endDrag!.dx ||
-                          selection.y2 != _endDrag!.dy));
-              if (shouldAssign) {
-                final transformedSelectionRect = MathHelper.applyTransformToSelection(
-                  oldRect: _oldImageRect!.translateToOrigin(),
-                  newRect: Rect.fromLTRB(
-                    0,
-                    0,
-                    _image.width.toDouble(),
-                    _image.height.toDouble(),
-                  ),
-                  selectionRect: Rect.fromLTRB(
-                    _startDrag!.dx - _oldImageRect!.left,
-                    _startDrag!.dy - _oldImageRect!.top,
-                    _endDrag!.dx - _oldImageRect!.left,
-                    _endDrag!.dy - _oldImageRect!.top,
-                  ),
-                );
-                Selection tmpSelection = transformedSelectionRect.toSelection();
+              if (selection != null && _tableSelection.area == 0 && _headerSelection.area == 0) {
+                widget.document.selections.remove(widget.file);
+              } else if (_oldImageRect != null) {
+                double? tX1;
+                double? tX2;
+                double? tY1;
+                double? tY2;
+                if (_tableSelection.area != 0) {
+                  final Rect tableSelectionRect = MathHelper.applyTransformToSelection(
+                    oldRect: _oldImageRect!.translateToOrigin(),
+                    newRect: Rect.fromLTRB(
+                      0,
+                      0,
+                      _image.width.toDouble(),
+                      _image.height.toDouble(),
+                    ),
+                    selectionRect: Rect.fromLTRB(
+                      _tableSelection.startDrag!.dx - _oldImageRect!.left,
+                      _tableSelection.startDrag!.dy - _oldImageRect!.top,
+                      _tableSelection.endDrag!.dx - _oldImageRect!.left,
+                      _tableSelection.endDrag!.dy - _oldImageRect!.top,
+                    ),
+                  );
+                  tX1 = tableSelectionRect.left;
+                  tX2 = tableSelectionRect.right;
+                  tY1 = tableSelectionRect.top;
+                  tY2 = tableSelectionRect.bottom;
+                }
+                double? hX1;
+                double? hX2;
+                double? hY1;
+                double? hY2;
+                if (_headerSelection.area != 0) {
+                  final Rect headerSelectionRect = MathHelper.applyTransformToSelection(
+                    oldRect: _oldImageRect!.translateToOrigin(),
+                    newRect: Rect.fromLTRB(
+                      0,
+                      0,
+                      _image.width.toDouble(),
+                      _image.height.toDouble(),
+                    ),
+                    selectionRect: Rect.fromLTRB(
+                      _headerSelection.startDrag!.dx - _oldImageRect!.left,
+                      _headerSelection.startDrag!.dy - _oldImageRect!.top,
+                      _headerSelection.endDrag!.dx - _oldImageRect!.left,
+                      _headerSelection.endDrag!.dy - _oldImageRect!.top,
+                    ),
+                  );
+                  hX1 = headerSelectionRect.left;
+                  hX2 = headerSelectionRect.right;
+                  hY1 = headerSelectionRect.top;
+                  hY2 = headerSelectionRect.bottom;
+                }
                 if (selection == null) {
-                  widget.document.selections[widget.file] = tmpSelection;
+                  widget.document.selections[widget.file] = Selection(
+                    tX1: tX1,
+                    tX2: tX2,
+                    tY1: tY1,
+                    tY2: tY2,
+                    hX1: hX1,
+                    hX2: hX1,
+                    hY1: hX1,
+                    hY2: hY2,
+                  );
                 } else {
                   selection
-                    ..x1 = tmpSelection.x1
-                    ..y1 = tmpSelection.y1
-                    ..x2 = tmpSelection.x2
-                    ..y2 = tmpSelection.y2;
+                    ..tX1 = tX1
+                    ..tY1 = tY1
+                    ..tX2 = tX2
+                    ..tY2 = tY2
+                    ..hX1 = hX1
+                    ..hY1 = hY1
+                    ..hX2 = hX2
+                    ..hY2 = hY2;
                 }
-              } else if (_startDrag == null && _endDrag == null && selection != null) {
-                widget.document.selections.remove(widget.file);
-                shouldAssign = true;
+              } else {
+                newAssign = false;
               }
-              Navigator.of(context).pop<bool>(shouldAssign);
+              Navigator.of(context).pop<bool>(newAssign);
             },
           )
         ],
@@ -136,19 +234,27 @@ class _FloorTableSelectionScreenState extends State<FloorTableSelectionScreen> {
             imageHeight,
           );
 
-          if (_startDrag != null && _endDrag != null && _oldImageRect != null) {
-            final selectionRect = MathHelper.applyTransformToSelection(
-              oldRect: _oldImageRect!.translateToOrigin(),
-              newRect: imageRect.translateToOrigin(),
-              selectionRect: Rect.fromLTRB(
-                _startDrag!.dx - _oldImageRect!.left,
-                _startDrag!.dy - _oldImageRect!.top,
-                _endDrag!.dx - _oldImageRect!.left,
-                _endDrag!.dy - _oldImageRect!.top,
-              ),
-            );
-            _startDrag = Offset(selectionRect.left + imageRect.left, selectionRect.top + imageRect.top);
-            _endDrag = Offset(selectionRect.right + imageRect.left, selectionRect.bottom + imageRect.top);
+          void resizeSelectionPaint(_SelectionPaint selectionPaint) {
+            if (_oldImageRect != null && selectionPaint.isSet) {
+              final selectionRect = MathHelper.applyTransformToSelection(
+                oldRect: _oldImageRect!.translateToOrigin(),
+                newRect: imageRect.translateToOrigin(),
+                selectionRect: Rect.fromLTRB(
+                  selectionPaint.startDrag!.dx - _oldImageRect!.left,
+                  selectionPaint.startDrag!.dy - _oldImageRect!.top,
+                  selectionPaint.endDrag!.dx - _oldImageRect!.left,
+                  selectionPaint.endDrag!.dy - _oldImageRect!.top,
+                ),
+              );
+              selectionPaint.startDrag = Offset(selectionRect.left + imageRect.left, selectionRect.top + imageRect.top);
+              selectionPaint.endDrag = Offset(selectionRect.right + imageRect.left, selectionRect.bottom + imageRect.top);
+            }
+          }
+
+          if (!_isFirstBuild) {
+            resizeSelectionPaint(_tableSelection);
+
+            resizeSelectionPaint(_headerSelection);
           }
           _oldImageRect = imageRect;
 
@@ -158,38 +264,60 @@ class _FloorTableSelectionScreenState extends State<FloorTableSelectionScreen> {
             onPanStart: (details) {
               if (imageRect.contains(details.localPosition))
                 setState(() {
-                  _startDrag = details.localPosition;
-                  _endDrag = details.localPosition;
+                  _currentSelectionPaint.startDrag = details.localPosition;
+                  _currentSelectionPaint.endDrag = details.localPosition;
                 });
             },
             onPanUpdate: (details) => setState(() {
-              _endDrag = Offset(
+              _currentSelectionPaint.endDrag = Offset(
                 details.localPosition.dx.clamp(imageRect.left, imageRect.right),
                 details.localPosition.dy.clamp(imageRect.top, imageRect.bottom),
               );
             }),
-            onPanEnd: (details) {
-              if (_startDrag != null && _endDrag != null)
-                setState(() {
-                  _startDrag = _startDrag;
-                  _endDrag = _endDrag;
-                });
-            },
             onTapDown: (details) => setState(() {
-              _startDrag = null;
-              _endDrag = null;
+              _currentSelectionPaint.startDrag = null;
+              _currentSelectionPaint.endDrag = null;
             }),
             child: CustomPaint(
               size: containerSize,
               painter: SelectionPainter(
                 image: _image,
                 imageRect: imageRect,
-                startDrag: _startDrag,
-                endDrag: _endDrag,
+                headerSelection: _isFirstBuild ? null : _headerSelection,
+                tableSelection: _isFirstBuild ? null : _tableSelection,
               ),
             ),
           );
         },
+      ),
+      bottomNavigationBar: RowGap(
+        gap: AppSizes.kSmallGap,
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          FloorButton(
+            iconData: Icons.branding_watermark,
+            type: _selectionType == SelectionType.header ? FloorButtonType.filled : FloorButtonType.outlined,
+            foregroundColor: _selectionType == SelectionType.header ? Color(0xFF212121) : null,
+            backgroundColor: _selectionType == SelectionType.header ? Colors.orange : null,
+            text: 'Kopfzeile',
+            onPressed: () {
+              _selectionType = SelectionType.header;
+              setState(() {});
+            },
+          ),
+          FloorButton(
+            iconData: Icons.table_rows,
+            type: _selectionType == SelectionType.table ? FloorButtonType.filled : FloorButtonType.outlined,
+            foregroundColor: _selectionType == SelectionType.table ? Colors.white : null,
+            backgroundColor: _selectionType == SelectionType.table ? Colors.blue : null,
+            text: 'Tabelle',
+            onPressed: () {
+              _selectionType = SelectionType.table;
+              setState(() {});
+            },
+          ),
+        ],
       ),
     );
   }
@@ -198,36 +326,41 @@ class _FloorTableSelectionScreenState extends State<FloorTableSelectionScreen> {
 class SelectionPainter extends CustomPainter {
   final ui.Image image;
   final Rect imageRect;
-  final Offset? startDrag;
-  final Offset? endDrag;
+  final _SelectionPaint? headerSelection;
+  final _SelectionPaint? tableSelection;
 
   SelectionPainter({
     required this.image,
     required this.imageRect,
-    required this.startDrag,
-    required this.endDrag,
+    required this.headerSelection,
+    required this.tableSelection,
   });
 
   @override
   void paint(Canvas canvas, Size size) {
+    void drawSelectionRect(_SelectionPaint selectionPaint) {
+      if (selectionPaint.isSet) {
+        final rect = Rect.fromPoints(selectionPaint.startDrag!, selectionPaint.endDrag!);
+        if (rect.area > 0) {
+          final selectionCanvasPaint = Paint()
+            ..color = selectionPaint.color.withOpacity(0.3)
+            ..style = PaintingStyle.fill;
+          final borderPaint = Paint()
+            ..color = selectionPaint.color
+            ..style = PaintingStyle.stroke
+            ..strokeWidth = 2.0;
+
+          canvas.drawRect(rect, selectionCanvasPaint);
+          canvas.drawRect(rect, borderPaint);
+        }
+      }
+    }
+
     final srcRect = Rect.fromLTWH(0, 0, image.width.toDouble(), image.height.toDouble());
     final paint = Paint();
     canvas.drawImageRect(image, srcRect, imageRect, paint);
-    if (startDrag != null && endDrag != null) {
-      final rect = Rect.fromPoints(startDrag!, endDrag!);
-      if (rect.area > 0) {
-        final selectionPaint = Paint()
-          ..color = Colors.blue.withOpacity(0.3)
-          ..style = PaintingStyle.fill;
-        final borderPaint = Paint()
-          ..color = Colors.blue
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = 2.0;
-
-        canvas.drawRect(rect, selectionPaint);
-        canvas.drawRect(rect, borderPaint);
-      }
-    }
+    if (headerSelection != null) drawSelectionRect(headerSelection!);
+    if (tableSelection != null) drawSelectionRect(tableSelection!);
   }
 
   @override

@@ -29,13 +29,21 @@ class TbSelection extends Table {
 
   TextColumn get fileId => text().references(TbFile, #uuid, onDelete: KeyAction.cascade)();
 
-  RealColumn get x1 => real()();
+  RealColumn get tX1 => real().nullable()();
 
-  RealColumn get x2 => real()();
+  RealColumn get tX2 => real().nullable()();
 
-  RealColumn get y1 => real()();
+  RealColumn get tY1 => real().nullable()();
 
-  RealColumn get y2 => real()();
+  RealColumn get tY2 => real().nullable()();
+
+  RealColumn get hX1 => real().nullable()();
+
+  RealColumn get hX2 => real().nullable()();
+
+  RealColumn get hY1 => real().nullable()();
+
+  RealColumn get hY2 => real().nullable()();
 
   @override
   Set<Column> get primaryKey => {uuid};

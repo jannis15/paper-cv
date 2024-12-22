@@ -156,7 +156,16 @@ class FloorDatabase extends _$FloorDatabase with DbMixin {
     for (final selection in selections) {
       final capture = form.captures.firstWhereOrNull((capture) => capture.uuid! == selection.fileId);
       if (capture == null) continue;
-      form.selections[capture] = Selection(x1: selection.x1, x2: selection.x2, y1: selection.y1, y2: selection.y2);
+      form.selections[capture] = Selection(
+        tX1: selection.tX1,
+        tX2: selection.tX2,
+        tY1: selection.tY1,
+        tY2: selection.tY2,
+        hX1: selection.hX1,
+        hX2: selection.hX2,
+        hY1: selection.hY1,
+        hY2: selection.hY2,
+      );
     }
   }
 
@@ -167,10 +176,14 @@ class FloorDatabase extends _$FloorDatabase with DbMixin {
         uuid: Value(selection.uuid!),
         documentId: Value(documentId),
         fileId: Value(fileId),
-        x1: Value(selection.x1),
-        x2: Value(selection.x2),
-        y1: Value(selection.y1),
-        y2: Value(selection.y2),
+        tX1: Value(selection.tX1),
+        tX2: Value(selection.tX2),
+        tY1: Value(selection.tY1),
+        tY2: Value(selection.tY2),
+        hX1: Value(selection.hX1),
+        hX2: Value(selection.hX2),
+        hY1: Value(selection.hY1),
+        hY2: Value(selection.hY2),
       ),
     );
   }

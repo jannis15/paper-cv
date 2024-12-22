@@ -12,3 +12,8 @@ const _$FileTypeEnumMap = {
   FileType.report: 2,
   FileType.scan: 3,
 };
+
+const _$SelectionTypeEnumMap = {
+  SelectionType.header: 0,
+  SelectionType.table: 1,
+};

@@ -851,29 +851,49 @@ class $TbSelectionTable extends TbSelection
       requiredDuringInsert: true,
       defaultConstraints: GeneratedColumn.constraintIsAlways(
           'REFERENCES tb_file (uuid) ON DELETE CASCADE'));
-  static const VerificationMeta _x1Meta = const VerificationMeta('x1');
+  static const VerificationMeta _tX1Meta = const VerificationMeta('tX1');
   @override
-  late final GeneratedColumn<double> x1 = GeneratedColumn<double>(
-      'x1', aliasedName, false,
-      type: DriftSqlType.double, requiredDuringInsert: true);
-  static const VerificationMeta _x2Meta = const VerificationMeta('x2');
+  late final GeneratedColumn<double> tX1 = GeneratedColumn<double>(
+      't_x1', aliasedName, true,
+      type: DriftSqlType.double, requiredDuringInsert: false);
+  static const VerificationMeta _tX2Meta = const VerificationMeta('tX2');
   @override
-  late final GeneratedColumn<double> x2 = GeneratedColumn<double>(
-      'x2', aliasedName, false,
-      type: DriftSqlType.double, requiredDuringInsert: true);
-  static const VerificationMeta _y1Meta = const VerificationMeta('y1');
+  late final GeneratedColumn<double> tX2 = GeneratedColumn<double>(
+      't_x2', aliasedName, true,
+      type: DriftSqlType.double, requiredDuringInsert: false);
+  static const VerificationMeta _tY1Meta = const VerificationMeta('tY1');
   @override
-  late final GeneratedColumn<double> y1 = GeneratedColumn<double>(
-      'y1', aliasedName, false,
-      type: DriftSqlType.double, requiredDuringInsert: true);
-  static const VerificationMeta _y2Meta = const VerificationMeta('y2');
+  late final GeneratedColumn<double> tY1 = GeneratedColumn<double>(
+      't_y1', aliasedName, true,
+      type: DriftSqlType.double, requiredDuringInsert: false);
+  static const VerificationMeta _tY2Meta = const VerificationMeta('tY2');
   @override
-  late final GeneratedColumn<double> y2 = GeneratedColumn<double>(
-      'y2', aliasedName, false,
-      type: DriftSqlType.double, requiredDuringInsert: true);
+  late final GeneratedColumn<double> tY2 = GeneratedColumn<double>(
+      't_y2', aliasedName, true,
+      type: DriftSqlType.double, requiredDuringInsert: false);
+  static const VerificationMeta _hX1Meta = const VerificationMeta('hX1');
+  @override
+  late final GeneratedColumn<double> hX1 = GeneratedColumn<double>(
+      'h_x1', aliasedName, true,
+      type: DriftSqlType.double, requiredDuringInsert: false);
+  static const VerificationMeta _hX2Meta = const VerificationMeta('hX2');
+  @override
+  late final GeneratedColumn<double> hX2 = GeneratedColumn<double>(
+      'h_x2', aliasedName, true,
+      type: DriftSqlType.double, requiredDuringInsert: false);
+  static const VerificationMeta _hY1Meta = const VerificationMeta('hY1');
+  @override
+  late final GeneratedColumn<double> hY1 = GeneratedColumn<double>(
+      'h_y1', aliasedName, true,
+      type: DriftSqlType.double, requiredDuringInsert: false);
+  static const VerificationMeta _hY2Meta = const VerificationMeta('hY2');
+  @override
+  late final GeneratedColumn<double> hY2 = GeneratedColumn<double>(
+      'h_y2', aliasedName, true,
+      type: DriftSqlType.double, requiredDuringInsert: false);
   @override
   List<GeneratedColumn> get $columns =>
-      [uuid, documentId, fileId, x1, x2, y1, y2];
+      [uuid, documentId, fileId, tX1, tX2, tY1, tY2, hX1, hX2, hY1, hY2];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -902,25 +922,37 @@ class $TbSelectionTable extends TbSelection
     } else if (isInserting) {
       context.missing(_fileIdMeta);
     }
-    if (data.containsKey('x1')) {
-      context.handle(_x1Meta, x1.isAcceptableOrUnknown(data['x1']!, _x1Meta));
-    } else if (isInserting) {
-      context.missing(_x1Meta);
+    if (data.containsKey('t_x1')) {
+      context.handle(
+          _tX1Meta, tX1.isAcceptableOrUnknown(data['t_x1']!, _tX1Meta));
     }
-    if (data.containsKey('x2')) {
-      context.handle(_x2Meta, x2.isAcceptableOrUnknown(data['x2']!, _x2Meta));
-    } else if (isInserting) {
-      context.missing(_x2Meta);
+    if (data.containsKey('t_x2')) {
+      context.handle(
+          _tX2Meta, tX2.isAcceptableOrUnknown(data['t_x2']!, _tX2Meta));
     }
-    if (data.containsKey('y1')) {
-      context.handle(_y1Meta, y1.isAcceptableOrUnknown(data['y1']!, _y1Meta));
-    } else if (isInserting) {
-      context.missing(_y1Meta);
+    if (data.containsKey('t_y1')) {
+      context.handle(
+          _tY1Meta, tY1.isAcceptableOrUnknown(data['t_y1']!, _tY1Meta));
     }
-    if (data.containsKey('y2')) {
-      context.handle(_y2Meta, y2.isAcceptableOrUnknown(data['y2']!, _y2Meta));
-    } else if (isInserting) {
-      context.missing(_y2Meta);
+    if (data.containsKey('t_y2')) {
+      context.handle(
+          _tY2Meta, tY2.isAcceptableOrUnknown(data['t_y2']!, _tY2Meta));
+    }
+    if (data.containsKey('h_x1')) {
+      context.handle(
+          _hX1Meta, hX1.isAcceptableOrUnknown(data['h_x1']!, _hX1Meta));
+    }
+    if (data.containsKey('h_x2')) {
+      context.handle(
+          _hX2Meta, hX2.isAcceptableOrUnknown(data['h_x2']!, _hX2Meta));
+    }
+    if (data.containsKey('h_y1')) {
+      context.handle(
+          _hY1Meta, hY1.isAcceptableOrUnknown(data['h_y1']!, _hY1Meta));
+    }
+    if (data.containsKey('h_y2')) {
+      context.handle(
+          _hY2Meta, hY2.isAcceptableOrUnknown(data['h_y2']!, _hY2Meta));
     }
     return context;
   }
@@ -937,14 +969,22 @@ class $TbSelectionTable extends TbSelection
           .read(DriftSqlType.string, data['${effectivePrefix}document_id'])!,
       fileId: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}file_id'])!,
-      x1: attachedDatabase.typeMapping
-          .read(DriftSqlType.double, data['${effectivePrefix}x1'])!,
-      x2: attachedDatabase.typeMapping
-          .read(DriftSqlType.double, data['${effectivePrefix}x2'])!,
-      y1: attachedDatabase.typeMapping
-          .read(DriftSqlType.double, data['${effectivePrefix}y1'])!,
-      y2: attachedDatabase.typeMapping
-          .read(DriftSqlType.double, data['${effectivePrefix}y2'])!,
+      tX1: attachedDatabase.typeMapping
+          .read(DriftSqlType.double, data['${effectivePrefix}t_x1']),
+      tX2: attachedDatabase.typeMapping
+          .read(DriftSqlType.double, data['${effectivePrefix}t_x2']),
+      tY1: attachedDatabase.typeMapping
+          .read(DriftSqlType.double, data['${effectivePrefix}t_y1']),
+      tY2: attachedDatabase.typeMapping
+          .read(DriftSqlType.double, data['${effectivePrefix}t_y2']),
+      hX1: attachedDatabase.typeMapping
+          .read(DriftSqlType.double, data['${effectivePrefix}h_x1']),
+      hX2: attachedDatabase.typeMapping
+          .read(DriftSqlType.double, data['${effectivePrefix}h_x2']),
+      hY1: attachedDatabase.typeMapping
+          .read(DriftSqlType.double, data['${effectivePrefix}h_y1']),
+      hY2: attachedDatabase.typeMapping
+          .read(DriftSqlType.double, data['${effectivePrefix}h_y2']),
     );
   }
 
@@ -958,28 +998,56 @@ class TbSelectionData extends DataClass implements Insertable<TbSelectionData> {
   final String uuid;
   final String documentId;
   final String fileId;
-  final double x1;
-  final double x2;
-  final double y1;
-  final double y2;
+  final double? tX1;
+  final double? tX2;
+  final double? tY1;
+  final double? tY2;
+  final double? hX1;
+  final double? hX2;
+  final double? hY1;
+  final double? hY2;
   const TbSelectionData(
       {required this.uuid,
       required this.documentId,
       required this.fileId,
-      required this.x1,
-      required this.x2,
-      required this.y1,
-      required this.y2});
+      this.tX1,
+      this.tX2,
+      this.tY1,
+      this.tY2,
+      this.hX1,
+      this.hX2,
+      this.hY1,
+      this.hY2});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['uuid'] = Variable<String>(uuid);
     map['document_id'] = Variable<String>(documentId);
     map['file_id'] = Variable<String>(fileId);
-    map['x1'] = Variable<double>(x1);
-    map['x2'] = Variable<double>(x2);
-    map['y1'] = Variable<double>(y1);
-    map['y2'] = Variable<double>(y2);
+    if (!nullToAbsent || tX1 != null) {
+      map['t_x1'] = Variable<double>(tX1);
+    }
+    if (!nullToAbsent || tX2 != null) {
+      map['t_x2'] = Variable<double>(tX2);
+    }
+    if (!nullToAbsent || tY1 != null) {
+      map['t_y1'] = Variable<double>(tY1);
+    }
+    if (!nullToAbsent || tY2 != null) {
+      map['t_y2'] = Variable<double>(tY2);
+    }
+    if (!nullToAbsent || hX1 != null) {
+      map['h_x1'] = Variable<double>(hX1);
+    }
+    if (!nullToAbsent || hX2 != null) {
+      map['h_x2'] = Variable<double>(hX2);
+    }
+    if (!nullToAbsent || hY1 != null) {
+      map['h_y1'] = Variable<double>(hY1);
+    }
+    if (!nullToAbsent || hY2 != null) {
+      map['h_y2'] = Variable<double>(hY2);
+    }
     return map;
   }
 
@@ -988,10 +1056,14 @@ class TbSelectionData extends DataClass implements Insertable<TbSelectionData> {
       uuid: Value(uuid),
       documentId: Value(documentId),
       fileId: Value(fileId),
-      x1: Value(x1),
-      x2: Value(x2),
-      y1: Value(y1),
-      y2: Value(y2),
+      tX1: tX1 == null && nullToAbsent ? const Value.absent() : Value(tX1),
+      tX2: tX2 == null && nullToAbsent ? const Value.absent() : Value(tX2),
+      tY1: tY1 == null && nullToAbsent ? const Value.absent() : Value(tY1),
+      tY2: tY2 == null && nullToAbsent ? const Value.absent() : Value(tY2),
+      hX1: hX1 == null && nullToAbsent ? const Value.absent() : Value(hX1),
+      hX2: hX2 == null && nullToAbsent ? const Value.absent() : Value(hX2),
+      hY1: hY1 == null && nullToAbsent ? const Value.absent() : Value(hY1),
+      hY2: hY2 == null && nullToAbsent ? const Value.absent() : Value(hY2),
     );
   }
 
@@ -1002,10 +1074,14 @@ class TbSelectionData extends DataClass implements Insertable<TbSelectionData> {
       uuid: serializer.fromJson<String>(json['uuid']),
       documentId: serializer.fromJson<String>(json['documentId']),
       fileId: serializer.fromJson<String>(json['fileId']),
-      x1: serializer.fromJson<double>(json['x1']),
-      x2: serializer.fromJson<double>(json['x2']),
-      y1: serializer.fromJson<double>(json['y1']),
-      y2: serializer.fromJson<double>(json['y2']),
+      tX1: serializer.fromJson<double?>(json['tX1']),
+      tX2: serializer.fromJson<double?>(json['tX2']),
+      tY1: serializer.fromJson<double?>(json['tY1']),
+      tY2: serializer.fromJson<double?>(json['tY2']),
+      hX1: serializer.fromJson<double?>(json['hX1']),
+      hX2: serializer.fromJson<double?>(json['hX2']),
+      hY1: serializer.fromJson<double?>(json['hY1']),
+      hY2: serializer.fromJson<double?>(json['hY2']),
     );
   }
   @override
@@ -1015,10 +1091,14 @@ class TbSelectionData extends DataClass implements Insertable<TbSelectionData> {
       'uuid': serializer.toJson<String>(uuid),
       'documentId': serializer.toJson<String>(documentId),
       'fileId': serializer.toJson<String>(fileId),
-      'x1': serializer.toJson<double>(x1),
-      'x2': serializer.toJson<double>(x2),
-      'y1': serializer.toJson<double>(y1),
-      'y2': serializer.toJson<double>(y2),
+      'tX1': serializer.toJson<double?>(tX1),
+      'tX2': serializer.toJson<double?>(tX2),
+      'tY1': serializer.toJson<double?>(tY1),
+      'tY2': serializer.toJson<double?>(tY2),
+      'hX1': serializer.toJson<double?>(hX1),
+      'hX2': serializer.toJson<double?>(hX2),
+      'hY1': serializer.toJson<double?>(hY1),
+      'hY2': serializer.toJson<double?>(hY2),
     };
   }
 
@@ -1026,18 +1106,26 @@ class TbSelectionData extends DataClass implements Insertable<TbSelectionData> {
           {String? uuid,
           String? documentId,
           String? fileId,
-          double? x1,
-          double? x2,
-          double? y1,
-          double? y2}) =>
+          Value<double?> tX1 = const Value.absent(),
+          Value<double?> tX2 = const Value.absent(),
+          Value<double?> tY1 = const Value.absent(),
+          Value<double?> tY2 = const Value.absent(),
+          Value<double?> hX1 = const Value.absent(),
+          Value<double?> hX2 = const Value.absent(),
+          Value<double?> hY1 = const Value.absent(),
+          Value<double?> hY2 = const Value.absent()}) =>
       TbSelectionData(
         uuid: uuid ?? this.uuid,
         documentId: documentId ?? this.documentId,
         fileId: fileId ?? this.fileId,
-        x1: x1 ?? this.x1,
-        x2: x2 ?? this.x2,
-        y1: y1 ?? this.y1,
-        y2: y2 ?? this.y2,
+        tX1: tX1.present ? tX1.value : this.tX1,
+        tX2: tX2.present ? tX2.value : this.tX2,
+        tY1: tY1.present ? tY1.value : this.tY1,
+        tY2: tY2.present ? tY2.value : this.tY2,
+        hX1: hX1.present ? hX1.value : this.hX1,
+        hX2: hX2.present ? hX2.value : this.hX2,
+        hY1: hY1.present ? hY1.value : this.hY1,
+        hY2: hY2.present ? hY2.value : this.hY2,
       );
   TbSelectionData copyWithCompanion(TbSelectionCompanion data) {
     return TbSelectionData(
@@ -1045,10 +1133,14 @@ class TbSelectionData extends DataClass implements Insertable<TbSelectionData> {
       documentId:
           data.documentId.present ? data.documentId.value : this.documentId,
       fileId: data.fileId.present ? data.fileId.value : this.fileId,
-      x1: data.x1.present ? data.x1.value : this.x1,
-      x2: data.x2.present ? data.x2.value : this.x2,
-      y1: data.y1.present ? data.y1.value : this.y1,
-      y2: data.y2.present ? data.y2.value : this.y2,
+      tX1: data.tX1.present ? data.tX1.value : this.tX1,
+      tX2: data.tX2.present ? data.tX2.value : this.tX2,
+      tY1: data.tY1.present ? data.tY1.value : this.tY1,
+      tY2: data.tY2.present ? data.tY2.value : this.tY2,
+      hX1: data.hX1.present ? data.hX1.value : this.hX1,
+      hX2: data.hX2.present ? data.hX2.value : this.hX2,
+      hY1: data.hY1.present ? data.hY1.value : this.hY1,
+      hY2: data.hY2.present ? data.hY2.value : this.hY2,
     );
   }
 
@@ -1058,16 +1150,21 @@ class TbSelectionData extends DataClass implements Insertable<TbSelectionData> {
           ..write('uuid: $uuid, ')
           ..write('documentId: $documentId, ')
           ..write('fileId: $fileId, ')
-          ..write('x1: $x1, ')
-          ..write('x2: $x2, ')
-          ..write('y1: $y1, ')
-          ..write('y2: $y2')
+          ..write('tX1: $tX1, ')
+          ..write('tX2: $tX2, ')
+          ..write('tY1: $tY1, ')
+          ..write('tY2: $tY2, ')
+          ..write('hX1: $hX1, ')
+          ..write('hX2: $hX2, ')
+          ..write('hY1: $hY1, ')
+          ..write('hY2: $hY2')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(uuid, documentId, fileId, x1, x2, y1, y2);
+  int get hashCode => Object.hash(
+      uuid, documentId, fileId, tX1, tX2, tY1, tY2, hX1, hX2, hY1, hY2);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -1075,64 +1172,84 @@ class TbSelectionData extends DataClass implements Insertable<TbSelectionData> {
           other.uuid == this.uuid &&
           other.documentId == this.documentId &&
           other.fileId == this.fileId &&
-          other.x1 == this.x1 &&
-          other.x2 == this.x2 &&
-          other.y1 == this.y1 &&
-          other.y2 == this.y2);
+          other.tX1 == this.tX1 &&
+          other.tX2 == this.tX2 &&
+          other.tY1 == this.tY1 &&
+          other.tY2 == this.tY2 &&
+          other.hX1 == this.hX1 &&
+          other.hX2 == this.hX2 &&
+          other.hY1 == this.hY1 &&
+          other.hY2 == this.hY2);
 }
 
 class TbSelectionCompanion extends UpdateCompanion<TbSelectionData> {
   final Value<String> uuid;
   final Value<String> documentId;
   final Value<String> fileId;
-  final Value<double> x1;
-  final Value<double> x2;
-  final Value<double> y1;
-  final Value<double> y2;
+  final Value<double?> tX1;
+  final Value<double?> tX2;
+  final Value<double?> tY1;
+  final Value<double?> tY2;
+  final Value<double?> hX1;
+  final Value<double?> hX2;
+  final Value<double?> hY1;
+  final Value<double?> hY2;
   final Value<int> rowid;
   const TbSelectionCompanion({
     this.uuid = const Value.absent(),
     this.documentId = const Value.absent(),
     this.fileId = const Value.absent(),
-    this.x1 = const Value.absent(),
-    this.x2 = const Value.absent(),
-    this.y1 = const Value.absent(),
-    this.y2 = const Value.absent(),
+    this.tX1 = const Value.absent(),
+    this.tX2 = const Value.absent(),
+    this.tY1 = const Value.absent(),
+    this.tY2 = const Value.absent(),
+    this.hX1 = const Value.absent(),
+    this.hX2 = const Value.absent(),
+    this.hY1 = const Value.absent(),
+    this.hY2 = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   TbSelectionCompanion.insert({
     this.uuid = const Value.absent(),
     required String documentId,
     required String fileId,
-    required double x1,
-    required double x2,
-    required double y1,
-    required double y2,
+    this.tX1 = const Value.absent(),
+    this.tX2 = const Value.absent(),
+    this.tY1 = const Value.absent(),
+    this.tY2 = const Value.absent(),
+    this.hX1 = const Value.absent(),
+    this.hX2 = const Value.absent(),
+    this.hY1 = const Value.absent(),
+    this.hY2 = const Value.absent(),
     this.rowid = const Value.absent(),
   })  : documentId = Value(documentId),
-        fileId = Value(fileId),
-        x1 = Value(x1),
-        x2 = Value(x2),
-        y1 = Value(y1),
-        y2 = Value(y2);
+        fileId = Value(fileId);
   static Insertable<TbSelectionData> custom({
     Expression<String>? uuid,
     Expression<String>? documentId,
     Expression<String>? fileId,
-    Expression<double>? x1,
-    Expression<double>? x2,
-    Expression<double>? y1,
-    Expression<double>? y2,
+    Expression<double>? tX1,
+    Expression<double>? tX2,
+    Expression<double>? tY1,
+    Expression<double>? tY2,
+    Expression<double>? hX1,
+    Expression<double>? hX2,
+    Expression<double>? hY1,
+    Expression<double>? hY2,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
       if (uuid != null) 'uuid': uuid,
       if (documentId != null) 'document_id': documentId,
       if (fileId != null) 'file_id': fileId,
-      if (x1 != null) 'x1': x1,
-      if (x2 != null) 'x2': x2,
-      if (y1 != null) 'y1': y1,
-      if (y2 != null) 'y2': y2,
+      if (tX1 != null) 't_x1': tX1,
+      if (tX2 != null) 't_x2': tX2,
+      if (tY1 != null) 't_y1': tY1,
+      if (tY2 != null) 't_y2': tY2,
+      if (hX1 != null) 'h_x1': hX1,
+      if (hX2 != null) 'h_x2': hX2,
+      if (hY1 != null) 'h_y1': hY1,
+      if (hY2 != null) 'h_y2': hY2,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -1141,19 +1258,27 @@ class TbSelectionCompanion extends UpdateCompanion<TbSelectionData> {
       {Value<String>? uuid,
       Value<String>? documentId,
       Value<String>? fileId,
-      Value<double>? x1,
-      Value<double>? x2,
-      Value<double>? y1,
-      Value<double>? y2,
+      Value<double?>? tX1,
+      Value<double?>? tX2,
+      Value<double?>? tY1,
+      Value<double?>? tY2,
+      Value<double?>? hX1,
+      Value<double?>? hX2,
+      Value<double?>? hY1,
+      Value<double?>? hY2,
       Value<int>? rowid}) {
     return TbSelectionCompanion(
       uuid: uuid ?? this.uuid,
       documentId: documentId ?? this.documentId,
       fileId: fileId ?? this.fileId,
-      x1: x1 ?? this.x1,
-      x2: x2 ?? this.x2,
-      y1: y1 ?? this.y1,
-      y2: y2 ?? this.y2,
+      tX1: tX1 ?? this.tX1,
+      tX2: tX2 ?? this.tX2,
+      tY1: tY1 ?? this.tY1,
+      tY2: tY2 ?? this.tY2,
+      hX1: hX1 ?? this.hX1,
+      hX2: hX2 ?? this.hX2,
+      hY1: hY1 ?? this.hY1,
+      hY2: hY2 ?? this.hY2,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -1170,17 +1295,29 @@ class TbSelectionCompanion extends UpdateCompanion<TbSelectionData> {
     if (fileId.present) {
       map['file_id'] = Variable<String>(fileId.value);
     }
-    if (x1.present) {
-      map['x1'] = Variable<double>(x1.value);
+    if (tX1.present) {
+      map['t_x1'] = Variable<double>(tX1.value);
     }
-    if (x2.present) {
-      map['x2'] = Variable<double>(x2.value);
+    if (tX2.present) {
+      map['t_x2'] = Variable<double>(tX2.value);
     }
-    if (y1.present) {
-      map['y1'] = Variable<double>(y1.value);
+    if (tY1.present) {
+      map['t_y1'] = Variable<double>(tY1.value);
     }
-    if (y2.present) {
-      map['y2'] = Variable<double>(y2.value);
+    if (tY2.present) {
+      map['t_y2'] = Variable<double>(tY2.value);
+    }
+    if (hX1.present) {
+      map['h_x1'] = Variable<double>(hX1.value);
+    }
+    if (hX2.present) {
+      map['h_x2'] = Variable<double>(hX2.value);
+    }
+    if (hY1.present) {
+      map['h_y1'] = Variable<double>(hY1.value);
+    }
+    if (hY2.present) {
+      map['h_y2'] = Variable<double>(hY2.value);
     }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
@@ -1194,10 +1331,14 @@ class TbSelectionCompanion extends UpdateCompanion<TbSelectionData> {
           ..write('uuid: $uuid, ')
           ..write('documentId: $documentId, ')
           ..write('fileId: $fileId, ')
-          ..write('x1: $x1, ')
-          ..write('x2: $x2, ')
-          ..write('y1: $y1, ')
-          ..write('y2: $y2, ')
+          ..write('tX1: $tX1, ')
+          ..write('tX2: $tX2, ')
+          ..write('tY1: $tY1, ')
+          ..write('tY2: $tY2, ')
+          ..write('hX1: $hX1, ')
+          ..write('hX2: $hX2, ')
+          ..write('hY1: $hY1, ')
+          ..write('hY2: $hY2, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -1822,10 +1963,14 @@ typedef $$TbSelectionTableCreateCompanionBuilder = TbSelectionCompanion
   Value<String> uuid,
   required String documentId,
   required String fileId,
-  required double x1,
-  required double x2,
-  required double y1,
-  required double y2,
+  Value<double?> tX1,
+  Value<double?> tX2,
+  Value<double?> tY1,
+  Value<double?> tY2,
+  Value<double?> hX1,
+  Value<double?> hX2,
+  Value<double?> hY1,
+  Value<double?> hY2,
   Value<int> rowid,
 });
 typedef $$TbSelectionTableUpdateCompanionBuilder = TbSelectionCompanion
@@ -1833,10 +1978,14 @@ typedef $$TbSelectionTableUpdateCompanionBuilder = TbSelectionCompanion
   Value<String> uuid,
   Value<String> documentId,
   Value<String> fileId,
-  Value<double> x1,
-  Value<double> x2,
-  Value<double> y1,
-  Value<double> y2,
+  Value<double?> tX1,
+  Value<double?> tX2,
+  Value<double?> tY1,
+  Value<double?> tY2,
+  Value<double?> hX1,
+  Value<double?> hX2,
+  Value<double?> hY1,
+  Value<double?> hY2,
   Value<int> rowid,
 });
 
@@ -1882,17 +2031,29 @@ class $$TbSelectionTableFilterComposer
   ColumnFilters<String> get uuid => $composableBuilder(
       column: $table.uuid, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<double> get x1 => $composableBuilder(
-      column: $table.x1, builder: (column) => ColumnFilters(column));
+  ColumnFilters<double> get tX1 => $composableBuilder(
+      column: $table.tX1, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<double> get x2 => $composableBuilder(
-      column: $table.x2, builder: (column) => ColumnFilters(column));
+  ColumnFilters<double> get tX2 => $composableBuilder(
+      column: $table.tX2, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<double> get y1 => $composableBuilder(
-      column: $table.y1, builder: (column) => ColumnFilters(column));
+  ColumnFilters<double> get tY1 => $composableBuilder(
+      column: $table.tY1, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<double> get y2 => $composableBuilder(
-      column: $table.y2, builder: (column) => ColumnFilters(column));
+  ColumnFilters<double> get tY2 => $composableBuilder(
+      column: $table.tY2, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<double> get hX1 => $composableBuilder(
+      column: $table.hX1, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<double> get hX2 => $composableBuilder(
+      column: $table.hX2, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<double> get hY1 => $composableBuilder(
+      column: $table.hY1, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<double> get hY2 => $composableBuilder(
+      column: $table.hY2, builder: (column) => ColumnFilters(column));
 
   $$TbDocumentTableFilterComposer get documentId {
     final $$TbDocumentTableFilterComposer composer = $composerBuilder(
@@ -1947,17 +2108,29 @@ class $$TbSelectionTableOrderingComposer
   ColumnOrderings<String> get uuid => $composableBuilder(
       column: $table.uuid, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<double> get x1 => $composableBuilder(
-      column: $table.x1, builder: (column) => ColumnOrderings(column));
+  ColumnOrderings<double> get tX1 => $composableBuilder(
+      column: $table.tX1, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<double> get x2 => $composableBuilder(
-      column: $table.x2, builder: (column) => ColumnOrderings(column));
+  ColumnOrderings<double> get tX2 => $composableBuilder(
+      column: $table.tX2, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<double> get y1 => $composableBuilder(
-      column: $table.y1, builder: (column) => ColumnOrderings(column));
+  ColumnOrderings<double> get tY1 => $composableBuilder(
+      column: $table.tY1, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<double> get y2 => $composableBuilder(
-      column: $table.y2, builder: (column) => ColumnOrderings(column));
+  ColumnOrderings<double> get tY2 => $composableBuilder(
+      column: $table.tY2, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<double> get hX1 => $composableBuilder(
+      column: $table.hX1, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<double> get hX2 => $composableBuilder(
+      column: $table.hX2, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<double> get hY1 => $composableBuilder(
+      column: $table.hY1, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<double> get hY2 => $composableBuilder(
+      column: $table.hY2, builder: (column) => ColumnOrderings(column));
 
   $$TbDocumentTableOrderingComposer get documentId {
     final $$TbDocumentTableOrderingComposer composer = $composerBuilder(
@@ -2012,17 +2185,29 @@ class $$TbSelectionTableAnnotationComposer
   GeneratedColumn<String> get uuid =>
       $composableBuilder(column: $table.uuid, builder: (column) => column);
 
-  GeneratedColumn<double> get x1 =>
-      $composableBuilder(column: $table.x1, builder: (column) => column);
+  GeneratedColumn<double> get tX1 =>
+      $composableBuilder(column: $table.tX1, builder: (column) => column);
 
-  GeneratedColumn<double> get x2 =>
-      $composableBuilder(column: $table.x2, builder: (column) => column);
+  GeneratedColumn<double> get tX2 =>
+      $composableBuilder(column: $table.tX2, builder: (column) => column);
 
-  GeneratedColumn<double> get y1 =>
-      $composableBuilder(column: $table.y1, builder: (column) => column);
+  GeneratedColumn<double> get tY1 =>
+      $composableBuilder(column: $table.tY1, builder: (column) => column);
 
-  GeneratedColumn<double> get y2 =>
-      $composableBuilder(column: $table.y2, builder: (column) => column);
+  GeneratedColumn<double> get tY2 =>
+      $composableBuilder(column: $table.tY2, builder: (column) => column);
+
+  GeneratedColumn<double> get hX1 =>
+      $composableBuilder(column: $table.hX1, builder: (column) => column);
+
+  GeneratedColumn<double> get hX2 =>
+      $composableBuilder(column: $table.hX2, builder: (column) => column);
+
+  GeneratedColumn<double> get hY1 =>
+      $composableBuilder(column: $table.hY1, builder: (column) => column);
+
+  GeneratedColumn<double> get hY2 =>
+      $composableBuilder(column: $table.hY2, builder: (column) => column);
 
   $$TbDocumentTableAnnotationComposer get documentId {
     final $$TbDocumentTableAnnotationComposer composer = $composerBuilder(
@@ -2091,40 +2276,56 @@ class $$TbSelectionTableTableManager extends RootTableManager<
             Value<String> uuid = const Value.absent(),
             Value<String> documentId = const Value.absent(),
             Value<String> fileId = const Value.absent(),
-            Value<double> x1 = const Value.absent(),
-            Value<double> x2 = const Value.absent(),
-            Value<double> y1 = const Value.absent(),
-            Value<double> y2 = const Value.absent(),
+            Value<double?> tX1 = const Value.absent(),
+            Value<double?> tX2 = const Value.absent(),
+            Value<double?> tY1 = const Value.absent(),
+            Value<double?> tY2 = const Value.absent(),
+            Value<double?> hX1 = const Value.absent(),
+            Value<double?> hX2 = const Value.absent(),
+            Value<double?> hY1 = const Value.absent(),
+            Value<double?> hY2 = const Value.absent(),
             Value<int> rowid = const Value.absent(),
           }) =>
               TbSelectionCompanion(
             uuid: uuid,
             documentId: documentId,
             fileId: fileId,
-            x1: x1,
-            x2: x2,
-            y1: y1,
-            y2: y2,
+            tX1: tX1,
+            tX2: tX2,
+            tY1: tY1,
+            tY2: tY2,
+            hX1: hX1,
+            hX2: hX2,
+            hY1: hY1,
+            hY2: hY2,
             rowid: rowid,
           ),
           createCompanionCallback: ({
             Value<String> uuid = const Value.absent(),
             required String documentId,
             required String fileId,
-            required double x1,
-            required double x2,
-            required double y1,
-            required double y2,
+            Value<double?> tX1 = const Value.absent(),
+            Value<double?> tX2 = const Value.absent(),
+            Value<double?> tY1 = const Value.absent(),
+            Value<double?> tY2 = const Value.absent(),
+            Value<double?> hX1 = const Value.absent(),
+            Value<double?> hX2 = const Value.absent(),
+            Value<double?> hY1 = const Value.absent(),
+            Value<double?> hY2 = const Value.absent(),
             Value<int> rowid = const Value.absent(),
           }) =>
               TbSelectionCompanion.insert(
             uuid: uuid,
             documentId: documentId,
             fileId: fileId,
-            x1: x1,
-            x2: x2,
-            y1: y1,
-            y2: y2,
+            tX1: tX1,
+            tX2: tX2,
+            tY1: tY1,
+            tY2: tY2,
+            hX1: hX1,
+            hX2: hX2,
+            hY1: hY1,
+            hY2: hY2,
             rowid: rowid,
           ),
           withReferenceMapper: (p0) => p0

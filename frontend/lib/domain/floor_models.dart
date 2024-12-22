@@ -25,24 +25,38 @@ enum DocumentSortType {
 
 class Selection {
   String? uuid;
-  double x1;
-  double x2;
-  double y1;
-  double y2;
+  double? tX1;
+  double? tX2;
+  double? tY1;
+  double? tY2;
+  double? hX1;
+  double? hX2;
+  double? hY1;
+  double? hY2;
 
   Selection({
     this.uuid,
-    required this.x1,
-    required this.x2,
-    required this.y1,
-    required this.y2,
+    this.tX1,
+    this.tX2,
+    this.tY1,
+    this.tY2,
+    this.hX1,
+    this.hX2,
+    this.hY1,
+    this.hY2,
   });
 
-  SelectionDto toDto() => SelectionDto(
-        x1: x1,
-        x2: x2,
-        y1: y1,
-        y2: y2,
+  bool get isTSet => tX1 != null && tX2 != null && tY1 != null && tY2 != null;
+
+  bool get isHSet => hX1 != null && hX2 != null && hY1 != null && hY2 != null;
+
+  bool get isSet => this.isTSet && this.isHSet;
+
+  SelectionDto toTDto() => SelectionDto(
+        x1: tX1!,
+        x2: tX2!,
+        y1: tY1!,
+        y2: tY2!,
       );
 }
 
@@ -74,5 +88,5 @@ class DocumentForm {
         reports = reports ?? [],
         selections = selections ?? {};
 
-  bool get selectionsReady => selections.entries.length == captures.length;
+  bool get selectionsReady => selections.entries.map((entry) => entry.value.isSet).where((entry) => entry).length == captures.length;
 }

@@ -8,12 +8,13 @@ enum FloorButtonType {
   transparent;
 }
 
-abstract class FloorButton extends StatelessWidget {
+class FloorButton extends StatelessWidget {
   final bool loading;
   final IconData? iconData;
   final String? text;
   final void Function()? onPressed;
   final Color? foregroundColor;
+  final Color? backgroundColor;
   final TextDecoration? textDecoration;
 
   final FloorButtonType type;
@@ -25,6 +26,7 @@ abstract class FloorButton extends StatelessWidget {
     this.loading = false,
     required this.type,
     this.foregroundColor,
+    this.backgroundColor,
     this.textDecoration,
   });
 
@@ -32,11 +34,12 @@ abstract class FloorButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final ColorScheme colorScheme = Theme.of(context).colorScheme;
     final TextTheme textTheme = Theme.of(context).textTheme;
+    final baseBackgroundColor = backgroundColor ?? colorScheme.primary;
 
     Color getBackgroundColor() => type == FloorButtonType.filled
         ? onPressed == null
-            ? Color.alphaBlend(colorScheme.surface.withOpacity(.5), colorScheme.primary)
-            : colorScheme.primary
+            ? Color.alphaBlend(colorScheme.surface.withOpacity(.5), baseBackgroundColor)
+            : baseBackgroundColor
         : Colors.transparent;
     Color getForegroundColor() {
       final calcForegroundColor = foregroundColor != null

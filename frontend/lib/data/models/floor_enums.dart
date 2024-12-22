@@ -17,3 +17,14 @@ enum FileType implements IJsonEnum<FileType> {
   @override
   int toJson() => _$FileTypeEnumMap[this]!;
 }
+
+@JsonEnum(alwaysCreate: true)
+enum SelectionType implements IJsonEnum<SelectionType> {
+  @JsonValue(0)
+  header,
+  @JsonValue(1)
+  table;
+
+  @override
+  int toJson() => _$SelectionTypeEnumMap[this]!;
+}
