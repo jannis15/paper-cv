@@ -150,9 +150,21 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
             }
           },
           fileStatusWidget: (file) => FloorIconButton(
-            iconData: _form.selections[file]?.isSet == true ? Icons.check : Icons.document_scanner,
-            foregroundColor: _form.selections[file]?.isSet == true ? Colors.white : Colors.black,
-            backgroundColor: _form.selections[file]?.isSet == true ? Colors.green : Colors.amber,
+            iconData: _form.selections[file]?.isSet == true
+                ? Icons.check
+                : _form.selections[file]?.isTSet == true
+                    ? Icons.edit_document
+                    : Icons.document_scanner,
+            foregroundColor: _form.selections[file]?.isSet == true
+                ? Colors.white
+                : _form.selections[file]?.isTSet == true
+                    ? Colors.white
+                    : Colors.black,
+            backgroundColor: _form.selections[file]?.isSet == true
+                ? Colors.green
+                : _form.selections[file]?.isTSet == true
+                    ? Colors.blue
+                    : Colors.amber,
             onPressed: () {},
           ),
         );

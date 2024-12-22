@@ -88,5 +88,5 @@ class DocumentForm {
         reports = reports ?? [],
         selections = selections ?? {};
 
-  bool get selectionsReady => selections.entries.map((entry) => entry.value.isSet).where((entry) => entry).length == captures.length;
+  bool get selectionsReady => selections.entries.map((entry) => entry.value.isTSet).where((entry) => entry).length == captures.length;
 }

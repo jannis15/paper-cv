@@ -50,7 +50,7 @@ class _FloorTableSelectionScreenState extends State<FloorTableSelectionScreen> {
   late final _SelectionPaint _headerSelection;
   late final _SelectionPaint _tableSelection;
   Rect? _oldImageRect;
-  SelectionType _selectionType = SelectionType.header;
+  SelectionType _selectionType = SelectionType.table;
   bool _isFirstBuild = true;
 
   void _initSelection() {
