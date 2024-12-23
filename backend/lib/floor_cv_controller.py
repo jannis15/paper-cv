@@ -10,6 +10,7 @@ from lib.schemas import ScanProperties, Selection
 
 a4_height = 29.7
 a4_width = 21
+root_dir = Path(__file__).resolve().parent.parent
 
 
 class FloorCvController(ABC):
@@ -35,44 +36,47 @@ class FloorCvController(ABC):
 
     @staticmethod
     def scan_file(client: vision.ImageAnnotatorClient, file_bytes: bytes, selection: Selection):
-        # current_dir = Path(__file__).resolve().parent
-        # root_dir = current_dir.parent
+        logging = True
         np_arr = np.frombuffer(file_bytes, np.uint8)
         img_grayscale = FloorCV.read_grayscale_img_from_bytes(np_arr)
-        img_grayscale_cropped = FloorCvController.__crop_image_by_selection(img_grayscale, selection)
-        # FloorCV.log_image(root_dir, img_grayscale_cropped, 'grayscale')
+        img_base = FloorCvController.__crop_image_by_selection(img_grayscale, selection)
+        if logging:
+            FloorCV.log_image(root_dir, img_base, 'grayscale')
 
-        img_gaussian_blur = FloorCV.apply_gaussian_blur(img_grayscale_cropped)
-        # FloorCV.log_image(root_dir, img_gaussian_blur, 'gaussian_blur')
+        img_gaussian_blur = FloorCV.apply_gaussian_blur(img_base)
+        if logging:
+            FloorCV.log_image(root_dir, img_gaussian_blur, 'gaussian_blur')
 
         img_threshold = FloorCV.apply_adaptive_threshold_with_inversion(img_gaussian_blur)
-        # FloorCV.log_image(root_dir, img_threshold, 'adaptive_threshold_with_inversion')
+        if logging:
+            FloorCV.log_image(root_dir, img_threshold, 'adaptive_threshold_with_inversion')
 
         img_structure = FloorCV.get_structuring_elements(img_threshold)
-        # FloorCV.log_image(root_dir, img_structure, 'structure')
+        if logging:
+            FloorCV.log_image(root_dir, img_structure, 'structure')
 
         lines = FloorCV.get_all_lines(img_structure)
-        # print(f'Lines: {len(lines)}')
         FloorCV.extend_all_lines(img_structure, lines)
-        # img_lines = FloorCV.add_lines_to_zeros_like_img(img_structure, lines)
-        # FloorCV.log_image(root_dir, img_lines, 'lines')
+        if logging:
+            print(f'Lines: {len(lines)}')
+            img_lines = FloorCV.add_lines_to_zeros_like_img(img_base, lines)
+            FloorCV.log_image(root_dir, img_lines, 'lines')
 
-        intersections = FloorCV.get_all_intersections(img_structure, lines)
-        # print(f'Filtered Lines: {len(new_lines)}')
-        # print(f'Intersections: {len(intersections)}')
-        # img_lines = FloorCV.add_lines_to_zeros_like_img(img_structure, lines)
-        # FloorCV.log_image(root_dir, img_lines, 'new_lines')
-        # FloorCV.export_intersections(root_dir, img_structure, intersections)
+        intersections = FloorCV.get_all_intersections(img_base, lines)
+        if logging:
+            print(f'Intersections: {len(intersections)}')
+            img_lines = FloorCV.add_lines_to_zeros_like_img(img_base, lines)
+            FloorCV.log_image(root_dir, img_lines, 'new_lines')
+            FloorCV.export_intersections(root_dir, img_structure, intersections)
 
         corners = FloorCV.get_table_corners(intersections)
-
-        # img_new_lines = FloorCV.add_lines_to_zeros_like_img(img_structure, lines)
-
-        img_straightened, lines, new_corners, perspective_transform = FloorCV.straighten_table(img_structure, lines,
+        img_straightened, lines, new_corners, perspective_transform = FloorCV.straighten_table(logging, img_structure,
+                                                                                               lines,
                                                                                                corners)
-        # FloorCV.log_image(root_dir, img_straightened, 'straightened')
-        # img_new_lines = FloorCV.add_lines_to_zeros_like_img(img_straightened, lines)
-        # FloorCV.log_image(root_dir, img_new_lines, 'new_lines2')
+        if logging:
+            FloorCV.log_image(root_dir, img_straightened, 'straightened')
+            img_new_lines = FloorCV.add_lines_to_zeros_like_img(img_base, lines)
+            FloorCV.log_image(root_dir, img_new_lines, 'new_lines_2')
 
         FloorCV.add_lines_around_table(new_corners, lines)
         new_horizontal_lines, new_vertical_lines = FloorCV.filter_out_close_lines(lines)
@@ -81,47 +85,49 @@ class FloorCvController(ABC):
         new_vertical_lines = FloorCV.sort_vertical_lines_by_x(new_vertical_lines)
         new_horizontal_lines = FloorCV.straighten_horizontal_lines(new_horizontal_lines)
         new_horizontal_lines = FloorCV.sort_horizontal_lines_by_y(new_horizontal_lines)
-        avg_vertical_distance = FloorCV.average_vertical_distance(new_horizontal_lines)
-        new_horizontal_lines = FloorCV.adjust_horizontal_lines_by_avg_vertical_distance(avg_vertical_distance,
-                                                                                        new_horizontal_lines)
+        avg_vertical_distance = FloorCV.get_average_vertical_distance(new_horizontal_lines)
+        # new_horizontal_lines = FloorCV.adjust_horizontal_lines_by_avg_vertical_distance(avg_vertical_distance,
+        #                                                                                 new_horizontal_lines)
         new_lines = np.concatenate((new_horizontal_lines, new_vertical_lines), axis=0)
         new_lines = list(new_lines)
         img_new_lines = FloorCV.add_lines_to_zeros_like_img(img_structure, new_lines)
-        # print(f'New Lines: {len(new_lines)}')
-        # FloorCV.log_image(root_dir, img_new_lines, 'new_lines')
+        if logging:
+            print(f'New Lines: {len(new_lines)}')
+            FloorCV.log_image(root_dir, img_new_lines, 'new_lines')
 
-        cropped_img = img_new_lines[int(new_corners[0][1]):int(new_corners[2][1]),
+        cropped_corner_img = img_new_lines[int(new_corners[0][1]):int(new_corners[2][1]),
                       int(new_corners[0][0]):int(new_corners[2][0])]
+        if logging:
+            img_threshold_straightened = FloorCV.warp_image(img_threshold, perspective_transform)
+            FloorCV.add_lines_to_img(img_threshold_straightened, new_lines)
+            img_mask = FloorCV.create_rectangular_mask(img_threshold_straightened, new_corners)
+            img_threshold_masked = FloorCV.apply_mask(img_threshold_straightened, img_mask)
+            FloorCV.log_image(root_dir, img_threshold_masked, 'threshold_masked')
+            
 
-        # img_threshold_straightened = FloorCV.warp_image(img_threshold, perspective_transform)
-        # FloorCV.add_lines_to_img(img_threshold_straightened, new_lines)
-        # img_mask = FloorCV.create_rectangular_mask(img_threshold_straightened, new_corners)
-        # img_threshold_masked = FloorCV.apply_mask(img_threshold_straightened, img_mask)
-        # FloorCV.log_image(root_dir, img_threshold_masked, 'threshold_masked')
-
-        # img_straightened_bgr = FloorCV.img_to_bgr(cropped_img)
-        # FloorCV.export_cells(root_dir, cells, img_straightened_bgr)
-        column_widths = FloorCV.get_column_widths(new_vertical_lines)
-
-        cells = FloorCV.find_cells(cropped_img)
+        cells = FloorCV.find_cells(cropped_corner_img)
         cell_texts = ['' for _ in cells]
+        if logging:
+            img_straightened_bgr = FloorCV.img_to_bgr(cropped_corner_img)
+            FloorCV.export_cells(root_dir, cells, img_straightened_bgr)
 
         img_handwriting_source = FloorCV.warp_image(img_threshold, perspective_transform)
         img_handwriting_source = img_handwriting_source[int(new_corners[0][1]):int(new_corners[2][1]),
                                  int(new_corners[0][0]):int(new_corners[2][0])]
         img_handwriting_source_bytes = FloorCV.ndarray_to_bytes(img_handwriting_source)
 
-        # img_warped_structure = FloorCV.warp_image(img_structure, perspective_transform)
-        # FloorCV.log_image(root_dir, img=img_warped_structure, title='asdf')
-        # cropped_img_warped_structure = img_warped_structure[int(new_corners[0][1]):int(new_corners[2][1]),
-        #               int(new_corners[0][0]):int(new_corners[2][0])]
-        # FloorCV.log_image(root_dir, img=cropped_img_warped_structure, title='qwertz')
-        # cropped_img_warped_structure_bytes = FloorCV.ndarray_to_bytes(cropped_img_warped_structure)
+        img_warped_structure = FloorCV.warp_image(img_structure, perspective_transform)
+        FloorCV.log_image(root_dir, img=img_warped_structure, title='asdf')
+        cropped_img_warped_structure = img_warped_structure[int(new_corners[0][1]):int(new_corners[2][1]),
+                                       int(new_corners[0][0]):int(new_corners[2][0])]
+        FloorCV.log_image(root_dir, img=cropped_img_warped_structure, title='qwertz')
+        cropped_img_warped_structure_bytes = FloorCV.ndarray_to_bytes(cropped_img_warped_structure)
 
-        # nparr = np.frombuffer(cropped_img_warped_structure_bytes, np.uint8)
-        # import cv2 as cv
-        # img = cv.imdecode(nparr, cv.IMREAD_COLOR)
-        # FloorCV.log_image(root_dir=root_dir, img=img, title='yeehaw')
+        nparr = np.frombuffer(cropped_img_warped_structure_bytes, np.uint8)
+        if logging:
+            import cv2 as cv
+            img = cv.imdecode(nparr, cv.IMREAD_COLOR)
+            FloorCV.log_image(root_dir=root_dir, img=img, title='yeehaw')
 
         ocr_res = FloorCvController.__detect_handwriting(client=client, content=img_handwriting_source_bytes)
         for annotation in ocr_res.text_annotations:
@@ -133,11 +139,13 @@ class FloorCvController(ABC):
             best_fit_index = find_best_fit(cells, annotation_cell)
             if best_fit_index is not None:
                 if cell_texts[best_fit_index] != '':
-                    cell_texts[best_fit_index] += ' '
+                    cell_texts[best_fit_index] += ';'
                 cell_texts[best_fit_index] += annotation.description
-
+                
+        cell_texts = [text.strip() for text in cell_texts]
         rows = len(new_horizontal_lines) - 1
         columns = len(new_vertical_lines) - 1
+        column_widths = FloorCV.get_column_widths(new_vertical_lines)
         cell_texts = FloorCV.make_2d_list(cell_texts, columns)
 
         img_height, img_width = img_grayscale.shape
