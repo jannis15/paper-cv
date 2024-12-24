@@ -519,15 +519,63 @@ class FloorCV(ABC):
                 row[6] = 'x'
             else:
                 row[7] = ''
-            
-    
+
+    @staticmethod
+    def __sum_column(cell_texts: List[List[str]], column_idx: int, row_start: int, row_end: int) -> str:
+        total = 0.0
+        try:
+            for row in cell_texts[row_start:row_end + 1]:
+                if row[column_idx] != '':
+                    total += atof(row[column_idx])
+            return locale.format_string('%.3f', total, grouping=True).replace('.', '')
+        except:
+            return '0,000'
+
+    @staticmethod
+    def __calculate_missing_fields(cell_texts: List[List[str]]):
+        segment_start = None
+        floor_start = None
+        for row_idx, row in enumerate(cell_texts):
+            if row_idx == 0:
+                continue
+            if row[1] != '':
+                segment_start = row_idx
+                if floor_start is None:
+                    floor_start = row_idx
+
+            try:
+                if row[3] != '' and row[5] != '':
+                    if row[7] != '':
+                        num = atof(row[3]) * atof(row[5]) * atof(row[7])
+                    else:
+                        num = atof(row[3]) * atof(row[5])
+                    row[10] = locale.format_string('%.3f', num, grouping=True).replace('.', '')
+            except ValueError:
+                row[10] = '0,000'
+
+            # floor exists
+            # no entry in row
+            if (floor_start is not None) and (row[1] == '' and (row[3] == '' or row[5] == '')):
+                row[12] = FloorCV.__sum_column(cell_texts, column_idx=12, row_start=floor_start, row_end=row_idx - 1)
+                floor_start = None
+            # segment exists
+            # not last row
+            # next segment is waiting
+            # or floor will be finished
+            elif (segment_start is not None) and (row_idx != len(cell_texts) - 1) and (
+                    (cell_texts[row_idx + 1][1] != '') or (
+                    (cell_texts[row_idx + 1][3] == '') or (cell_texts[row_idx + 1][5] == ''))):
+                row[12] = FloorCV.__sum_column(cell_texts, column_idx=10, row_start=segment_start, row_end=row_idx)
+                segment_start = None
+        cell_texts[-2][-1] = FloorCV.__sum_column(cell_texts, column_idx=10, row_start=1,
+                                                     row_end=len(cell_texts) - 3)
 
     @staticmethod
     def adjust_cell_texts_for_template(template_no, cell_texts: List[List[str]]) -> List[List[str]]:
         if template_no == 1:
             transposed = list(map(list, zip(*cell_texts)))
             rows_to_ignore = [0]
-            columns_to_empty = [2, 4, 6, 8, 9,10,11,12]
+            columns_to_empty = [2, 4, 6, 8, 9, 10, 11, 12]
             columns_to_number_convert = [3, 5, 7]
             for col in columns_to_empty:
                 if col < len(transposed):
@@ -541,7 +589,9 @@ class FloorCV(ABC):
                     transposed[col] = FloorCV.__force_number_conversion(transposed[col], rows_to_ignore,
                                                                         "%g" if col == 7 else "%.3f")
             cell_texts = list(map(list, zip(*transposed)))
-            
+
             FloorCV.__add_missing_x(cell_texts)
-            
+
+            FloorCV.__calculate_missing_fields(cell_texts)
+
         return cell_texts
