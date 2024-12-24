@@ -71,7 +71,7 @@ class FloorCvController(ABC):
 
     @staticmethod
     def scan_file(client: vision.ImageAnnotatorClient, file_bytes: bytes, scan_properties: ScanProperties):
-        logging = True
+        logging = False
         np_arr = np.frombuffer(file_bytes, np.uint8)
         img_grayscale = FloorCV.read_grayscale_img_from_bytes(np_arr)
         img_base = FloorCvController.__crop_image_by_selection(img_grayscale, scan_properties.selection)
