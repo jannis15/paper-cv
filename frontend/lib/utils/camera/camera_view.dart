@@ -42,7 +42,7 @@ class _CameraViewState extends State<_CameraView> {
     if (camera == null) return;
     _cameraController = CameraController(
       camera,
-      ResolutionPreset.veryHigh,
+      kIsWeb ? ResolutionPreset.veryHigh : ResolutionPreset.max,
       enableAudio: false,
       imageFormatGroup: ImageFormatGroup.jpeg,
     );
