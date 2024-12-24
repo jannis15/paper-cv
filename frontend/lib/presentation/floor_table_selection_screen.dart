@@ -189,8 +189,8 @@ class _FloorTableSelectionScreenState extends State<FloorTableSelectionScreen> {
                     tY1: tY1,
                     tY2: tY2,
                     hX1: hX1,
-                    hX2: hX1,
-                    hY1: hX1,
+                    hX2: hX2,
+                    hY1: hY1,
                     hY2: hY2,
                   );
                 } else {
