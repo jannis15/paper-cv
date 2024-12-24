@@ -6,9 +6,8 @@ part of 'floor_dto_models.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$ScanPropertiesDtoImpl _$$ScanPropertiesDtoImplFromJson(
-        Map<String, dynamic> json) =>
-    _$ScanPropertiesDtoImpl(
+_$ScanResultDtoImpl _$$ScanResultDtoImplFromJson(Map<String, dynamic> json) =>
+    _$ScanResultDtoImpl(
       uuid: json['uuid'] as String?,
       columnWidthsCm: (json['column_widths_cm'] as List<dynamic>)
           .map((e) => (e as num).toDouble())
@@ -24,8 +23,7 @@ _$ScanPropertiesDtoImpl _$$ScanPropertiesDtoImplFromJson(
           .toList(),
     );
 
-Map<String, dynamic> _$$ScanPropertiesDtoImplToJson(
-        _$ScanPropertiesDtoImpl instance) =>
+Map<String, dynamic> _$$ScanResultDtoImplToJson(_$ScanResultDtoImpl instance) =>
     <String, dynamic>{
       'uuid': instance.uuid,
       'column_widths_cm': instance.columnWidthsCm,
@@ -52,4 +50,19 @@ Map<String, dynamic> _$$SelectionDtoImplToJson(_$SelectionDtoImpl instance) =>
       'y1': instance.y1,
       'x2': instance.x2,
       'y2': instance.y2,
+    };
+
+_$ScanPropertiesDtoImpl _$$ScanPropertiesDtoImplFromJson(
+        Map<String, dynamic> json) =>
+    _$ScanPropertiesDtoImpl(
+      selection:
+          SelectionDto.fromJson(json['selection'] as Map<String, dynamic>),
+      templateNo: (json['template_no'] as num).toInt(),
+    );
+
+Map<String, dynamic> _$$ScanPropertiesDtoImplToJson(
+        _$ScanPropertiesDtoImpl instance) =>
+    <String, dynamic>{
+      'selection': instance.selection,
+      'template_no': instance.templateNo,
     };

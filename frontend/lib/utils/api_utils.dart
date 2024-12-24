@@ -39,7 +39,7 @@ class RestApi {
         filename: file.filename,
         contentType: DioMediaType.parse(lookupMimeType(file.filename) ?? ''),
       ),
-      if (json != null) 'selection': jsonEncode(json),
+      if (json != null) 'scan_properties': jsonEncode(json),
     });
 
     try {

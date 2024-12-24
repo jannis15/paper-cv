@@ -9,7 +9,7 @@ from pydantic import constr
 
 from lib.floor_cv import FloorCV, Cell
 from lib.rect_fitter import find_best_fit
-from lib.schemas import ScanProperties, Selection
+from lib.schemas import ScanResult, ScanProperties, Selection
 import cv2 as cv
 
 a4_height = 29.7
@@ -28,14 +28,14 @@ class FloorCvController(ABC):
                 for block in page.blocks:
                     for paragraph in block.paragraphs:
                         for word in paragraph.words:
-                            word_text = ''.join([symbol.text for symbol in word.symbols])
-                            if re.match(ALLOWED_PATTERN, word_text):
-                                word_bbox = [(vertex.x, vertex.y) for vertex in word.bounding_box.vertices]
-                                x1, y1 = word_bbox[0]
-                                x2, y2 = word_bbox[2]
-                                cell = Cell(x1, y1, x2, y2)
-                                cell.text = word_text
-                                cells.append(cell)
+                            word_text = ''.join(
+                                [symbol.text for symbol in word.symbols if re.match(ALLOWED_PATTERN, symbol.text)])
+                            word_bbox = [(vertex.x, vertex.y) for vertex in word.bounding_box.vertices]
+                            x1, y1 = word_bbox[0]
+                            x2, y2 = word_bbox[2]
+                            cell = Cell(x1, y1, x2, y2)
+                            cell.text = word_text
+                            cells.append(cell)
             return cells
 
         current_x = 0
@@ -49,7 +49,7 @@ class FloorCvController(ABC):
             cropped_vision_image = vision.Image(content=cropped_content.tobytes())
             response = client.document_text_detection(image=cropped_vision_image,
                                                       image_context=vision.ImageContext(language_hints=["de"]))
-            
+
             new_cells = extract_cells_from_response(response)
             for cell in new_cells:
                 cell.transform(translate_x=current_x)
@@ -70,11 +70,11 @@ class FloorCvController(ABC):
         return cropped_image
 
     @staticmethod
-    def scan_file(client: vision.ImageAnnotatorClient, file_bytes: bytes, selection: Selection):
+    def scan_file(client: vision.ImageAnnotatorClient, file_bytes: bytes, scan_properties: ScanProperties):
         logging = True
         np_arr = np.frombuffer(file_bytes, np.uint8)
         img_grayscale = FloorCV.read_grayscale_img_from_bytes(np_arr)
-        img_base = FloorCvController.__crop_image_by_selection(img_grayscale, selection)
+        img_base = FloorCvController.__crop_image_by_selection(img_grayscale, scan_properties.selection)
         if logging:
             FloorCV.log_image(root_dir, img_base, '1_grayscale')
 
@@ -185,12 +185,13 @@ class FloorCvController(ABC):
             column_widths_cm.append((column_width / img_width) * a4_width)
 
         corner_x, corner_y = new_corners[0][0], new_corners[0][1]
-        abs_corner_x = selection.x1 + corner_x
-        abs_corner_y = selection.y1 + corner_y
+        abs_corner_x = scan_properties.selection.x1 + corner_x
+        abs_corner_y = scan_properties.selection.y1 + corner_y
         corner_x_cm = (abs_corner_x / img_width) * a4_width
         corner_y_cm = (abs_corner_y / img_height) * a4_height
+        cell_texts = FloorCV.adjust_cell_texts_for_template(template_no=scan_properties.template_no, cell_texts=cell_texts)
 
-        return ScanProperties(
+        return ScanResult(
             column_widths_cm=column_widths_cm,
             rows=rows,
             table_x_cm=corner_x_cm,

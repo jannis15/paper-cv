@@ -28,15 +28,15 @@ abstract class FloorRepository {
 
   static Future<void> saveDocumentForm(DocumentForm form) => FloorDatabase.instance.saveDocumentForm(form);
 
-  static Future<ScanPropertiesDto> scanCapture(SelectedFile capture, SelectionDto selection, {CancelToken? cancelToken}) =>
-      FloorCvApi.instance.scanCapture(capture, selection, cancelToken: cancelToken);
+  static Future<ScanResultDto> scanCapture(SelectedFile capture, ScanPropertiesDto scanPropertiesDto, {CancelToken? cancelToken}) =>
+      FloorCvApi.instance.scanCapture(capture, scanPropertiesDto, cancelToken: cancelToken);
 
-  static Future<Uint8List> createPdf(DocumentForm form, List<ScanPropertiesDto> dtoList) async {
+  static Future<Uint8List> createPdf(DocumentForm form, List<ScanResultDto> dtoList) async {
     img.Image cropImage(Uint8List imageData, int x1, int x2, int y1, int y2) =>
         img.copyCrop(img.decodeImage(imageData)!, x: x1, y: y1, width: (x2 - x1).abs(), height: (y2 - y1).abs());
 
     final pdf = pw.Document();
-    for (final dto in dtoList) {
+    for (final ScanResultDto dto in dtoList) {
       const a4HeightCm = 29.7;
       const a4HWidthCm = 21;
       const documentMarginCm = 1.0;

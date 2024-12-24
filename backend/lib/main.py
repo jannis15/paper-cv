@@ -13,7 +13,7 @@ from PIL import Image
 import io
 import os
 
-from lib.schemas import Selection
+from lib.schemas import Selection, ScanProperties
 
 app = FastAPI()
 limiter = Limiter(key_func=get_remote_address)
@@ -77,11 +77,11 @@ async def rate_limit_error(request, exc):
 
 @app.post('/scan')
 @limiter.limit('6/minute')
-async def scan_file(request: Request, selection: str = Form(...), file: UploadFile = File(...)):
-    selection_data = json.loads(selection)
-    selection_model = Selection(**selection_data)
+async def scan_file(request: Request, scan_properties: str = Form(...), file: UploadFile = File(...)):
+    scan_properties = json.loads(scan_properties)
+    scan_properties = ScanProperties(**scan_properties)
     file_bytes = await validate_file(request, file)
-    return FloorCvController.scan_file(client=client, file_bytes=file_bytes, selection=selection_model)
+    return FloorCvController.scan_file(client=client, file_bytes=file_bytes, scan_properties=scan_properties)
 
 
 if __name__ == '__main__':

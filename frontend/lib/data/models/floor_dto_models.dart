@@ -21,10 +21,10 @@ class DocumentPreviewDto with _$DocumentPreviewDto {
 }
 
 @freezed
-class ScanPropertiesDto with _$ScanPropertiesDto {
-  ScanPropertiesDto._();
+class ScanResultDto with _$ScanResultDto {
+  ScanResultDto._();
 
-  factory ScanPropertiesDto({
+  factory ScanResultDto({
     String? uuid,
     @JsonKey(name: 'column_widths_cm') required List<double> columnWidthsCm,
     @JsonKey(name: 'rows') required int rows,
@@ -34,9 +34,9 @@ class ScanPropertiesDto with _$ScanPropertiesDto {
     @JsonKey(name: 'img_width_px') required double imgWidthPx,
     @JsonKey(name: 'img_height_px') required double imgHeightPx,
     @JsonKey(name: 'cell_texts') required List<List<String>> cellTexts,
-  }) = _ScanPropertiesDto;
+  }) = _ScanResultDto;
 
-  factory ScanPropertiesDto.fromJson(JsonObject json) => _$ScanPropertiesDtoFromJson(json);
+  factory ScanResultDto.fromJson(JsonObject json) => _$ScanResultDtoFromJson(json);
 
   SelectedFile toSelectedFile() {
     final now = DateTime.now();
@@ -66,4 +66,16 @@ class SelectionDto with _$SelectionDto {
   }) = _SelectionDto;
 
   factory SelectionDto.fromJson(Map<String, dynamic> json) => _$SelectionDtoFromJson(json);
+}
+
+@freezed
+class ScanPropertiesDto with _$ScanPropertiesDto {
+  ScanPropertiesDto._();
+
+  factory ScanPropertiesDto({
+    @JsonKey(name: 'selection') required SelectionDto selection,
+    @JsonKey(name: 'template_no') required int templateNo,
+  }) = _ScanPropertiesDto;
+
+  factory ScanPropertiesDto.fromJson(Map<String, dynamic> json) => _$ScanPropertiesDtoFromJson(json);
 }

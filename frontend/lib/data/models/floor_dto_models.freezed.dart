@@ -231,12 +231,12 @@ abstract class _DocumentPreviewDto implements DocumentPreviewDto {
       throw _privateConstructorUsedError;
 }
 
-ScanPropertiesDto _$ScanPropertiesDtoFromJson(Map<String, dynamic> json) {
-  return _ScanPropertiesDto.fromJson(json);
+ScanResultDto _$ScanResultDtoFromJson(Map<String, dynamic> json) {
+  return _ScanResultDto.fromJson(json);
 }
 
 /// @nodoc
-mixin _$ScanPropertiesDto {
+mixin _$ScanResultDto {
   String? get uuid => throw _privateConstructorUsedError;
   @JsonKey(name: 'column_widths_cm')
   List<double> get columnWidthsCm => throw _privateConstructorUsedError;
@@ -255,21 +255,21 @@ mixin _$ScanPropertiesDto {
   @JsonKey(name: 'cell_texts')
   List<List<String>> get cellTexts => throw _privateConstructorUsedError;
 
-  /// Serializes this ScanPropertiesDto to a JSON map.
+  /// Serializes this ScanResultDto to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
 
-  /// Create a copy of ScanPropertiesDto
+  /// Create a copy of ScanResultDto
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
-  $ScanPropertiesDtoCopyWith<ScanPropertiesDto> get copyWith =>
+  $ScanResultDtoCopyWith<ScanResultDto> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class $ScanPropertiesDtoCopyWith<$Res> {
-  factory $ScanPropertiesDtoCopyWith(
-          ScanPropertiesDto value, $Res Function(ScanPropertiesDto) then) =
-      _$ScanPropertiesDtoCopyWithImpl<$Res, ScanPropertiesDto>;
+abstract class $ScanResultDtoCopyWith<$Res> {
+  factory $ScanResultDtoCopyWith(
+          ScanResultDto value, $Res Function(ScanResultDto) then) =
+      _$ScanResultDtoCopyWithImpl<$Res, ScanResultDto>;
   @useResult
   $Res call(
       {String? uuid,
@@ -284,16 +284,16 @@ abstract class $ScanPropertiesDtoCopyWith<$Res> {
 }
 
 /// @nodoc
-class _$ScanPropertiesDtoCopyWithImpl<$Res, $Val extends ScanPropertiesDto>
-    implements $ScanPropertiesDtoCopyWith<$Res> {
-  _$ScanPropertiesDtoCopyWithImpl(this._value, this._then);
+class _$ScanResultDtoCopyWithImpl<$Res, $Val extends ScanResultDto>
+    implements $ScanResultDtoCopyWith<$Res> {
+  _$ScanResultDtoCopyWithImpl(this._value, this._then);
 
   // ignore: unused_field
   final $Val _value;
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of ScanPropertiesDto
+  /// Create a copy of ScanResultDto
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
@@ -350,11 +350,11 @@ class _$ScanPropertiesDtoCopyWithImpl<$Res, $Val extends ScanPropertiesDto>
 }
 
 /// @nodoc
-abstract class _$$ScanPropertiesDtoImplCopyWith<$Res>
-    implements $ScanPropertiesDtoCopyWith<$Res> {
-  factory _$$ScanPropertiesDtoImplCopyWith(_$ScanPropertiesDtoImpl value,
-          $Res Function(_$ScanPropertiesDtoImpl) then) =
-      __$$ScanPropertiesDtoImplCopyWithImpl<$Res>;
+abstract class _$$ScanResultDtoImplCopyWith<$Res>
+    implements $ScanResultDtoCopyWith<$Res> {
+  factory _$$ScanResultDtoImplCopyWith(
+          _$ScanResultDtoImpl value, $Res Function(_$ScanResultDtoImpl) then) =
+      __$$ScanResultDtoImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -370,14 +370,14 @@ abstract class _$$ScanPropertiesDtoImplCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$ScanPropertiesDtoImplCopyWithImpl<$Res>
-    extends _$ScanPropertiesDtoCopyWithImpl<$Res, _$ScanPropertiesDtoImpl>
-    implements _$$ScanPropertiesDtoImplCopyWith<$Res> {
-  __$$ScanPropertiesDtoImplCopyWithImpl(_$ScanPropertiesDtoImpl _value,
-      $Res Function(_$ScanPropertiesDtoImpl) _then)
+class __$$ScanResultDtoImplCopyWithImpl<$Res>
+    extends _$ScanResultDtoCopyWithImpl<$Res, _$ScanResultDtoImpl>
+    implements _$$ScanResultDtoImplCopyWith<$Res> {
+  __$$ScanResultDtoImplCopyWithImpl(
+      _$ScanResultDtoImpl _value, $Res Function(_$ScanResultDtoImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of ScanPropertiesDto
+  /// Create a copy of ScanResultDto
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
@@ -392,7 +392,7 @@ class __$$ScanPropertiesDtoImplCopyWithImpl<$Res>
     Object? imgHeightPx = null,
     Object? cellTexts = null,
   }) {
-    return _then(_$ScanPropertiesDtoImpl(
+    return _then(_$ScanResultDtoImpl(
       uuid: freezed == uuid
           ? _value.uuid
           : uuid // ignore: cast_nullable_to_non_nullable
@@ -435,8 +435,8 @@ class __$$ScanPropertiesDtoImplCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$ScanPropertiesDtoImpl extends _ScanPropertiesDto {
-  _$ScanPropertiesDtoImpl(
+class _$ScanResultDtoImpl extends _ScanResultDto {
+  _$ScanResultDtoImpl(
       {this.uuid,
       @JsonKey(name: 'column_widths_cm')
       required final List<double> columnWidthsCm,
@@ -451,8 +451,8 @@ class _$ScanPropertiesDtoImpl extends _ScanPropertiesDto {
         _cellTexts = cellTexts,
         super._();
 
-  factory _$ScanPropertiesDtoImpl.fromJson(Map<String, dynamic> json) =>
-      _$$ScanPropertiesDtoImplFromJson(json);
+  factory _$ScanResultDtoImpl.fromJson(Map<String, dynamic> json) =>
+      _$$ScanResultDtoImplFromJson(json);
 
   @override
   final String? uuid;
@@ -494,14 +494,14 @@ class _$ScanPropertiesDtoImpl extends _ScanPropertiesDto {
 
   @override
   String toString() {
-    return 'ScanPropertiesDto(uuid: $uuid, columnWidthsCm: $columnWidthsCm, rows: $rows, avgRowHeightCm: $avgRowHeightCm, tableXCm: $tableXCm, tableYCm: $tableYCm, imgWidthPx: $imgWidthPx, imgHeightPx: $imgHeightPx, cellTexts: $cellTexts)';
+    return 'ScanResultDto(uuid: $uuid, columnWidthsCm: $columnWidthsCm, rows: $rows, avgRowHeightCm: $avgRowHeightCm, tableXCm: $tableXCm, tableYCm: $tableYCm, imgWidthPx: $imgWidthPx, imgHeightPx: $imgHeightPx, cellTexts: $cellTexts)';
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$ScanPropertiesDtoImpl &&
+            other is _$ScanResultDtoImpl &&
             (identical(other.uuid, uuid) || other.uuid == uuid) &&
             const DeepCollectionEquality()
                 .equals(other._columnWidthsCm, _columnWidthsCm) &&
@@ -534,25 +534,24 @@ class _$ScanPropertiesDtoImpl extends _ScanPropertiesDto {
       imgHeightPx,
       const DeepCollectionEquality().hash(_cellTexts));
 
-  /// Create a copy of ScanPropertiesDto
+  /// Create a copy of ScanResultDto
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
-  _$$ScanPropertiesDtoImplCopyWith<_$ScanPropertiesDtoImpl> get copyWith =>
-      __$$ScanPropertiesDtoImplCopyWithImpl<_$ScanPropertiesDtoImpl>(
-          this, _$identity);
+  _$$ScanResultDtoImplCopyWith<_$ScanResultDtoImpl> get copyWith =>
+      __$$ScanResultDtoImplCopyWithImpl<_$ScanResultDtoImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$ScanPropertiesDtoImplToJson(
+    return _$$ScanResultDtoImplToJson(
       this,
     );
   }
 }
 
-abstract class _ScanPropertiesDto extends ScanPropertiesDto {
-  factory _ScanPropertiesDto(
+abstract class _ScanResultDto extends ScanResultDto {
+  factory _ScanResultDto(
       {final String? uuid,
       @JsonKey(name: 'column_widths_cm')
       required final List<double> columnWidthsCm,
@@ -563,11 +562,11 @@ abstract class _ScanPropertiesDto extends ScanPropertiesDto {
       @JsonKey(name: 'img_width_px') required final double imgWidthPx,
       @JsonKey(name: 'img_height_px') required final double imgHeightPx,
       @JsonKey(name: 'cell_texts')
-      required final List<List<String>> cellTexts}) = _$ScanPropertiesDtoImpl;
-  _ScanPropertiesDto._() : super._();
+      required final List<List<String>> cellTexts}) = _$ScanResultDtoImpl;
+  _ScanResultDto._() : super._();
 
-  factory _ScanPropertiesDto.fromJson(Map<String, dynamic> json) =
-      _$ScanPropertiesDtoImpl.fromJson;
+  factory _ScanResultDto.fromJson(Map<String, dynamic> json) =
+      _$ScanResultDtoImpl.fromJson;
 
   @override
   String? get uuid;
@@ -596,11 +595,11 @@ abstract class _ScanPropertiesDto extends ScanPropertiesDto {
   @JsonKey(name: 'cell_texts')
   List<List<String>> get cellTexts;
 
-  /// Create a copy of ScanPropertiesDto
+  /// Create a copy of ScanResultDto
   /// with the given fields replaced by the non-null parameter values.
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$ScanPropertiesDtoImplCopyWith<_$ScanPropertiesDtoImpl> get copyWith =>
+  _$$ScanResultDtoImplCopyWith<_$ScanResultDtoImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
@@ -805,5 +804,205 @@ abstract class _SelectionDto extends SelectionDto {
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$SelectionDtoImplCopyWith<_$SelectionDtoImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+ScanPropertiesDto _$ScanPropertiesDtoFromJson(Map<String, dynamic> json) {
+  return _ScanPropertiesDto.fromJson(json);
+}
+
+/// @nodoc
+mixin _$ScanPropertiesDto {
+  @JsonKey(name: 'selection')
+  SelectionDto get selection => throw _privateConstructorUsedError;
+  @JsonKey(name: 'template_no')
+  int get templateNo => throw _privateConstructorUsedError;
+
+  /// Serializes this ScanPropertiesDto to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of ScanPropertiesDto
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $ScanPropertiesDtoCopyWith<ScanPropertiesDto> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $ScanPropertiesDtoCopyWith<$Res> {
+  factory $ScanPropertiesDtoCopyWith(
+          ScanPropertiesDto value, $Res Function(ScanPropertiesDto) then) =
+      _$ScanPropertiesDtoCopyWithImpl<$Res, ScanPropertiesDto>;
+  @useResult
+  $Res call(
+      {@JsonKey(name: 'selection') SelectionDto selection,
+      @JsonKey(name: 'template_no') int templateNo});
+
+  $SelectionDtoCopyWith<$Res> get selection;
+}
+
+/// @nodoc
+class _$ScanPropertiesDtoCopyWithImpl<$Res, $Val extends ScanPropertiesDto>
+    implements $ScanPropertiesDtoCopyWith<$Res> {
+  _$ScanPropertiesDtoCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of ScanPropertiesDto
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? selection = null,
+    Object? templateNo = null,
+  }) {
+    return _then(_value.copyWith(
+      selection: null == selection
+          ? _value.selection
+          : selection // ignore: cast_nullable_to_non_nullable
+              as SelectionDto,
+      templateNo: null == templateNo
+          ? _value.templateNo
+          : templateNo // ignore: cast_nullable_to_non_nullable
+              as int,
+    ) as $Val);
+  }
+
+  /// Create a copy of ScanPropertiesDto
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $SelectionDtoCopyWith<$Res> get selection {
+    return $SelectionDtoCopyWith<$Res>(_value.selection, (value) {
+      return _then(_value.copyWith(selection: value) as $Val);
+    });
+  }
+}
+
+/// @nodoc
+abstract class _$$ScanPropertiesDtoImplCopyWith<$Res>
+    implements $ScanPropertiesDtoCopyWith<$Res> {
+  factory _$$ScanPropertiesDtoImplCopyWith(_$ScanPropertiesDtoImpl value,
+          $Res Function(_$ScanPropertiesDtoImpl) then) =
+      __$$ScanPropertiesDtoImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call(
+      {@JsonKey(name: 'selection') SelectionDto selection,
+      @JsonKey(name: 'template_no') int templateNo});
+
+  @override
+  $SelectionDtoCopyWith<$Res> get selection;
+}
+
+/// @nodoc
+class __$$ScanPropertiesDtoImplCopyWithImpl<$Res>
+    extends _$ScanPropertiesDtoCopyWithImpl<$Res, _$ScanPropertiesDtoImpl>
+    implements _$$ScanPropertiesDtoImplCopyWith<$Res> {
+  __$$ScanPropertiesDtoImplCopyWithImpl(_$ScanPropertiesDtoImpl _value,
+      $Res Function(_$ScanPropertiesDtoImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of ScanPropertiesDto
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? selection = null,
+    Object? templateNo = null,
+  }) {
+    return _then(_$ScanPropertiesDtoImpl(
+      selection: null == selection
+          ? _value.selection
+          : selection // ignore: cast_nullable_to_non_nullable
+              as SelectionDto,
+      templateNo: null == templateNo
+          ? _value.templateNo
+          : templateNo // ignore: cast_nullable_to_non_nullable
+              as int,
+    ));
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$ScanPropertiesDtoImpl extends _ScanPropertiesDto {
+  _$ScanPropertiesDtoImpl(
+      {@JsonKey(name: 'selection') required this.selection,
+      @JsonKey(name: 'template_no') required this.templateNo})
+      : super._();
+
+  factory _$ScanPropertiesDtoImpl.fromJson(Map<String, dynamic> json) =>
+      _$$ScanPropertiesDtoImplFromJson(json);
+
+  @override
+  @JsonKey(name: 'selection')
+  final SelectionDto selection;
+  @override
+  @JsonKey(name: 'template_no')
+  final int templateNo;
+
+  @override
+  String toString() {
+    return 'ScanPropertiesDto(selection: $selection, templateNo: $templateNo)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$ScanPropertiesDtoImpl &&
+            (identical(other.selection, selection) ||
+                other.selection == selection) &&
+            (identical(other.templateNo, templateNo) ||
+                other.templateNo == templateNo));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, selection, templateNo);
+
+  /// Create a copy of ScanPropertiesDto
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$ScanPropertiesDtoImplCopyWith<_$ScanPropertiesDtoImpl> get copyWith =>
+      __$$ScanPropertiesDtoImplCopyWithImpl<_$ScanPropertiesDtoImpl>(
+          this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$ScanPropertiesDtoImplToJson(
+      this,
+    );
+  }
+}
+
+abstract class _ScanPropertiesDto extends ScanPropertiesDto {
+  factory _ScanPropertiesDto(
+          {@JsonKey(name: 'selection') required final SelectionDto selection,
+          @JsonKey(name: 'template_no') required final int templateNo}) =
+      _$ScanPropertiesDtoImpl;
+  _ScanPropertiesDto._() : super._();
+
+  factory _ScanPropertiesDto.fromJson(Map<String, dynamic> json) =
+      _$ScanPropertiesDtoImpl.fromJson;
+
+  @override
+  @JsonKey(name: 'selection')
+  SelectionDto get selection;
+  @override
+  @JsonKey(name: 'template_no')
+  int get templateNo;
+
+  /// Create a copy of ScanPropertiesDto
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$ScanPropertiesDtoImplCopyWith<_$ScanPropertiesDtoImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

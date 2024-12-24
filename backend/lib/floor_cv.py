@@ -5,6 +5,8 @@ import cv2 as cv
 from typing import List, Tuple
 from shapely.geometry import LineString, Point, box
 from abc import ABC
+from locale import setlocale, LC_NUMERIC, atof
+import locale
 
 
 class Cell:
@@ -481,3 +483,63 @@ class FloorCV(ABC):
             for point in tmp_points:
                 intersections.append(point)
         return intersections
+
+    @staticmethod
+    def __force_number_conversion(cell_texts: List[str], cells_to_ignore: List[int], format_number: str) -> List[str]:
+        setlocale(LC_NUMERIC, 'de_DE.UTF-8')
+
+        for cell_idx in range(len(cell_texts)):
+            if cell_idx in cells_to_ignore:
+                continue
+
+            text = ''.join(c for c in cell_texts[cell_idx] if c.isdigit() or c in ['+', '-'])
+            text = text.ljust(4, '0')
+            text = text[:-3] + ',' + text[-3:]
+
+            try:
+                number = atof(text)
+                if number == 0:
+                    cell_texts[cell_idx] = ''
+                else:
+                    formatted_number = locale.format_string(format_number, number, grouping=True)
+                    formatted_number = formatted_number.replace('.', '')
+                    cell_texts[cell_idx] = formatted_number
+            except ValueError:
+                cell_texts[cell_idx] = ''
+
+        return cell_texts
+
+    @staticmethod
+    def __add_missing_x(cell_texts: List[List[str]]):
+        for row in cell_texts:
+            if row[2] != '' and row[4] != '':
+                row[3] = 'x'
+
+            if row[4] != '' and row[6] != '':
+                row[5] = 'x'
+            
+    
+
+    @staticmethod
+    def adjust_cell_texts_for_template(template_no, cell_texts: List[List[str]]) -> List[List[str]]:
+        if template_no == 1:
+            transposed = list(map(list, zip(*cell_texts)))
+            rows_to_ignore = [0]
+            columns_to_empty = [2, 4, 6, 8]
+            columns_to_number_convert = [3, 5, 7, 9, 10, 11, 12]
+            for col in columns_to_empty:
+                if col < len(transposed):
+                    for row in range(len(transposed[col])):
+                        if row in rows_to_ignore:
+                            continue
+                        transposed[col][row] = ''
+
+            for col in columns_to_number_convert:
+                if col < len(transposed):
+                    transposed[col] = FloorCV.__force_number_conversion(transposed[col], rows_to_ignore,
+                                                                        "%g" if col == 7 else "%.3f")
+            cell_texts = list(map(list, zip(*transposed)))
+            
+            FloorCV.__add_missing_x(cell_texts)
+            
+        return cell_texts

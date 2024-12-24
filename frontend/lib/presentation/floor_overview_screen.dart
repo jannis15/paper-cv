@@ -177,8 +177,15 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
           onPickFiles: () async {
             final result = <SelectedFile>[];
             for (final capture in _form.captures) {
-              final scanProperties = await FloorRepository.scanCapture(capture, _form.selections[capture]!.toTDto(), cancelToken: _cancelToken);
-              final newSelectedFile = scanProperties.toSelectedFile();
+              final selection = _form.selections[capture]!;
+              final scanResult = await FloorRepository.scanCapture(
+                  capture,
+                  ScanPropertiesDto(
+                    selection: selection.toTDto(),
+                    templateNo: 1,
+                  ),
+                  cancelToken: _cancelToken);
+              final newSelectedFile = scanResult.toSelectedFile();
               result.add(newSelectedFile);
             }
             return result;
@@ -210,9 +217,9 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
           iconData: Icons.auto_awesome,
           iconText: 'Generieren',
           onPickFiles: () async {
-            final List<ScanPropertiesDto> scanPropertiesList = [];
+            final List<ScanResultDto> scanPropertiesList = [];
             for (final scan in _form.scans) {
-              final scanProperties = ScanPropertiesDto.fromJson(jsonDecode(utf8.decode(scan.data)));
+              final scanProperties = ScanResultDto.fromJson(jsonDecode(utf8.decode(scan.data)));
               scanPropertiesList.add(scanProperties);
             }
             final pdfData = await FloorRepository.createPdf(_form, scanPropertiesList);
