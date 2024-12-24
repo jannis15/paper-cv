@@ -2,7 +2,7 @@ import uuid
 from pathlib import Path
 import numpy as np
 import cv2 as cv
-from typing import List, Tuple, Any
+from typing import List, Tuple
 from shapely.geometry import LineString, Point, box
 from abc import ABC
 
@@ -13,6 +13,7 @@ class Cell:
         self.y1 = y1
         self.x2 = x2
         self.y2 = y2
+        self.text = ''
 
     @property
     def width(self):
@@ -26,18 +27,24 @@ class Cell:
     def area(self):
         return self.width * self.height
 
+    def transform(self, scale_x=1, scale_y=1, translate_x=0, translate_y=0):
+        self.x1 = self.x1 * scale_x + translate_x
+        self.y1 = self.y1 * scale_y + translate_y
+        self.x2 = self.x2 * scale_x + translate_x
+        self.y2 = self.y2 * scale_y + translate_y
+
 
 class FloorCV(ABC):
     @staticmethod
     def make_2d_list(lst: list, n: int) -> list:
         return [lst[i:i + n] for i in range(0, len(lst), n)]
 
-    @staticmethod
-    def ndarray_to_bytes(image: np.ndarray, file_format: str = '.png') -> bytes:
-        success, encoded_image = cv.imencode(file_format, image)
-        if not success:
-            raise ValueError("Image encoding failed.")
-        return encoded_image.tobytes()
+    # @staticmethod
+    # def ndarray_to_bytes(image: np.ndarray, file_format: str = '.png') -> bytes:
+    #     success, encoded_image = cv.imencode(file_format, image)
+    #     if not success:
+    #         raise ValueError("Image encoding failed.")
+    #     return encoded_image.tobytes()
 
     @staticmethod
     def subtract_images(img1: np.ndarray, img2: np.ndarray) -> np.ndarray:
@@ -88,6 +95,7 @@ class FloorCV(ABC):
         top_right_sum = top_right.x - top_right.y
         bottom_left_sum = bottom_left.y - bottom_left.x
         bottom_right_sum = bottom_right.x + bottom_right.y
+
         for point in intersections:
             x, y = point.x, point.y
             point_sum = x + y
@@ -129,10 +137,10 @@ class FloorCV(ABC):
         for point in intersections:
             x, y = int(point.x), int(point.y)
             cv.circle(intersection_canvas, (x, y), 5, [0, 0, 255])
-        FloorCV.log_image(root_dir, intersection_canvas, 'intersections')
+        FloorCV.log_image(root_dir, intersection_canvas, '6.1_intersections')
         line_image_bgr = FloorCV.img_to_bgr(img)
         intersection_canvas = cv.addWeighted(line_image_bgr, .2, intersection_canvas, 1, 0)
-        FloorCV.log_image(root_dir, intersection_canvas, 'lines_with_intersections')
+        FloorCV.log_image(root_dir, intersection_canvas, '6.2_lines_with_intersections')
 
     @staticmethod
     def __extend_line_from_slope(x1: float, y1: float, slope: float, width: float, height: float) -> np.ndarray:
@@ -211,8 +219,10 @@ class FloorCV(ABC):
             font_scale = 0.7
             text_color = (0, 0, 255)  # Red color
             text_thickness = 2
-            cv.putText(annotated_image, str(idx + 1), (center_x - 10, center_y + 10), font, font_scale, text_color, text_thickness)
-        FloorCV.log_image(root_dir, annotated_image, 'annotated_image')
+            cv.putText(annotated_image, str(idx + 1) + '-' + cell.text, (center_x - 10, center_y + 10), font,
+                       font_scale, text_color,
+                       text_thickness)
+        FloorCV.log_image(root_dir, annotated_image, '92_cells')
 
     @staticmethod
     def get_dst_corners(corners: List) -> List:
@@ -242,7 +252,7 @@ class FloorCV(ABC):
         ]
 
     @staticmethod
-    def straighten_table(img: np.ndarray, lines: List, corners: List) -> Tuple:
+    def straighten_table(logging: bool, img: np.ndarray, lines: List, corners: List) -> Tuple:
         src_corners = np.float32(corners)
         new_corners = FloorCV.get_dst_corners(corners)
         dst_corners = np.float32(new_corners)
@@ -255,7 +265,10 @@ class FloorCV(ABC):
             transformed_points = transformed_points.reshape(4)
             transformed_lines.append(transformed_points)
         FloorCV.extend_all_lines(img, transformed_lines)
-        warped_image = FloorCV.warp_image(img, perspective_transform)
+        if logging:
+            warped_image = FloorCV.warp_image(img, perspective_transform)
+        else:
+            warped_image = None
         return warped_image, transformed_lines, new_corners, perspective_transform
 
     @staticmethod
@@ -322,26 +335,26 @@ class FloorCV(ABC):
     def __table_height(sorted_horizontal_lines: np.ndarray):
         first_y = sorted_horizontal_lines[0, 1]
         last_y = sorted_horizontal_lines[-1, 1]
-        return last_y-first_y
+        return last_y - first_y
 
     @staticmethod
-    def average_vertical_distance(sorted_horizontal_lines: np.ndarray) -> float:
+    def get_average_vertical_distance(sorted_horizontal_lines: np.ndarray) -> float:
         if len(sorted_horizontal_lines) < 2:
             return 0.0
         return float((FloorCV.__table_height(sorted_horizontal_lines)) / (len(sorted_horizontal_lines) - 1))
 
-    @staticmethod
-    def adjust_horizontal_lines_by_avg_vertical_distance(avg_distance: float,
-                                                         sorted_horizontal_lines: np.ndarray) -> np.ndarray:
-        adjusted_lines = sorted_horizontal_lines.copy()
-        if len(sorted_horizontal_lines) < 2:
-            return adjusted_lines
-
-        for i in range(1, len(adjusted_lines) - 1):
-            adjusted_lines[i, 1] = adjusted_lines[0, 1] + avg_distance * i
-            adjusted_lines[i, 3] = adjusted_lines[0, 3] + avg_distance * i
-
-        return adjusted_lines
+    # @staticmethod
+    # def adjust_horizontal_lines_by_avg_vertical_distance(avg_distance: float,
+    #                                                      sorted_horizontal_lines: np.ndarray) -> np.ndarray:
+    #     adjusted_lines = sorted_horizontal_lines.copy()
+    #     if len(sorted_horizontal_lines) < 2:
+    #         return adjusted_lines
+    # 
+    #     for i in range(1, len(adjusted_lines) - 1):
+    #         adjusted_lines[i, 1] = adjusted_lines[0, 1] + avg_distance * i
+    #         adjusted_lines[i, 3] = adjusted_lines[0, 3] + avg_distance * i
+    # 
+    #     return adjusted_lines
 
     @staticmethod
     def add_lines_to_zeros_like_img(img: np.ndarray, lines: List) -> np.ndarray:
