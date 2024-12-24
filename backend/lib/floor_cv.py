@@ -512,11 +512,13 @@ class FloorCV(ABC):
     @staticmethod
     def __add_missing_x(cell_texts: List[List[str]]):
         for row in cell_texts:
-            if row[2] != '' and row[4] != '':
-                row[3] = 'x'
+            if row[3] != '' and row[5] != '':
+                row[4] = 'x'
 
-            if row[4] != '' and row[6] != '':
-                row[5] = 'x'
+            if row[5] != '' and row[7] != '':
+                row[6] = 'x'
+            else:
+                row[7] = ''
             
     
 
@@ -525,8 +527,8 @@ class FloorCV(ABC):
         if template_no == 1:
             transposed = list(map(list, zip(*cell_texts)))
             rows_to_ignore = [0]
-            columns_to_empty = [2, 4, 6, 8]
-            columns_to_number_convert = [3, 5, 7, 9, 10, 11, 12]
+            columns_to_empty = [2, 4, 6, 8, 9,10,11,12]
+            columns_to_number_convert = [3, 5, 7]
             for col in columns_to_empty:
                 if col < len(transposed):
                     for row in range(len(transposed[col])):
