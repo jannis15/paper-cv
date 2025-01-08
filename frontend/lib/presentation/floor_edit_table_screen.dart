@@ -71,7 +71,8 @@ class _FloorEditTableScreenState extends State<FloorEditTableScreen> {
 
   void _saveChanges() async {
     final newSelectedFile = _form.toDto().toSelectedFile();
-    await FloorRepository.saveDocumentFile(documentId: _form.uuid!, file: newSelectedFile);
+    // TODO
+    // await FloorRepository.saveDocumentFile(documentId: _form.uuid!, file: newSelectedFile);
     Navigator.of(context).pop(newSelectedFile);
   }
 
@@ -90,7 +91,6 @@ class _FloorEditTableScreenState extends State<FloorEditTableScreen> {
         ],
       ),
       body: FloorLayoutBody(
-        sideChildren: [],
         child: SizedBox(
           height: 500,
           width: 400,
@@ -113,21 +113,35 @@ class _FloorEditTableScreenState extends State<FloorEditTableScreen> {
                     children: _form.cellTexts[0]
                         .mapIndexed(
                           (rowIdx, _) => TableRow(
-                            children: _form.cellTexts
-                                .mapIndexed(
-                                  (colIdx, _) => Padding(
-                                    padding: EdgeInsets.all(AppSizes.kSmallGap),
-                                    child: _editableMap[colIdx][rowIdx]
-                                        ? FloorTextField(
-                                            controller: _controllers[colIdx][rowIdx],
-                                            onChanged: (value) {
-                                              _form.cellTexts[colIdx][rowIdx] = value;
-                                            },
-                                          )
-                                        : Text('moin'),
-                                  ),
-                                )
-                                .toList(),
+                            children: _form.cellTexts.mapIndexed((colIdx, _) {
+                              final bool isTextEmpty = _controllers[colIdx][rowIdx]?.value.text.isEmpty ?? false;
+                              return Padding(
+                                padding: EdgeInsets.all(AppSizes.kSmallGap),
+                                child: _editableMap[colIdx][rowIdx]
+                                    ? FloorTextField(
+                                        controller: _controllers[colIdx][rowIdx],
+                                        decoration: InputDecoration(hintText: isTextEmpty ? '[...]' : null, border: InputBorder.none),
+                                        style: textTheme.bodyMedium?.copyWith(
+                                          fontWeight: rowIdx == 0 ? FontWeight.bold : FontWeight.normal,
+                                          fontStyle: isTextEmpty ? FontStyle.italic : FontStyle.normal,
+                                        ),
+                                        onChanged: (value) {
+                                          _form.cellTexts[colIdx][rowIdx] = value;
+                                          setState(() {});
+                                        },
+                                      )
+                                    : Text(
+                                        _form.cellTexts[colIdx][rowIdx] + 'static text',
+                                        style: textTheme.bodyMedium?.copyWith(
+                                          color: Color.alphaBlend(
+                                            colorScheme.onSurface.withOpacity(.5),
+                                            colorScheme.surface,
+                                          ),
+                                          fontWeight: rowIdx == 0 ? FontWeight.bold : FontWeight.normal,
+                                        ),
+                                      ),
+                              );
+                            }).toList(),
                           ),
                         )
                         .toList(),

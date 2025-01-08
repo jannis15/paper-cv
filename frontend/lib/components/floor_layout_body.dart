@@ -10,7 +10,7 @@ class FloorLayoutBody extends StatefulWidget {
 
   const FloorLayoutBody({
     super.key,
-    required this.sideChildren,
+    this.sideChildren = const [],
     required this.child,
   });
 
@@ -37,17 +37,20 @@ class _FloorLayoutBodyState extends State<FloorLayoutBody> {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SizedBox(
-                      width: 6 * AppSizes.kComponentHeight,
-                      child: SingleChildScrollView(
-                        padding: EdgeInsets.all(AppSizes.kGap),
-                        child: ColumnGap(
-                          gap: AppSizes.kSmallGap,
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: widget.sideChildren,
+                    if (widget.sideChildren.isEmpty)
+                      SizedBox(width: AppSizes.kComponentHeight)
+                    else
+                      SizedBox(
+                        width: 6 * AppSizes.kComponentHeight,
+                        child: SingleChildScrollView(
+                          padding: EdgeInsets.all(AppSizes.kGap),
+                          child: ColumnGap(
+                            gap: AppSizes.kSmallGap,
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: widget.sideChildren,
+                          ),
                         ),
                       ),
-                    ),
                     Expanded(
                       child: FloorCard(
                         color: colorScheme.surface,
