@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:paper_cv/data/models/floor_enums.dart';
+import 'package:paper_cv/domain/floor_models.dart';
 import 'package:paper_cv/utils/api_utils.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:intl/intl.dart';
@@ -27,8 +28,8 @@ class ScanResultDto with _$ScanResultDto {
   factory ScanResultDto({
     String? uuid,
     @JsonKey(name: 'column_widths_cm') required List<double> columnWidthsCm,
-    @JsonKey(name: 'rows') required int rows,
     @JsonKey(name: 'avg_row_height_cm') required double avgRowHeightCm,
+    @JsonKey(name: 'rows') required int rows,
     @JsonKey(name: 'table_x_cm') required double tableXCm,
     @JsonKey(name: 'table_y_cm') required double tableYCm,
     @JsonKey(name: 'img_width_px') required double imgWidthPx,
@@ -37,6 +38,18 @@ class ScanResultDto with _$ScanResultDto {
   }) = _ScanResultDto;
 
   factory ScanResultDto.fromJson(JsonObject json) => _$ScanResultDtoFromJson(json);
+
+  ScanForm toForm() => ScanForm(
+        uuid: this.uuid,
+        columnWidthsCm: this.columnWidthsCm,
+        avgRowHeightCm: this.avgRowHeightCm,
+        rows: this.rows,
+        tableXCm: this.tableXCm,
+        tableYCm: this.tableYCm,
+        imgWidthPx: this.imgWidthPx,
+        imgHeightPx: this.imgHeightPx,
+        cellTexts: this.cellTexts,
+      );
 
   SelectedFile toSelectedFile() {
     final now = DateTime.now();

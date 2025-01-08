@@ -90,3 +90,39 @@ class DocumentForm {
 
   bool get selectionsReady => selections.entries.map((entry) => entry.value.isTSet).where((entry) => entry).length == captures.length;
 }
+
+class ScanForm {
+  String? uuid;
+  List<double> columnWidthsCm;
+  double avgRowHeightCm;
+  int rows;
+  double tableXCm;
+  double tableYCm;
+  double imgWidthPx;
+  double imgHeightPx;
+  List<List<String>> cellTexts;
+
+  ScanForm({
+    this.uuid,
+    required this.columnWidthsCm,
+    required this.avgRowHeightCm,
+    required this.rows,
+    required this.tableXCm,
+    required this.tableYCm,
+    required this.imgWidthPx,
+    required this.imgHeightPx,
+    required this.cellTexts,
+  });
+
+  ScanResultDto toDto() => ScanResultDto(
+        uuid: this.uuid,
+        columnWidthsCm: this.columnWidthsCm,
+        avgRowHeightCm: this.avgRowHeightCm,
+        rows: this.rows,
+        tableXCm: this.tableXCm,
+        tableYCm: this.tableYCm,
+        imgWidthPx: this.imgWidthPx,
+        imgHeightPx: this.imgHeightPx,
+        cellTexts: this.cellTexts,
+      );
+}

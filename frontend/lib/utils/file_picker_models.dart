@@ -27,4 +27,24 @@ class SelectedFile {
     required this.createdAt,
     required this.modifiedAt,
   });
+
+  SelectedFile copyWith({
+    String? uuid,
+    String? filename,
+    Uint8List? data,
+    int? index,
+    FileType? fileType,
+    DateTime? createdAt,
+    DateTime? modifiedAt,
+  }) {
+    return SelectedFile(
+      uuid: uuid ?? this.uuid,
+      filename: filename ?? this.filename,
+      data: data ?? this.data,
+      index: index ?? this.index,
+      fileType: fileType ?? this.fileType,
+      createdAt: createdAt ?? this.createdAt,
+      modifiedAt: modifiedAt ?? this.modifiedAt,
+    );
+  }
 }

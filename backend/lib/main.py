@@ -81,7 +81,8 @@ async def scan_file(request: Request, scan_properties: str = Form(...), file: Up
     scan_properties = json.loads(scan_properties)
     scan_properties = ScanProperties(**scan_properties)
     file_bytes = await validate_file(request, file)
-    return FloorCvController.scan_file(client=client, file_bytes=file_bytes, scan_properties=scan_properties)
+    return FloorCvController.scan_file(client=client, file_bytes=file_bytes, scan_properties=scan_properties,
+                                       logging=True)
 
 
 if __name__ == '__main__':

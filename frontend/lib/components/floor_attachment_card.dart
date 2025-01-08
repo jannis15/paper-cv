@@ -21,8 +21,8 @@ class FloorAttachmentCard extends StatefulWidget {
   final Future<List<SelectedFile>?> Function() onPickFiles;
   final Future<List<SelectedFile>?> Function()? onPickFiles2;
   final FutureOr<void> Function(List<SelectedFile> files) onAddFiles;
-  final FutureOr<void> Function(SelectedFile file) onRemoveFile;
-  final FutureOr<void> Function(SelectedFile file, ui.Image? image)? onTapFile;
+  final FutureOr<void> Function(SelectedFile file, int idx) onRemoveFile;
+  final FutureOr<void> Function(SelectedFile file, int idx, ui.Image? image)? onTapFile;
   final Widget Function(SelectedFile file)? fileStatusWidget;
   final IconData iconData;
   final IconData? iconData2;
@@ -111,7 +111,7 @@ class _FloorAttachmentCardState extends State<FloorAttachmentCard> {
         alignment: Alignment.center,
         children: [
           GestureDetector(
-            onTap: widget.onTapFile != null ? () => widget.onTapFile!(file, _previewImages[index]) : () => accessFile(file),
+            onTap: widget.onTapFile != null ? () => widget.onTapFile!(file, index, _previewImages[index]) : () => accessFile(file),
             child: Container(
               margin: EdgeInsets.only(
                 top: AppSizes.kIconButtonSize / 2,
@@ -170,7 +170,7 @@ class _FloorAttachmentCardState extends State<FloorAttachmentCard> {
                 if (alertResult == AlertOption.yes) {
                   _files.removeAt(index);
                   _previewImages.removeAt(index);
-                  await widget.onRemoveFile(file);
+                  await widget.onRemoveFile(file, index);
                   if (context.mounted) setState(() {});
                 }
               },

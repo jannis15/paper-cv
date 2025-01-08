@@ -16,6 +16,7 @@ import 'package:paper_cv/data/models/floor_dto_models.dart';
 import 'package:paper_cv/data/models/floor_enums.dart';
 import 'package:paper_cv/data/repositories/floor_repository.dart';
 import 'package:paper_cv/domain/floor_models.dart';
+import 'package:paper_cv/presentation/floor_edit_table_screen.dart';
 import 'package:paper_cv/presentation/floor_table_selection_screen.dart';
 import 'package:paper_cv/utils/file_picker_models.dart';
 import 'package:paper_cv/utils/file_picker_utils.dart';
@@ -128,11 +129,11 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
           onAddFiles: (_) => setState(() {
             _setIsDirty();
           }),
-          onRemoveFile: (file) => setState(() {
+          onRemoveFile: (file, _) => setState(() {
             _form.selections.remove(file);
             _setIsDirty();
           }),
-          onTapFile: (file, image) async {
+          onTapFile: (file, _, image) async {
             if (image != null) {
               final selectionResult = await Navigator.of(context).push<bool?>(
                 MaterialPageRoute(
@@ -179,12 +180,13 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
             for (final capture in _form.captures) {
               final selection = _form.selections[capture]!;
               final scanResult = await FloorRepository.scanCapture(
-                  capture,
-                  ScanPropertiesDto(
-                    selection: selection.toTDto(),
-                    templateNo: 1,
-                  ),
-                  cancelToken: _cancelToken);
+                capture,
+                ScanPropertiesDto(
+                  selection: selection.toTDto(),
+                  templateNo: 1,
+                ),
+                cancelToken: _cancelToken,
+              );
               final newSelectedFile = scanResult.toSelectedFile();
               result.add(newSelectedFile);
             }
@@ -193,9 +195,17 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
           onAddFiles: (_) => setState(() {
             _setIsDirty();
           }),
-          onRemoveFile: (_) => setState(() {
+          onRemoveFile: (_, __) => setState(() {
             _setIsDirty();
           }),
+          onTapFile: (file, idx, _) async {
+            final selectionResult =
+                await Navigator.of(context).push<SelectedFile?>(MaterialPageRoute(builder: (context) => FloorEditTableScreen(file: file)));
+            if (mounted && selectionResult != null) _form.scans[idx] = selectionResult;
+            setState(() {
+              _isDirty = true;
+            });
+          },
           disablePickFile: _form.captures.isEmpty || !_form.selectionsReady,
           infoWidget: _form.captures.isNotEmpty && _form.scans.isEmpty
               ? Container(
@@ -217,12 +227,12 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
           iconData: Icons.auto_awesome,
           iconText: 'Generieren',
           onPickFiles: () async {
-            final List<ScanResultDto> scanPropertiesList = [];
+            final List<ScanResultDto> scanResultList = [];
             for (final scan in _form.scans) {
-              final scanProperties = ScanResultDto.fromJson(jsonDecode(utf8.decode(scan.data)));
-              scanPropertiesList.add(scanProperties);
+              final scanResult = ScanResultDto.fromJson(jsonDecode(utf8.decode(scan.data)));
+              scanResultList.add(scanResult);
             }
-            final pdfData = await FloorRepository.createPdf(_form, scanPropertiesList);
+            final pdfData = await FloorRepository.createPdf(_form, scanResultList);
             final now = DateTime.now();
             final String formattedDate = DateFormat('dd.MM.yy HH:mm').format(now);
             final selectedFile = SelectedFile(
@@ -237,7 +247,7 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
           onAddFiles: (_) => setState(() {
             _setIsDirty();
           }),
-          onRemoveFile: (_) => setState(() {
+          onRemoveFile: (_, __) => setState(() {
             _setIsDirty();
           }),
           disablePickFile: _form.scans.isEmpty,

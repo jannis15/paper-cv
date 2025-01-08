@@ -12,8 +12,8 @@ _$ScanResultDtoImpl _$$ScanResultDtoImplFromJson(Map<String, dynamic> json) =>
       columnWidthsCm: (json['column_widths_cm'] as List<dynamic>)
           .map((e) => (e as num).toDouble())
           .toList(),
-      rows: (json['rows'] as num).toInt(),
       avgRowHeightCm: (json['avg_row_height_cm'] as num).toDouble(),
+      rows: (json['rows'] as num).toInt(),
       tableXCm: (json['table_x_cm'] as num).toDouble(),
       tableYCm: (json['table_y_cm'] as num).toDouble(),
       imgWidthPx: (json['img_width_px'] as num).toDouble(),
@@ -27,8 +27,8 @@ Map<String, dynamic> _$$ScanResultDtoImplToJson(_$ScanResultDtoImpl instance) =>
     <String, dynamic>{
       'uuid': instance.uuid,
       'column_widths_cm': instance.columnWidthsCm,
-      'rows': instance.rows,
       'avg_row_height_cm': instance.avgRowHeightCm,
+      'rows': instance.rows,
       'table_x_cm': instance.tableXCm,
       'table_y_cm': instance.tableYCm,
       'img_width_px': instance.imgWidthPx,

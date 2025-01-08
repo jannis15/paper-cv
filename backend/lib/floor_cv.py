@@ -573,22 +573,20 @@ class FloorCV(ABC):
     @staticmethod
     def adjust_cell_texts_for_template(template_no, cell_texts: List[List[str]]) -> List[List[str]]:
         if template_no == 1:
-            transposed = list(map(list, zip(*cell_texts)))
             rows_to_ignore = [0]
             columns_to_empty = [2, 4, 6, 8, 9, 10, 11, 12]
             columns_to_number_convert = [3, 5, 7]
             for col in columns_to_empty:
-                if col < len(transposed):
-                    for row in range(len(transposed[col])):
+                if col < len(cell_texts):
+                    for row in range(len(cell_texts[col])):
                         if row in rows_to_ignore:
                             continue
-                        transposed[col][row] = ''
+                        cell_texts[col][row] = ''
 
             for col in columns_to_number_convert:
-                if col < len(transposed):
-                    transposed[col] = FloorCV.__force_number_conversion(transposed[col], rows_to_ignore,
+                if col < len(cell_texts):
+                    cell_texts[col] = FloorCV.__force_number_conversion(cell_texts[col], rows_to_ignore,
                                                                         "%g" if col == 7 else "%.3f")
-            cell_texts = list(map(list, zip(*transposed)))
 
             FloorCV.__add_missing_x(cell_texts)
 

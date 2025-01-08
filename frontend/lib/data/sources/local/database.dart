@@ -117,11 +117,11 @@ class FloorDatabase extends _$FloorDatabase with DbMixin {
     }
   }
 
-  Future<void> _saveDocumentFile({required SelectedFile file, required String documentId}) async {
+  Future<void> saveDocumentFile({required SelectedFile file, required String documentId}) async {
     if (file.uuid != null) return;
     final String newUuid = Uuid().v4().toString();
     file.uuid ??= newUuid;
-    await into(tbFile).insert(
+    await into(tbFile).insertOnConflictUpdate(
       TbFileCompanion(
         uuid: Value(file.uuid!),
         refUuid: Value(documentId),
@@ -211,13 +211,13 @@ class FloorDatabase extends _$FloorDatabase with DbMixin {
         ].whereType<String>().toList();
         await _deleteUnlinkedFiles(formUuid, existingfileIds);
         for (final capture in form.captures) {
-          await _saveDocumentFile(file: capture, documentId: formUuid);
+          await saveDocumentFile(file: capture, documentId: formUuid);
         }
         for (final scan in form.scans) {
-          await _saveDocumentFile(file: scan, documentId: formUuid);
+          await saveDocumentFile(file: scan, documentId: formUuid);
         }
         for (final reports in form.reports) {
-          await _saveDocumentFile(file: reports, documentId: formUuid);
+          await saveDocumentFile(file: reports, documentId: formUuid);
         }
         await _deleteUnlinkedSelections(formUuid, form.selections.values.map((selection) => formUuid).whereNotNull().toList());
         for (final selectionEntry in form.selections.entries) {

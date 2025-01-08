@@ -240,10 +240,10 @@ mixin _$ScanResultDto {
   String? get uuid => throw _privateConstructorUsedError;
   @JsonKey(name: 'column_widths_cm')
   List<double> get columnWidthsCm => throw _privateConstructorUsedError;
-  @JsonKey(name: 'rows')
-  int get rows => throw _privateConstructorUsedError;
   @JsonKey(name: 'avg_row_height_cm')
   double get avgRowHeightCm => throw _privateConstructorUsedError;
+  @JsonKey(name: 'rows')
+  int get rows => throw _privateConstructorUsedError;
   @JsonKey(name: 'table_x_cm')
   double get tableXCm => throw _privateConstructorUsedError;
   @JsonKey(name: 'table_y_cm')
@@ -274,8 +274,8 @@ abstract class $ScanResultDtoCopyWith<$Res> {
   $Res call(
       {String? uuid,
       @JsonKey(name: 'column_widths_cm') List<double> columnWidthsCm,
-      @JsonKey(name: 'rows') int rows,
       @JsonKey(name: 'avg_row_height_cm') double avgRowHeightCm,
+      @JsonKey(name: 'rows') int rows,
       @JsonKey(name: 'table_x_cm') double tableXCm,
       @JsonKey(name: 'table_y_cm') double tableYCm,
       @JsonKey(name: 'img_width_px') double imgWidthPx,
@@ -300,8 +300,8 @@ class _$ScanResultDtoCopyWithImpl<$Res, $Val extends ScanResultDto>
   $Res call({
     Object? uuid = freezed,
     Object? columnWidthsCm = null,
-    Object? rows = null,
     Object? avgRowHeightCm = null,
+    Object? rows = null,
     Object? tableXCm = null,
     Object? tableYCm = null,
     Object? imgWidthPx = null,
@@ -317,14 +317,14 @@ class _$ScanResultDtoCopyWithImpl<$Res, $Val extends ScanResultDto>
           ? _value.columnWidthsCm
           : columnWidthsCm // ignore: cast_nullable_to_non_nullable
               as List<double>,
-      rows: null == rows
-          ? _value.rows
-          : rows // ignore: cast_nullable_to_non_nullable
-              as int,
       avgRowHeightCm: null == avgRowHeightCm
           ? _value.avgRowHeightCm
           : avgRowHeightCm // ignore: cast_nullable_to_non_nullable
               as double,
+      rows: null == rows
+          ? _value.rows
+          : rows // ignore: cast_nullable_to_non_nullable
+              as int,
       tableXCm: null == tableXCm
           ? _value.tableXCm
           : tableXCm // ignore: cast_nullable_to_non_nullable
@@ -360,8 +360,8 @@ abstract class _$$ScanResultDtoImplCopyWith<$Res>
   $Res call(
       {String? uuid,
       @JsonKey(name: 'column_widths_cm') List<double> columnWidthsCm,
-      @JsonKey(name: 'rows') int rows,
       @JsonKey(name: 'avg_row_height_cm') double avgRowHeightCm,
+      @JsonKey(name: 'rows') int rows,
       @JsonKey(name: 'table_x_cm') double tableXCm,
       @JsonKey(name: 'table_y_cm') double tableYCm,
       @JsonKey(name: 'img_width_px') double imgWidthPx,
@@ -384,8 +384,8 @@ class __$$ScanResultDtoImplCopyWithImpl<$Res>
   $Res call({
     Object? uuid = freezed,
     Object? columnWidthsCm = null,
-    Object? rows = null,
     Object? avgRowHeightCm = null,
+    Object? rows = null,
     Object? tableXCm = null,
     Object? tableYCm = null,
     Object? imgWidthPx = null,
@@ -401,14 +401,14 @@ class __$$ScanResultDtoImplCopyWithImpl<$Res>
           ? _value._columnWidthsCm
           : columnWidthsCm // ignore: cast_nullable_to_non_nullable
               as List<double>,
-      rows: null == rows
-          ? _value.rows
-          : rows // ignore: cast_nullable_to_non_nullable
-              as int,
       avgRowHeightCm: null == avgRowHeightCm
           ? _value.avgRowHeightCm
           : avgRowHeightCm // ignore: cast_nullable_to_non_nullable
               as double,
+      rows: null == rows
+          ? _value.rows
+          : rows // ignore: cast_nullable_to_non_nullable
+              as int,
       tableXCm: null == tableXCm
           ? _value.tableXCm
           : tableXCm // ignore: cast_nullable_to_non_nullable
@@ -440,8 +440,8 @@ class _$ScanResultDtoImpl extends _ScanResultDto {
       {this.uuid,
       @JsonKey(name: 'column_widths_cm')
       required final List<double> columnWidthsCm,
-      @JsonKey(name: 'rows') required this.rows,
       @JsonKey(name: 'avg_row_height_cm') required this.avgRowHeightCm,
+      @JsonKey(name: 'rows') required this.rows,
       @JsonKey(name: 'table_x_cm') required this.tableXCm,
       @JsonKey(name: 'table_y_cm') required this.tableYCm,
       @JsonKey(name: 'img_width_px') required this.imgWidthPx,
@@ -466,11 +466,11 @@ class _$ScanResultDtoImpl extends _ScanResultDto {
   }
 
   @override
-  @JsonKey(name: 'rows')
-  final int rows;
-  @override
   @JsonKey(name: 'avg_row_height_cm')
   final double avgRowHeightCm;
+  @override
+  @JsonKey(name: 'rows')
+  final int rows;
   @override
   @JsonKey(name: 'table_x_cm')
   final double tableXCm;
@@ -494,7 +494,7 @@ class _$ScanResultDtoImpl extends _ScanResultDto {
 
   @override
   String toString() {
-    return 'ScanResultDto(uuid: $uuid, columnWidthsCm: $columnWidthsCm, rows: $rows, avgRowHeightCm: $avgRowHeightCm, tableXCm: $tableXCm, tableYCm: $tableYCm, imgWidthPx: $imgWidthPx, imgHeightPx: $imgHeightPx, cellTexts: $cellTexts)';
+    return 'ScanResultDto(uuid: $uuid, columnWidthsCm: $columnWidthsCm, avgRowHeightCm: $avgRowHeightCm, rows: $rows, tableXCm: $tableXCm, tableYCm: $tableYCm, imgWidthPx: $imgWidthPx, imgHeightPx: $imgHeightPx, cellTexts: $cellTexts)';
   }
 
   @override
@@ -505,9 +505,9 @@ class _$ScanResultDtoImpl extends _ScanResultDto {
             (identical(other.uuid, uuid) || other.uuid == uuid) &&
             const DeepCollectionEquality()
                 .equals(other._columnWidthsCm, _columnWidthsCm) &&
-            (identical(other.rows, rows) || other.rows == rows) &&
             (identical(other.avgRowHeightCm, avgRowHeightCm) ||
                 other.avgRowHeightCm == avgRowHeightCm) &&
+            (identical(other.rows, rows) || other.rows == rows) &&
             (identical(other.tableXCm, tableXCm) ||
                 other.tableXCm == tableXCm) &&
             (identical(other.tableYCm, tableYCm) ||
@@ -526,8 +526,8 @@ class _$ScanResultDtoImpl extends _ScanResultDto {
       runtimeType,
       uuid,
       const DeepCollectionEquality().hash(_columnWidthsCm),
-      rows,
       avgRowHeightCm,
+      rows,
       tableXCm,
       tableYCm,
       imgWidthPx,
@@ -555,8 +555,8 @@ abstract class _ScanResultDto extends ScanResultDto {
       {final String? uuid,
       @JsonKey(name: 'column_widths_cm')
       required final List<double> columnWidthsCm,
-      @JsonKey(name: 'rows') required final int rows,
       @JsonKey(name: 'avg_row_height_cm') required final double avgRowHeightCm,
+      @JsonKey(name: 'rows') required final int rows,
       @JsonKey(name: 'table_x_cm') required final double tableXCm,
       @JsonKey(name: 'table_y_cm') required final double tableYCm,
       @JsonKey(name: 'img_width_px') required final double imgWidthPx,
@@ -574,11 +574,11 @@ abstract class _ScanResultDto extends ScanResultDto {
   @JsonKey(name: 'column_widths_cm')
   List<double> get columnWidthsCm;
   @override
-  @JsonKey(name: 'rows')
-  int get rows;
-  @override
   @JsonKey(name: 'avg_row_height_cm')
   double get avgRowHeightCm;
+  @override
+  @JsonKey(name: 'rows')
+  int get rows;
   @override
   @JsonKey(name: 'table_x_cm')
   double get tableXCm;

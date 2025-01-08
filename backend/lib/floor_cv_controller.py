@@ -70,8 +70,8 @@ class FloorCvController(ABC):
         return cropped_image
 
     @staticmethod
-    def scan_file(client: vision.ImageAnnotatorClient, file_bytes: bytes, scan_properties: ScanProperties):
-        logging = False
+    def scan_file(client: vision.ImageAnnotatorClient, file_bytes: bytes, scan_properties: ScanProperties,
+                  logging: bool = False):
         np_arr = np.frombuffer(file_bytes, np.uint8)
         img_grayscale = FloorCV.read_grayscale_img_from_bytes(np_arr)
         img_base = FloorCvController.__crop_image_by_selection(img_grayscale, scan_properties.selection)
@@ -149,33 +149,29 @@ class FloorCvController(ABC):
                                                  int(new_corners[0][0]):int(new_corners[2][0])]
             FloorCV.log_image(root_dir, img=img_structure_straightened_cropped,
                               title='93_structure_straightened_cropped')
-            # cropped_img_warped_structure_bytes = FloorCV.ndarray_to_bytes(cropped_img_warped_structure)
-            # np_arr = np.frombuffer(cropped_img_warped_structure_bytes, np.uint8)
-            # img = cv.imdecode(np_arr, cv.IMREAD_COLOR)
-            # FloorCV.log_image(root_dir=root_dir, img=img, title='yeehaw')
 
-        img_threshold_warped = FloorCV.warp_image(img_threshold, perspective_transform)
-        img_threshold_warped_cropped = img_threshold_warped[int(new_corners[0][1]):int(new_corners[2][1]),
-                                       int(new_corners[0][0]):int(new_corners[2][0])]
-        ocr_res = FloorCvController.__detect_handwriting(client=client, content=img_threshold_warped_cropped,
-                                                         column_widths=column_widths)
-        if logging:
-            FloorCV.log_image(root_dir, img_threshold_warped_cropped, '94_theshold_warped_cropped')
-            FloorCV.add_lines_to_img(img_threshold_warped, filtered_lines)
-            FloorCV.log_image(root_dir, img_threshold_warped, '95_theshold_warped_with_lines')
+        # img_threshold_warped = FloorCV.warp_image(img_threshold, perspective_transform)
+        # img_threshold_warped_cropped = img_threshold_warped[int(new_corners[0][1]):int(new_corners[2][1]),
+        #                                int(new_corners[0][0]):int(new_corners[2][0])]
+        # ocr_res = FloorCvController.__detect_handwriting(client=client, content=img_threshold_warped_cropped,
+        #                                                  column_widths=column_widths)
+        # if logging:
+        #     FloorCV.log_image(root_dir, img_threshold_warped_cropped, '94_theshold_warped_cropped')
+        #     FloorCV.add_lines_to_img(img_threshold_warped, filtered_lines)
+        #     FloorCV.log_image(root_dir, img_threshold_warped, '95_theshold_warped_with_lines')
+        # 
+        # for cell in ocr_res:
+        #     best_fit_index = find_best_fit(cells, cell)
+        #     if best_fit_index is not None:
+        #         if cell_texts[best_fit_index] != '':
+        #             cell_texts[best_fit_index] += ' '
+        #         cell_texts[best_fit_index] += cell.text.strip().strip('|').strip()
+        # 
+        # if logging:
+        #     filtered_lines_cropped_bgr = FloorCV.img_to_bgr(filtered_lines_cropped)
+        #     FloorCV.export_cells(root_dir, ocr_res, filtered_lines_cropped_bgr)
 
-        for cell in ocr_res:
-            best_fit_index = find_best_fit(cells, cell)
-            if best_fit_index is not None:
-                if cell_texts[best_fit_index] != '':
-                    cell_texts[best_fit_index] += ' '
-                cell_texts[best_fit_index] += cell.text.strip().strip('|').strip()
-
-        if logging:
-            filtered_lines_cropped_bgr = FloorCV.img_to_bgr(filtered_lines_cropped)
-            FloorCV.export_cells(root_dir, ocr_res, filtered_lines_cropped_bgr)
-
-        cell_texts = FloorCV.make_2d_list(cell_texts, columns)
+        cell_texts = FloorCV.make_2d_list(cell_texts, rows)
 
         img_height, img_width = img_grayscale.shape
         avg_vertical_distance_cm = (avg_vertical_distance / img_height) * a4_height
@@ -189,7 +185,9 @@ class FloorCvController(ABC):
         abs_corner_y = scan_properties.selection.y1 + corner_y
         corner_x_cm = (abs_corner_x / img_width) * a4_width
         corner_y_cm = (abs_corner_y / img_height) * a4_height
-        cell_texts = FloorCV.adjust_cell_texts_for_template(template_no=scan_properties.template_no, cell_texts=cell_texts)
+
+        cell_texts = FloorCV.adjust_cell_texts_for_template(template_no=scan_properties.template_no,
+                                                            cell_texts=cell_texts)
 
         return ScanResult(
             column_widths_cm=column_widths_cm,

@@ -31,6 +31,9 @@ abstract class FloorRepository {
   static Future<ScanResultDto> scanCapture(SelectedFile capture, ScanPropertiesDto scanPropertiesDto, {CancelToken? cancelToken}) =>
       FloorCvApi.instance.scanCapture(capture, scanPropertiesDto, cancelToken: cancelToken);
 
+  static Future<void> saveDocumentFile({required SelectedFile file, required String documentId}) =>
+      FloorDatabase.instance.saveDocumentFile(file: file, documentId: documentId);
+
   static Future<Uint8List> createPdf(DocumentForm form, List<ScanResultDto> dtoList) async {
     img.Image cropImage(Uint8List imageData, int x1, int x2, int y1, int y2) =>
         img.copyCrop(img.decodeImage(imageData)!, x: x1, y: y1, width: (x2 - x1).abs(), height: (y2 - y1).abs());

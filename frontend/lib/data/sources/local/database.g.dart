@@ -1999,7 +1999,7 @@ final class $$TbSelectionTableReferences extends BaseReferences<_$FloorDatabase,
 
   $$TbDocumentTableProcessedTableManager get documentId {
     final manager = $$TbDocumentTableTableManager($_db, $_db.tbDocument)
-        .filter((f) => f.uuid($_item.documentId!));
+        .filter((f) => f.uuid($_item.documentId));
     final item = $_typedResult.readTableOrNull(_documentIdTable($_db));
     if (item == null) return manager;
     return ProcessedTableManager(
@@ -2011,7 +2011,7 @@ final class $$TbSelectionTableReferences extends BaseReferences<_$FloorDatabase,
 
   $$TbFileTableProcessedTableManager get fileId {
     final manager = $$TbFileTableTableManager($_db, $_db.tbFile)
-        .filter((f) => f.uuid($_item.fileId!));
+        .filter((f) => f.uuid($_item.fileId));
     final item = $_typedResult.readTableOrNull(_fileIdTable($_db));
     if (item == null) return manager;
     return ProcessedTableManager(

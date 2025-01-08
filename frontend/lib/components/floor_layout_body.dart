@@ -5,10 +5,14 @@ import 'package:paper_cv/utils/list_utils.dart';
 import 'package:paper_cv/utils/widget_utils.dart';
 
 class FloorLayoutBody extends StatefulWidget {
-  final Widget child;
   final List<Widget> sideChildren;
+  final Widget child;
 
-  const FloorLayoutBody({super.key, required this.child, required this.sideChildren});
+  const FloorLayoutBody({
+    super.key,
+    required this.sideChildren,
+    required this.child,
+  });
 
   @override
   State<FloorLayoutBody> createState() => _FloorLayoutBodyState();
