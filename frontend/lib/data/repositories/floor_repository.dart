@@ -109,16 +109,16 @@ abstract class FloorRepository {
                     for (int i = 0; i < widths.length; i++) i: widths[i],
                   },
                   border: pw.TableBorder.all(),
-                  children: dto.cellTexts
+                  children: dto.cellTexts[0]
                       .mapIndexed(
-                        (y, row) => pw.TableRow(
-                          children: row
+                        (row, _) => pw.TableRow(
+                          children: dto.cellTexts
                               .mapIndexed(
-                                (x, text) => pw.Container(
-                                  alignment: y == 0 ? pw.Alignment.bottomCenter : pw.Alignment.bottomRight,
+                                (col, _) => pw.Container(
+                                  alignment: row == 0 ? pw.Alignment.bottomCenter : pw.Alignment.bottomRight,
                                   padding: pw.EdgeInsets.all(.5 * PdfPageFormat.mm),
                                   height: scaledAvgRowHeight,
-                                  child: pw.Text(text, style: pw.TextStyle(fontSize: fontSize)),
+                                  child: pw.Text(dto.cellTexts[col][row], style: pw.TextStyle(fontSize: fontSize)),
                                 ),
                               )
                               .toList(),
