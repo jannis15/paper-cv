@@ -6,6 +6,7 @@ import 'package:paper_cv/components/floor_buttons.dart';
 import 'package:paper_cv/components/floor_card.dart';
 import 'package:paper_cv/components/floor_date_picker.dart';
 import 'package:paper_cv/components/floor_date_picker_dialog.dart';
+import 'package:paper_cv/components/floor_drag.dart';
 import 'package:paper_cv/components/floor_file_picker.dart';
 import 'package:paper_cv/components/floor_icon_button.dart';
 import 'package:paper_cv/components/floor_layout_body.dart';
@@ -20,6 +21,7 @@ import 'package:paper_cv/presentation/floor_edit_table_screen.dart';
 import 'package:paper_cv/presentation/floor_table_selection_screen.dart';
 import 'package:paper_cv/utils/file_picker_models.dart';
 import 'package:paper_cv/utils/file_picker_utils.dart';
+import 'package:paper_cv/utils/image_utils.dart';
 import 'package:paper_cv/utils/list_utils.dart';
 import 'package:paper_cv/utils/widget_utils.dart';
 import 'package:flutter/material.dart';
@@ -39,16 +41,13 @@ class FloorOverviewScreen extends StatefulWidget {
 }
 
 class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
+  final GlobalKey<FloorAttachmentCardState> _capturesKey = GlobalKey();
   final CancelToken _cancelToken = CancelToken();
   late bool _isLoading;
   bool _isSaving = false;
   late DocumentForm _form;
   bool _isDirty = false; // if true, the form needs to be saved
   bool _showDocumentDetails = false;
-
-  void _setIsDirty() {
-    _isDirty = true;
-  }
 
   @override
   void initState() {
@@ -77,6 +76,10 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
     }
   }
 
+  void _setIsDirty() {
+    _isDirty = true;
+  }
+
   Future<bool> _saveForm() async {
     _isSaving = true;
     if (mounted) setState(() {});
@@ -102,71 +105,97 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
           ),
         );
 
-    Widget buildCaptureCard() => FloorAttachmentCard(
-          title: 'Aufnahme',
-          files: _form.captures,
-          iconData: Icons.add_a_photo,
-          iconData2: Icons.perm_media,
-          onPickFiles: () async {
-            final file = await FloorFilePicker.pickFile(context, pickerOption: FilePickerOption.camera);
-            if (file == null) return null;
-            final now = DateTime.now();
-            final String formattedDate = DateFormat('dd.MM.yy HH:mm').format(now);
-            file.filename = 'Aufnahme $formattedDate.jpg';
-            file.fileType = FileType.capture;
-            return [file];
+    Widget buildCaptureCard() => FloorDrag(
+          onDragDone: (detail) async {
+            await _capturesKey.currentState?.onPickFilesButtonPress(
+              () async {
+                final files = <SelectedFile>[];
+                for (final file in detail.files) {
+                  final fileBytes = await file.readAsBytes();
+                  if (!(ImageUtils.isImage(fileBytes))) continue;
+                  final now = DateTime.now();
+                  final String formattedDate = DateFormat('dd.MM.yy HH:mm').format(now);
+                  files.add(
+                    SelectedFile(
+                      filename: 'Aufnahme $formattedDate.jpg',
+                      data: fileBytes,
+                      createdAt: now,
+                      modifiedAt: now,
+                      fileType: FileType.capture,
+                    ),
+                  );
+                }
+                return files;
+              },
+            );
           },
-          onPickFiles2: () async {
-            final files = await FilePickerHelper.pickImageSelectedFile(context, allowMultiple: true);
-            for (final file in files) {
+          child: FloorAttachmentCard(
+            key: _capturesKey,
+            title: 'Aufnahme',
+            files: _form.captures,
+            iconData: Icons.add_a_photo,
+            iconData2: Icons.perm_media,
+            onPickFiles: () async {
+              final file = await FloorFilePicker.pickFile(context, pickerOption: FilePickerOption.camera);
+              if (file == null) return null;
               final now = DateTime.now();
               final String formattedDate = DateFormat('dd.MM.yy HH:mm').format(now);
               file.filename = 'Aufnahme $formattedDate.jpg';
               file.fileType = FileType.capture;
-            }
-            return files;
-          },
-          onAddFiles: (_) => setState(() {
-            _setIsDirty();
-          }),
-          onRemoveFile: (file, _) => setState(() {
-            _form.selections.remove(file);
-            _setIsDirty();
-          }),
-          onTapFile: (file, _, image) async {
-            if (image != null) {
-              final selectionResult = await Navigator.of(context).push<bool?>(
-                MaterialPageRoute(
-                  builder: (context) => FloorTableSelectionScreen(
-                    file: file,
-                    image: image,
-                    document: _form,
+              return [file];
+            },
+            onPickFiles2: () async {
+              final files = await FilePickerHelper.pickImageSelectedFile(context, allowMultiple: true);
+              for (final file in files) {
+                final now = DateTime.now();
+                final String formattedDate = DateFormat('dd.MM.yy HH:mm').format(now);
+                file.filename = 'Aufnahme $formattedDate.jpg';
+                file.fileType = FileType.capture;
+              }
+              return files;
+            },
+            onAddFiles: (_) => setState(() {
+              _setIsDirty();
+            }),
+            onRemoveFile: (file, _) => setState(() {
+              _form.selections.remove(file);
+              _setIsDirty();
+            }),
+            onTapFile: (file, _, image) async {
+              if (image != null) {
+                final selectionResult = await Navigator.of(context).push<bool?>(
+                  MaterialPageRoute(
+                    builder: (context) => FloorTableSelectionScreen(
+                      file: file,
+                      image: image,
+                      document: _form,
+                    ),
                   ),
-                ),
-              );
-              if (mounted && selectionResult == true)
-                setState(() {
-                  _isDirty = true;
-                });
-            }
-          },
-          fileStatusWidget: (file) => FloorIconButton(
-            iconData: _form.selections[file]?.isSet == true
-                ? Icons.check
-                : _form.selections[file]?.isTSet == true
-                    ? Icons.edit_document
-                    : Icons.document_scanner,
-            foregroundColor: _form.selections[file]?.isSet == true
-                ? Colors.white
-                : _form.selections[file]?.isTSet == true
-                    ? Colors.white
-                    : Colors.black,
-            backgroundColor: _form.selections[file]?.isSet == true
-                ? Colors.green
-                : _form.selections[file]?.isTSet == true
-                    ? Colors.blue
-                    : Colors.amber,
-            onPressed: () {},
+                );
+                if (mounted && selectionResult == true)
+                  setState(() {
+                    _isDirty = true;
+                  });
+              }
+            },
+            fileStatusWidget: (file) => FloorIconButton(
+              iconData: _form.selections[file]?.isSet == true
+                  ? Icons.check
+                  : _form.selections[file]?.isTSet == true
+                      ? Icons.edit_document
+                      : Icons.document_scanner,
+              foregroundColor: _form.selections[file]?.isSet == true
+                  ? Colors.white
+                  : _form.selections[file]?.isTSet == true
+                      ? Colors.white
+                      : Colors.black,
+              backgroundColor: _form.selections[file]?.isSet == true
+                  ? Colors.green
+                  : _form.selections[file]?.isTSet == true
+                      ? Colors.blue
+                      : Colors.amber,
+              onPressed: () {},
+            ),
           ),
         );
 

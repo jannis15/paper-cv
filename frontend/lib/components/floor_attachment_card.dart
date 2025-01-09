@@ -8,11 +8,11 @@ import 'package:paper_cv/components/floor_icon_button.dart';
 import 'package:paper_cv/config/config.dart';
 import 'package:paper_cv/utils/alert_dialog.dart';
 import 'package:paper_cv/utils/file_picker_models.dart';
+import 'package:paper_cv/utils/image_utils.dart';
 import 'package:paper_cv/utils/list_utils.dart';
 import 'package:paper_cv/utils/ui_image_extension.dart';
 import 'package:paper_cv/utils/widget_utils.dart';
 import "package:flutter/material.dart";
-import 'package:mime/mime.dart';
 import 'package:paper_cv/utils/mobile_access_file.dart' if (dart.library.html) 'package:paper_cv/utils/web_access_file.dart';
 
 class FloorAttachmentCard extends StatefulWidget {
@@ -48,10 +48,10 @@ class FloorAttachmentCard extends StatefulWidget {
   }) : assert((iconData2 == null && onPickFiles2 == null) || (iconData2 != null && onPickFiles2 != null), 'FloorAttachmentCard wrong parameters!');
 
   @override
-  State<FloorAttachmentCard> createState() => _FloorAttachmentCardState();
+  State<FloorAttachmentCard> createState() => FloorAttachmentCardState();
 }
 
-class _FloorAttachmentCardState extends State<FloorAttachmentCard> {
+class FloorAttachmentCardState extends State<FloorAttachmentCard> {
   final List<ui.Image?> _previewImages = [];
   late final List<SelectedFile> _files;
   bool _isLoading = true;
@@ -76,14 +76,14 @@ class _FloorAttachmentCardState extends State<FloorAttachmentCard> {
   Future<void> _addPreviewImages(List<SelectedFile> files) async {
     for (final file in files) {
       ui.Image? tmpImage;
-      if (lookupMimeType('', headerBytes: file.data)?.contains('image') ?? false) {
+      if (ImageUtils.isImage(file.data)) {
         tmpImage = await decodeImageFromList(file.data);
       }
       _previewImages.add(tmpImage);
     }
   }
 
-  Future<void> _onPickFilesButtonPress(Future<List<SelectedFile>?> Function() onPickFiles) async {
+  Future<void> onPickFilesButtonPress(Future<List<SelectedFile>?> Function() onPickFiles) async {
     _isAttaching = true;
     setState(() {});
     try {
@@ -220,13 +220,13 @@ class _FloorAttachmentCardState extends State<FloorAttachmentCard> {
                     iconData: widget.iconData,
                     text: widget.iconText,
                     loading: _isLoading || _isAttaching,
-                    onPressed: widget.disablePickFile ? null : () => _onPickFilesButtonPress(widget.onPickFiles),
+                    onPressed: widget.disablePickFile ? null : () => onPickFilesButtonPress(widget.onPickFiles),
                   ),
                   if (widget.iconData2 != null && widget.onPickFiles2 != null)
                     FloorOutlinedButton(
                       iconData: widget.iconData2,
                       loading: _isLoading || _isAttaching,
-                      onPressed: widget.disablePickFile ? null : () => _onPickFilesButtonPress(widget.onPickFiles2!),
+                      onPressed: widget.disablePickFile ? null : () => onPickFilesButtonPress(widget.onPickFiles2!),
                     ),
                 ],
               ),
