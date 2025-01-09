@@ -17,6 +17,7 @@ class DocumentPreviewDto with _$DocumentPreviewDto {
     required String title,
     required DateTime createdAt,
     required DateTime modifiedAt,
+    required DateTime? documentDate,
     required bool isExample,
   }) = _DocumentPreviewDto;
 }

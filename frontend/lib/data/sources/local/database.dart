@@ -37,6 +37,7 @@ class FloorDatabase extends _$FloorDatabase with DbMixin {
         title: row.title,
         createdAt: row.createdAt,
         modifiedAt: row.modifiedAt,
+        documentDate: row.documentDate,
         isExample: row.isExample,
       );
 

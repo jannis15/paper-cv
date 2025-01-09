@@ -16,6 +16,7 @@ import 'package:paper_cv/presentation/floor_info_screen.dart';
 import 'package:paper_cv/presentation/floor_overview_screen.dart';
 import 'package:paper_cv/presentation/floor_settings_screen.dart';
 import 'package:paper_cv/utils/alert_dialog.dart';
+import 'package:paper_cv/utils/date_format_utils.dart';
 import 'package:paper_cv/utils/list_utils.dart';
 import 'package:paper_cv/utils/widget_utils.dart';
 import 'package:flutter/material.dart';
@@ -35,7 +36,7 @@ class _FloorMainScreenState extends State<FloorMainScreen> {
   bool _showBanner = true;
   bool _isSelectionMode = false;
   final Set<DocumentPreviewDto> _selectedDocuments = {};
-  DocumentSortType _sortType = DocumentSortType.modifiedAt;
+  DocumentSortType _sortType = DocumentSortType.documentDate;
   SortDirection _sortDirection = SortDirection.descending;
 
   String get _selectedText => '${_selectedDocuments.length} ${_selectedDocuments.length == 1 ? 'Dokument' : 'Dokumente'} ausgewählt';
@@ -180,6 +181,28 @@ class _FloorMainScreenState extends State<FloorMainScreen> {
                           color: colorScheme.secondary,
                         ),
                         Positioned(
+                          bottom: AppSizes.kSmallGap / 2,
+                          right: AppSizes.kSmallGap / 2,
+                          child: RowGap(
+                            gap: AppSizes.kSmallGap / 2,
+                            children: [
+                              Icon(
+                                Icons.edit,
+                                color: colorScheme.outline,
+                                size: AppSizes.kSubIconSize,
+                              ),
+                              Timeago(
+                                builder: (context, value) {
+                                  return Text(value, style: textTheme.labelMedium?.copyWith(color: colorScheme.outline));
+                                },
+                                date: documentPreview.modifiedAt,
+                                allowFromNow: true,
+                                locale: 'de',
+                              ),
+                            ],
+                          ),
+                        ),
+                        Positioned(
                           top: AppSizes.kSmallGap / 2,
                           left: AppSizes.kSmallGap / 2,
                           child: AnimatedOpacity(
@@ -227,13 +250,9 @@ class _FloorMainScreenState extends State<FloorMainScreen> {
                             ),
                         ],
                       ),
-                      Timeago(
-                        builder: (context, value) {
-                          return Text(value, style: textTheme.titleMedium?.copyWith(color: colorScheme.outline));
-                        },
-                        date: documentPreview.modifiedAt,
-                        allowFromNow: true,
-                        locale: 'de',
+                      Text(
+                        documentPreview.documentDate != null ? dateFormatWeekdayDate.format(documentPreview.documentDate!) : 'Kein Datum',
+                        style: textTheme.titleMedium?.copyWith(color: colorScheme.outline),
                       ),
                     ],
                   )
