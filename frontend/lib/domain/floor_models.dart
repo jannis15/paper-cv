@@ -13,12 +13,10 @@ enum SortDirection {
 
 enum DocumentSortType {
   modifiedAt,
-  createdAt,
   documentDate;
 
   String get name => switch (this) {
         DocumentSortType.modifiedAt => 'Bearbeitungsdatum',
-        DocumentSortType.createdAt => 'Erstelldatum',
         DocumentSortType.documentDate => 'Dokumentdatum',
       };
 }

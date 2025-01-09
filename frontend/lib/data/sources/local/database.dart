@@ -69,7 +69,6 @@ class FloorDatabase extends _$FloorDatabase with DbMixin {
     final query = select(tbDocument).join([]);
     final column = switch (sortType) {
       DocumentSortType.modifiedAt => tbDocument.modifiedAt,
-      DocumentSortType.createdAt => tbDocument.createdAt,
       DocumentSortType.documentDate => tbDocument.documentDate,
     };
     final orderTerm = switch (sortDirection) {
