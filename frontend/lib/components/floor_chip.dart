@@ -32,22 +32,22 @@ class _FloorChipState extends State<FloorChip> {
               widget.iconData,
               size: AppSizes.kSubIconSize,
               color: widget.isSelected == true
-                  ? colorScheme.onSecondaryContainer
+                  ? colorScheme.onSecondary
                   : widget.isTrailingIcon
                       ? null
-                      : colorScheme.secondaryContainer,
+                      : colorScheme.secondary,
             ),
           if (widget.text != null)
             Text(
               widget.text!,
               style: textTheme.labelLarge?.copyWith(
-                color: widget.isSelected == true ? colorScheme.onSecondaryContainer : colorScheme.onSurfaceVariant,
+                color: widget.isSelected == true ? colorScheme.onSecondary : colorScheme.onSurfaceVariant,
               ),
             ),
         ];
 
     return ActionChip(
-      color: widget.isSelected == true ? WidgetStatePropertyAll(colorScheme.secondaryContainer) : null,
+      color: widget.isSelected == true ? WidgetStatePropertyAll(colorScheme.secondary) : null,
       padding: EdgeInsets.fromLTRB(
         !widget.isTrailingIcon && widget.iconData != null
             ? AppSizes.kSmallGap

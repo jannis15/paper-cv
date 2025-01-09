@@ -296,136 +296,127 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
           await tryCloseForm();
         }
       },
-      child: Scaffold(
-        backgroundColor: useDesktopLayout ? colorScheme.surfaceContainer : null,
-        appBar: FloorAppBar(
+      child: FloorLoaderOverlay(
+        loading: _isSaving,
+        child: FloorLayoutBody(
           title: useDesktopLayout ? Text('Dokument') : null,
-          showBackButton: !useDesktopLayout,
           customPop: tryCloseForm,
-        ),
-        body: FloorLoaderOverlay(
-          loading: _isSaving,
-          child: FloorLayoutBody(
-            sideChildren: [
-              FloorTransparentButton(
-                text: 'Zurück',
-                iconData: Icons.chevron_left,
-                onPressed: tryCloseForm,
-              ),
-            ],
-            child: _isLoading
-                ? Center(child: CircularProgressIndicator())
-                : SingleChildScrollView(
-                    padding: EdgeInsets.all(AppSizes.kGap),
-                    child: Align(
-                      alignment: Alignment.topCenter,
-                      child: SizedBox(
-                        width: AppSizes.kDesktopWidth,
-                        child: ColumnGap(
-                          gap: AppSizes.kGap,
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            ColumnGap(
-                              gap: AppSizes.kSmallGap,
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [
-                                if (_form.modifiedAt != null)
-                                  RowGap(
-                                    gap: 4,
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: [
-                                      Icon(
-                                        Icons.edit,
-                                        color: colorScheme.outline,
-                                        size: AppSizes.kSubIconSize,
-                                      ),
-                                      Timeago(
-                                          locale: 'de',
-                                          date: _form.modifiedAt!,
-                                          builder: (context, value) {
-                                            final now = DateTime.now();
-                                            return Text(
-                                              now.difference(_form.modifiedAt!).inDays > 7 ? dateFormatDateTime.format(_form.modifiedAt!) : value,
-                                              style: textTheme.labelMedium?.copyWith(color: colorScheme.outline),
-                                            );
-                                          }),
-                                    ],
-                                  ),
-                                FloorCard(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                                    children: [
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Text('Bemerkung', style: textTheme.titleLarge),
-                                          FloorIconButton(
-                                            iconData: _showDocumentDetails ? Icons.expand_less : Icons.expand_more,
-                                            onPressed: () {
-                                              _showDocumentDetails = !_showDocumentDetails;
-                                              setState(() {});
-                                            },
-                                          ),
-                                        ],
-                                      ),
-                                      if (_showDocumentDetails) SizedBox(height: AppSizes.kGap),
-                                      AnimatedSize(
-                                        duration: Duration(milliseconds: 200),
-                                        curve: Curves.easeIn,
-                                        child: _showDocumentDetails
-                                            ? ColumnGap(
-                                                gap: AppSizes.kSmallGap,
-                                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                                children: [
-                                                  FloorTextField(
-                                                    text: _form.title,
-                                                    onChanged: (value) {
-                                                      _form.title = value;
-                                                      _setIsDirty();
-                                                    },
-                                                    decoration: outlinedInputDecoration(labelText: 'Titel'),
-                                                  ),
-                                                  FloorDatePicker(
-                                                    labelText: 'Dokumentdatum',
-                                                    value: _form.documentDate,
-                                                    onSetValue: (dateTime) {
-                                                      _form.documentDate = dateTime;
-                                                      _setIsDirty();
-                                                      setState(() {});
-                                                    },
-                                                    overlayPicker: FloorDatePickerDialog(selectedDay: _form.documentDate),
-                                                  ),
-                                                  FloorTextField(
-                                                    text: _form.notes,
-                                                    onChanged: (value) {
-                                                      _form.notes = value;
-                                                      _setIsDirty();
-                                                    },
-                                                    decoration: outlinedInputDecoration(labelText: 'Notizen'),
-                                                    minLines: 4,
-                                                    maxLines: null,
-                                                  ),
-                                                ],
-                                              )
-                                            : SizedBox(),
-                                      ),
-                                    ],
-                                  ),
+          sideChildren: [
+            FloorTransparentButton(
+              text: 'Zurück',
+              iconData: Icons.chevron_left,
+              onPressed: tryCloseForm,
+            ),
+          ],
+          child: _isLoading
+              ? Center(child: CircularProgressIndicator())
+              : SingleChildScrollView(
+                  padding: EdgeInsets.all(AppSizes.kGap),
+                  child: Align(
+                    alignment: Alignment.topCenter,
+                    child: SizedBox(
+                      width: AppSizes.kDesktopWidth,
+                      child: ColumnGap(
+                        gap: AppSizes.kGap,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          ColumnGap(
+                            gap: AppSizes.kSmallGap,
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              if (_form.modifiedAt != null)
+                                RowGap(
+                                  gap: 4,
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    Icon(
+                                      Icons.edit,
+                                      color: colorScheme.outline,
+                                      size: AppSizes.kSubIconSize,
+                                    ),
+                                    Timeago(
+                                        locale: 'de',
+                                        date: _form.modifiedAt!,
+                                        builder: (context, value) {
+                                          final now = DateTime.now();
+                                          return Text(
+                                            now.difference(_form.modifiedAt!).inDays > 7 ? dateFormatDateTime.format(_form.modifiedAt!) : value,
+                                            style: textTheme.labelMedium?.copyWith(color: colorScheme.outline),
+                                          );
+                                        }),
+                                  ],
                                 ),
-                              ],
-                            ),
-                            buildCaptureCard(),
-                            if (_form.captures.isNotEmpty || _form.scans.isNotEmpty) buildScanCard() else buildDisabledChild(child: buildScanCard()),
-                            if (_form.scans.isNotEmpty || _form.reports.isNotEmpty)
-                              buildReportCard()
-                            else
-                              buildDisabledChild(child: buildReportCard()),
-                          ],
-                        ),
+                              FloorCard(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text('Bemerkung', style: textTheme.titleLarge),
+                                        FloorIconButton(
+                                          iconData: _showDocumentDetails ? Icons.expand_less : Icons.expand_more,
+                                          onPressed: () {
+                                            _showDocumentDetails = !_showDocumentDetails;
+                                            setState(() {});
+                                          },
+                                        ),
+                                      ],
+                                    ),
+                                    if (_showDocumentDetails) SizedBox(height: AppSizes.kGap),
+                                    AnimatedSize(
+                                      duration: Duration(milliseconds: 200),
+                                      curve: Curves.easeIn,
+                                      child: _showDocumentDetails
+                                          ? ColumnGap(
+                                              gap: AppSizes.kSmallGap,
+                                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                                              children: [
+                                                FloorTextField(
+                                                  text: _form.title,
+                                                  onChanged: (value) {
+                                                    _form.title = value;
+                                                    _setIsDirty();
+                                                  },
+                                                  decoration: outlinedInputDecoration(labelText: 'Titel'),
+                                                ),
+                                                FloorDatePicker(
+                                                  labelText: 'Dokumentdatum',
+                                                  value: _form.documentDate,
+                                                  onSetValue: (dateTime) {
+                                                    _form.documentDate = dateTime;
+                                                    _setIsDirty();
+                                                    setState(() {});
+                                                  },
+                                                  overlayPicker: FloorDatePickerDialog(selectedDay: _form.documentDate),
+                                                ),
+                                                FloorTextField(
+                                                  text: _form.notes,
+                                                  onChanged: (value) {
+                                                    _form.notes = value;
+                                                    _setIsDirty();
+                                                  },
+                                                  decoration: outlinedInputDecoration(labelText: 'Notizen'),
+                                                  minLines: 4,
+                                                  maxLines: null,
+                                                ),
+                                              ],
+                                            )
+                                          : SizedBox(),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                          buildCaptureCard(),
+                          if (_form.captures.isNotEmpty || _form.scans.isNotEmpty) buildScanCard() else buildDisabledChild(child: buildScanCard()),
+                          if (_form.scans.isNotEmpty || _form.reports.isNotEmpty) buildReportCard() else buildDisabledChild(child: buildReportCard()),
+                        ],
                       ),
                     ),
                   ),
-          ),
+                ),
         ),
       ),
     );

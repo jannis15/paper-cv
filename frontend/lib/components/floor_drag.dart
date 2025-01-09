@@ -49,7 +49,7 @@ class _FloorDragState extends State<FloorDrag> {
               if (_dragging)
                 Container(
                   decoration: BoxDecoration(
-                    color: colorScheme.onSurface.withOpacity(.5),
+                    color: colorScheme.onSurface.withOpacity(.3),
                     borderRadius: BorderRadius.circular(AppSizes.kBorderRadius),
                   ),
                   child: ColumnGap(

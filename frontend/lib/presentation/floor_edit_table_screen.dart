@@ -8,7 +8,6 @@ import 'package:paper_cv/components/floor_text_field.dart';
 import 'package:paper_cv/config/config.dart';
 import 'package:paper_cv/data/models/floor_dto_models.dart';
 import 'package:paper_cv/data/models/floor_enums.dart';
-import 'package:paper_cv/data/repositories/floor_repository.dart';
 import 'package:paper_cv/domain/floor_models.dart';
 import 'package:paper_cv/utils/file_picker_models.dart';
 import 'package:paper_cv/utils/widget_utils.dart';
@@ -71,8 +70,6 @@ class _FloorEditTableScreenState extends State<FloorEditTableScreen> {
 
   void _saveChanges() async {
     final newSelectedFile = _form.toDto().toSelectedFile();
-    // TODO
-    // await FloorRepository.saveDocumentFile(documentId: _form.uuid!, file: newSelectedFile);
     Navigator.of(context).pop(newSelectedFile);
   }
 

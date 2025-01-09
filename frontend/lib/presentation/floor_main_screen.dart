@@ -5,6 +5,7 @@ import 'package:paper_cv/components/floor_card.dart';
 import 'package:paper_cv/components/floor_chip.dart';
 import 'package:paper_cv/components/floor_icon_button.dart';
 import 'package:paper_cv/components/floor_layout_body.dart';
+import 'package:paper_cv/components/floor_wrap_view.dart';
 import 'package:paper_cv/config/config.dart';
 import 'package:paper_cv/data/models/floor_dto_models.dart';
 import 'package:paper_cv/data/repositories/floor_repository.dart';
@@ -28,9 +29,9 @@ class FloorMainScreen extends StatefulWidget {
 }
 
 class _FloorMainScreenState extends State<FloorMainScreen> {
+  DocumentPreviewDto? _hoverDocumentPreview;
   final ScrollController _scrollController = ScrollController();
   late Stream<List<DocumentPreviewDto>> _previewStream;
-  DocumentPreviewDto? _hoverDocumentPreview;
   bool _showBanner = true;
   bool _isSelectionMode = false;
   final Set<DocumentPreviewDto> _selectedDocuments = {};
@@ -58,8 +59,16 @@ class _FloorMainScreenState extends State<FloorMainScreen> {
   void _selectDocument(DocumentPreviewDto document) {
     if (_selectedDocuments.contains(document)) {
       _selectedDocuments.remove(document);
+      if (_selectedDocuments.length == 0) {
+        _disableSelectionMode();
+        setState(() {});
+      }
     } else {
       _selectedDocuments.add(document);
+      if (_selectedDocuments.length == 1) {
+        _isSelectionMode = true;
+        setState(() {});
+      }
     }
   }
 
@@ -89,7 +98,7 @@ class _FloorMainScreenState extends State<FloorMainScreen> {
 
   void _openOverviewScreen() async => await Navigator.of(context).push(
         PageRouteBuilder(
-          pageBuilder: (context, animation, secondaryAnimation) => FloorOverviewScreen(),
+          pageBuilder: (_, __, ___) => FloorOverviewScreen(),
           transitionDuration: Duration(seconds: 0),
         ),
       );
@@ -106,132 +115,233 @@ class _FloorMainScreenState extends State<FloorMainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    Widget buildPreviewCard(DocumentPreviewDto documentPreview) => FloorCard(
-          onLongPress: useDesktopLayout
-              ? null
-              : () {
-                  _isSelectionMode = !_isSelectionMode;
-                  if (_isSelectionMode) {
-                    _selectDocument(documentPreview);
-                  } else {
-                    _selectedDocuments.clear();
-                  }
-                  setState(() {});
-                },
-          onTap: _isSelectionMode
-              ? () {
-                  _selectDocument(documentPreview);
-                  setState(() {});
-                }
-              : () async {
-                  await Navigator.of(context).push(
-                    PageRouteBuilder(
-                      pageBuilder: (context, animation, secondaryAnimation) => FloorOverviewScreen(documentId: documentPreview.uuid),
-                      transitionDuration: Duration(seconds: 0),
-                    ),
-                  );
-                },
-          child: RowGap(
-            gap: AppSizes.kGap,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              SizedBox(
-                height: 56,
-                width: 56,
-                child: _isSelectionMode
-                    ? Checkbox(
-                        value: _selectedDocuments.contains(documentPreview),
-                        onChanged: (_) {
-                          _selectDocument(documentPreview);
-                          setState(() {});
-                        },
-                      )
-                    : MouseRegion(
-                        onEnter: (event) {
-                          _hoverDocumentPreview = documentPreview;
-                          setState(() {});
-                        },
-                        onExit: (event) {
-                          _hoverDocumentPreview = null;
-                          setState(() {});
-                        },
-                        child: GestureDetector(
-                          onTap: () {
-                            _isSelectionMode = true;
-                            _selectDocument(documentPreview);
-                            setState(() {});
-                          },
-                          child: Container(
-                            padding: EdgeInsets.all(AppSizes.kGap),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(AppSizes.kBorderRadius),
-                              color: colorScheme.secondaryContainer,
-                            ),
-                            child: Icon(
-                              useDesktopLayout && _hoverDocumentPreview == documentPreview ? Icons.check_box_outline_blank : Icons.article,
-                              size: AppSizes.kIconSize,
-                              color: colorScheme.onSecondaryContainer,
-                            ),
-                          ),
-                        ),
-                      ),
+    Widget buildPreviewCard(DocumentPreviewDto documentPreview) => MouseRegion(
+          onEnter: (event) {
+            _hoverDocumentPreview = documentPreview;
+            setState(() {});
+          },
+          onExit: (event) {
+            _hoverDocumentPreview = null;
+            setState(() {});
+          },
+          child: Container(
+            decoration: BoxDecoration(
+              border: Border.all(
+                color: _selectedDocuments.contains(documentPreview) ? colorScheme.primary : Colors.transparent,
+                width: 1.5,
               ),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    RowGap(
-                      gap: AppSizes.kSmallGap,
-                      crossAxisAlignment: CrossAxisAlignment.baseline,
-                      children: [
-                        Text(
-                          documentPreview.title.trim().isNotEmpty ? documentPreview.title : 'Gescanntes Dokument',
-                          style: textTheme.titleMedium,
+              borderRadius: BorderRadius.all(Radius.circular(AppSizes.kBorderRadius)),
+            ),
+            child: FloorCard(
+              onLongPress: useDesktopLayout
+                  ? null
+                  : () {
+                      _isSelectionMode = !_isSelectionMode;
+                      if (_isSelectionMode) {
+                        _selectDocument(documentPreview);
+                      } else {
+                        _selectedDocuments.clear();
+                      }
+                      setState(() {});
+                    },
+              onTap: _isSelectionMode
+                  ? () {
+                      _selectDocument(documentPreview);
+                      setState(() {});
+                    }
+                  : () async {
+                      await Navigator.of(context).push(
+                        PageRouteBuilder(
+                          pageBuilder: (_, __, ___) => FloorOverviewScreen(documentId: documentPreview.uuid),
+                          transitionDuration: Duration(seconds: 0),
                         ),
-                        if (documentPreview.isExample)
-                          Container(
-                            padding: EdgeInsets.symmetric(horizontal: AppSizes.kSmallGap),
-                            decoration: ShapeDecoration(
-                              shape: StadiumBorder(side: BorderSide(color: colorScheme.outline)),
+                      );
+                    },
+              child: ColumnGap(
+                gap: AppSizes.kSmallGap,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Expanded(
+                    child: Stack(
+                      fit: StackFit.expand,
+                      alignment: Alignment.center,
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                            color: colorScheme.surface,
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(AppSizes.kBorderRadius),
                             ),
-                            child: Text('Beispiel', style: textTheme.titleMedium?.copyWith(color: colorScheme.outline)),
                           ),
+                        ),
+                        Icon(
+                          Icons.article,
+                          size: AppSizes.kComponentHeight,
+                          color: colorScheme.secondary,
+                        ),
+                        Positioned(
+                          top: AppSizes.kSmallGap / 2,
+                          left: AppSizes.kSmallGap / 2,
+                          child: AnimatedOpacity(
+                            opacity: _isSelectionMode || _hoverDocumentPreview == documentPreview ? 1.0 : 0.0,
+                            duration: Duration(milliseconds: 200),
+                            child: Checkbox(
+                              value: _selectedDocuments.contains(documentPreview),
+                              onChanged: (_) {
+                                _selectDocument(documentPreview);
+                                setState(() {});
+                              },
+                            ),
+                          ),
+                        )
                       ],
                     ),
-                    Timeago(
-                      builder: (context, value) {
-                        return Text(value, style: textTheme.titleMedium?.copyWith(color: colorScheme.outline));
-                      },
-                      date: documentPreview.modifiedAt,
-                      allowFromNow: true,
-                      locale: 'de',
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          confirmDismiss: _isSelectionMode || useDesktopLayout
-              ? null
-              : (dismissDirection) async {
-                  final alertOption = await showAlertDialog(
-                    context,
-                    title: "'${documentPreview.title.trim().isNotEmpty ? documentPreview.title : 'Gescanntes Dokument'}' löschen?",
-                    content: 'Das Dokument wird dadurch unwiderruflich gelöscht!',
-                    optionData: [
-                      AlertOptionData.cancel(),
-                      AlertOptionData.yes(customText: 'Löschen'),
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      RowGap(
+                        gap: AppSizes.kSmallGap,
+                        crossAxisAlignment: CrossAxisAlignment.baseline,
+                        children: [
+                          Flexible(
+                            child: Text(
+                              documentPreview.title.trim().isNotEmpty ? documentPreview.title : 'Gescanntes Dokument',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: textTheme.titleMedium,
+                            ),
+                          ),
+                          if (documentPreview.isExample)
+                            Container(
+                              padding: EdgeInsets.symmetric(horizontal: AppSizes.kSmallGap),
+                              decoration: ShapeDecoration(
+                                shape: StadiumBorder(side: BorderSide(color: colorScheme.outline)),
+                              ),
+                              child: Text(
+                                'Beispiel',
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                                style: textTheme.titleMedium?.copyWith(color: colorScheme.outline),
+                              ),
+                            ),
+                        ],
+                      ),
+                      Timeago(
+                        builder: (context, value) {
+                          return Text(value, style: textTheme.titleMedium?.copyWith(color: colorScheme.outline));
+                        },
+                        date: documentPreview.modifiedAt,
+                        allowFromNow: true,
+                        locale: 'de',
+                      ),
                     ],
-                  );
-                  return alertOption == AlertOption.yes;
-                },
-          onDismissed: _isSelectionMode || useDesktopLayout
-              ? null
-              : (dismissDirection) async {
-                  if (documentPreview.uuid != null) {
-                    await FloorRepository.deleteDocumentById(documentPreview.uuid!);
-                  }
-                },
+                  )
+                ],
+              ),
+              // child: RowGap(
+              //   gap: AppSizes.kGap,
+              //   crossAxisAlignment: CrossAxisAlignment.center,
+              //   children: [
+              //     SizedBox(
+              //       height: 56,
+              //       width: 56,
+              //       child: _isSelectionMode
+              //           ? Checkbox(
+              //               value: _selectedDocuments.contains(documentPreview),
+              //               onChanged: (_) {
+              //                 _selectDocument(documentPreview);
+              //                 setState(() {});
+              //               },
+              //             )
+              //           : MouseRegion(
+              //               onEnter: (event) {
+              //                 _hoverDocumentPreview = documentPreview;
+              //                 setState(() {});
+              //               },
+              //               onExit: (event) {
+              //                 _hoverDocumentPreview = null;
+              //                 setState(() {});
+              //               },
+              //               child: GestureDetector(
+              //                 onTap: () {
+              //                   _isSelectionMode = true;
+              //                   _selectDocument(documentPreview);
+              //                   setState(() {});
+              //                 },
+              //                 child: Container(
+              //                   padding: EdgeInsets.all(AppSizes.kGap),
+              //                   decoration: BoxDecoration(
+              //                     borderRadius: BorderRadius.circular(AppSizes.kBorderRadius),
+              //                     color: colorScheme.secondary,
+              //                   ),
+              //                   child: Icon(
+              //                     useDesktopLayout && _hoverDocumentPreview == documentPreview ? Icons.check_box_outline_blank : Icons.article,
+              //                     size: AppSizes.kIconSize,
+              //                     color: colorScheme.onSecondary,
+              //                   ),
+              //                 ),
+              //               ),
+              //             ),
+              //     ),
+              //     Expanded(
+              //       child: Column(
+              //         crossAxisAlignment: CrossAxisAlignment.start,
+              //         children: [
+              //           RowGap(
+              //             gap: AppSizes.kSmallGap,
+              //             crossAxisAlignment: CrossAxisAlignment.baseline,
+              //             children: [
+              //               Text(
+              //                 documentPreview.title.trim().isNotEmpty ? documentPreview.title : 'Gescanntes Dokument',
+              //                 style: textTheme.titleMedium,
+              //               ),
+              //               if (documentPreview.isExample)
+              //                 Container(
+              //                   padding: EdgeInsets.symmetric(horizontal: AppSizes.kSmallGap),
+              //                   decoration: ShapeDecoration(
+              //                     shape: StadiumBorder(side: BorderSide(color: colorScheme.outline)),
+              //                   ),
+              //                   child: Text('Beispiel', style: textTheme.titleMedium?.copyWith(color: colorScheme.outline)),
+              //                 ),
+              //             ],
+              //           ),
+              //           Timeago(
+              //             builder: (context, value) {
+              //               return Text(value, style: textTheme.titleMedium?.copyWith(color: colorScheme.outline));
+              //             },
+              //             date: documentPreview.modifiedAt,
+              //             allowFromNow: true,
+              //             locale: 'de',
+              //           ),
+              //         ],
+              //       ),
+              //     ),
+              //   ],
+              // ),
+              confirmDismiss: _isSelectionMode || useDesktopLayout
+                  ? null
+                  : (dismissDirection) async {
+                      final alertOption = await showAlertDialog(
+                        context,
+                        title: "'${documentPreview.title.trim().isNotEmpty ? documentPreview.title : 'Gescanntes Dokument'}' löschen?",
+                        content: 'Das Dokument wird dadurch unwiderruflich gelöscht!',
+                        optionData: [
+                          AlertOptionData.cancel(),
+                          AlertOptionData.yes(customText: 'Löschen'),
+                        ],
+                      );
+                      return alertOption == AlertOption.yes;
+                    },
+              onDismissed: _isSelectionMode || useDesktopLayout
+                  ? null
+                  : (dismissDirection) async {
+                      if (documentPreview.uuid != null) {
+                        await FloorRepository.deleteDocumentById(documentPreview.uuid!);
+                      }
+                    },
+            ),
+          ),
         );
 
     return PopScope(
@@ -256,37 +366,34 @@ class _FloorMainScreenState extends State<FloorMainScreen> {
           }
         }
       },
-      child: Scaffold(
-        backgroundColor: useDesktopLayout ? colorScheme.surfaceContainer : null,
-        appBar: FloorAppBar(
-          title: _isSelectionMode && !useDesktopLayout
-              ? Text(_selectedText)
-              : RowGap(
-                  gap: AppSizes.kSmallGap,
-                  crossAxisAlignment: CrossAxisAlignment.baseline,
-                  children: [
-                    Text('PaperCV'),
-                    Text(
-                      '${packageInfo.version}+${packageInfo.buildNumber}',
-                      style: textTheme.labelMedium?.copyWith(color: colorScheme.outline),
-                    ),
-                  ],
-                ),
-          actions: [
-            FloorAppBarIconButton(
-              tooltip: 'Einstellungen',
-              iconData: Icons.settings,
-              onPressed: () {
-                Navigator.of(context).push(
-                  PageRouteBuilder(
-                    pageBuilder: (context, animation, secondaryAnimation) => FloorSettingsScreen(),
-                    transitionDuration: Duration(seconds: 0),
+      child: FloorLayoutBody(
+        title: _isSelectionMode && !useDesktopLayout
+            ? Text(_selectedText)
+            : RowGap(
+                gap: AppSizes.kSmallGap,
+                crossAxisAlignment: CrossAxisAlignment.baseline,
+                children: [
+                  Text('PaperCV'),
+                  Text(
+                    '${packageInfo.version}+${packageInfo.buildNumber}',
+                    style: textTheme.labelMedium?.copyWith(color: colorScheme.outline),
                   ),
-                );
-              },
-            ),
-          ],
-        ),
+                ],
+              ),
+        actions: [
+          FloorAppBarIconButton(
+            tooltip: 'Einstellungen',
+            iconData: Icons.settings,
+            onPressed: () {
+              Navigator.of(context).push(
+                PageRouteBuilder(
+                  pageBuilder: (_, __, ___) => FloorSettingsScreen(),
+                  transitionDuration: Duration(seconds: 0),
+                ),
+              );
+            },
+          ),
+        ],
         floatingActionButton: useDesktopLayout
             ? null
             : _isSelectionMode
@@ -337,147 +444,151 @@ class _FloorMainScreenState extends State<FloorMainScreen> {
                       )
                     ],
                   ),
-        body: FloorLayoutBody(
-          sideChildren: [
-            FloorOutlinedButton(
-              text: 'Erfassen',
-              iconData: Icons.post_add,
-              onPressed: _openOverviewScreen,
-            ),
-            FloorTransparentButton(
-              text: 'Mehr erfahren',
-              iconData: Icons.info,
-              onPressed: _seeInfo,
-            ),
-          ],
-          child: SingleChildScrollView(
-            controller: _scrollController,
-            padding: EdgeInsets.all(AppSizes.kGap),
-            child: Align(
-              alignment: Alignment.topCenter,
-              child: SizedBox(
-                width: AppSizes.kDesktopWidth,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    AnimatedSize(
-                      duration: Duration(milliseconds: 200),
-                      curve: Curves.easeIn,
-                      child: _showBanner
-                          ? Padding(
-                              padding: EdgeInsets.only(bottom: AppSizes.kGap),
-                              child: FloorContactBanner(
-                                  onCloseBanner: () => setState(() {
-                                        _showBanner = false;
-                                      })),
-                            )
-                          : SizedBox(),
-                    ),
-                    AnimatedSize(
-                      duration: Duration(milliseconds: 200),
-                      curve: Curves.easeIn,
-                      child: _isSelectionMode && useDesktopLayout
-                          ? Padding(
-                              padding: EdgeInsets.only(bottom: AppSizes.kGap),
-                              child: FloorCard(
-                                usePadding: false,
-                                child: Padding(
-                                  padding: EdgeInsets.all(AppSizes.kSmallGap),
-                                  child: RowGap(
-                                    gap: AppSizes.kGap,
-                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                    children: [
-                                      FloorIconButton(
-                                        backgroundColor: Colors.transparent,
-                                        iconData: Icons.close,
-                                        onPressed: () {
-                                          _disableSelectionMode();
-                                          if (mounted) setState(() {});
-                                        },
-                                      ),
-                                      Text(_selectedText, style: textTheme.labelLarge),
-                                      FloorIconButton(
-                                        backgroundColor: Colors.transparent,
-                                        iconData: Icons.delete,
-                                        onPressed: _selectedDocuments.isEmpty ? null : _deleteSelectedDocuments,
-                                      ),
-                                    ],
-                                  ),
+        sideChildren: [
+          FloorOutlinedButton(
+            text: 'Erfassen',
+            iconData: Icons.post_add,
+            onPressed: _openOverviewScreen,
+          ),
+          FloorTransparentButton(
+            text: 'Mehr erfahren',
+            iconData: Icons.info,
+            onPressed: _seeInfo,
+          ),
+        ],
+        child: SingleChildScrollView(
+          controller: _scrollController,
+          padding: EdgeInsets.all(AppSizes.kGap),
+          child: Align(
+            alignment: Alignment.topCenter,
+            child: SizedBox(
+              width: AppSizes.kDesktopWidth,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  AnimatedSize(
+                    duration: Duration(milliseconds: 200),
+                    curve: Curves.easeIn,
+                    child: _showBanner
+                        ? Padding(
+                            padding: EdgeInsets.only(bottom: AppSizes.kGap),
+                            child: FloorContactBanner(
+                                onCloseBanner: () => setState(() {
+                                      _showBanner = false;
+                                    })),
+                          )
+                        : SizedBox(),
+                  ),
+                  AnimatedSize(
+                    duration: Duration(milliseconds: 200),
+                    curve: Curves.easeIn,
+                    child: _isSelectionMode && useDesktopLayout
+                        ? Padding(
+                            padding: EdgeInsets.only(bottom: AppSizes.kGap),
+                            child: FloorCard(
+                              usePadding: false,
+                              child: Padding(
+                                padding: EdgeInsets.all(AppSizes.kSmallGap),
+                                child: RowGap(
+                                  gap: AppSizes.kGap,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    FloorIconButton(
+                                      backgroundColor: Colors.transparent,
+                                      iconData: Icons.close,
+                                      onPressed: () {
+                                        _disableSelectionMode();
+                                        if (mounted) setState(() {});
+                                      },
+                                    ),
+                                    Text(_selectedText, style: textTheme.labelLarge),
+                                    FloorIconButton(
+                                      backgroundColor: Colors.transparent,
+                                      iconData: Icons.delete,
+                                      onPressed: _selectedDocuments.isEmpty ? null : _deleteSelectedDocuments,
+                                    ),
+                                  ],
                                 ),
                               ),
-                            )
-                          : SizedBox(),
-                    ),
-                    RowGap(
-                      gap: AppSizes.kSmallGap,
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Text(
-                          'Sortiert nach',
-                          style: textTheme.labelMedium,
-                        ),
-                        Flexible(
-                          fit: FlexFit.loose,
-                          child: SingleChildScrollView(
-                            scrollDirection: Axis.horizontal,
-                            child: Row(
-                              children: [
-                                SizedBox(width: AppSizes.kSmallGap),
-                                RowGap(
-                                    gap: AppSizes.kSmallGap,
-                                    crossAxisAlignment: CrossAxisAlignment.baseline,
-                                    children: DocumentSortType.values
-                                        .map(
-                                          (sortType) => AnimatedSize(
-                                            duration: Duration(milliseconds: 200),
-                                            curve: Curves.easeIn,
-                                            child: FloorChip(
-                                              iconData: sortType != _sortType
-                                                  ? null
-                                                  : _sortDirection == SortDirection.ascending
-                                                      ? Icons.arrow_upward
-                                                      : Icons.arrow_downward,
-                                              text: sortType.name,
-                                              isSelected: sortType == _sortType,
-                                              onPressed: () => _changeSortType(sortType),
-                                            ),
-                                          ),
-                                        )
-                                        .toList()),
-                              ],
                             ),
+                          )
+                        : SizedBox(),
+                  ),
+                  RowGap(
+                    gap: AppSizes.kSmallGap,
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Sortiert nach',
+                        style: textTheme.labelMedium,
+                      ),
+                      Flexible(
+                        fit: FlexFit.loose,
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            children: [
+                              SizedBox(width: AppSizes.kSmallGap),
+                              RowGap(
+                                  gap: AppSizes.kSmallGap,
+                                  crossAxisAlignment: CrossAxisAlignment.baseline,
+                                  children: DocumentSortType.values
+                                      .map(
+                                        (sortType) => AnimatedSize(
+                                          duration: Duration(milliseconds: 200),
+                                          curve: Curves.easeIn,
+                                          child: FloorChip(
+                                            iconData: sortType != _sortType
+                                                ? null
+                                                : _sortDirection == SortDirection.ascending
+                                                    ? Icons.arrow_upward
+                                                    : Icons.arrow_downward,
+                                            text: sortType.name,
+                                            isSelected: sortType == _sortType,
+                                            onPressed: () => _changeSortType(sortType),
+                                          ),
+                                        ),
+                                      )
+                                      .toList()),
+                            ],
                           ),
                         ),
-                      ],
-                    ),
-                    SizedBox(height: AppSizes.kGap),
-                    StreamBuilder(
-                      stream: _previewStream,
-                      builder: (context, snapshot) {
-                        if (snapshot.hasError) {
-                          return Text(snapshot.error.toString(), style: TextStyle(color: colorScheme.error));
-                        } else if (snapshot.connectionState == ConnectionState.waiting || !snapshot.hasData) {
-                          return Center(child: CircularProgressIndicator());
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: AppSizes.kGap),
+                  StreamBuilder(
+                    stream: _previewStream,
+                    builder: (context, snapshot) {
+                      if (snapshot.hasError) {
+                        return Text(snapshot.error.toString(), style: TextStyle(color: colorScheme.error));
+                      } else if (snapshot.connectionState == ConnectionState.waiting || !snapshot.hasData) {
+                        return Center(child: CircularProgressIndicator());
+                      } else {
+                        final documentPreviews = snapshot.data!;
+                        if (documentPreviews.isEmpty) {
+                          return Text('Keine Dokumente vorhanden');
                         } else {
-                          final documentPreviews = snapshot.data!;
-                          if (documentPreviews.isEmpty) {
-                            return Text('Keine Dokumente vorhanden');
-                          } else {
-                            return ColumnGap(
-                              gap: AppSizes.kSmallGap,
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [
-                                ...documentPreviews.map(buildPreviewCard),
-                                if (!useDesktopLayout) SizedBox(height: 64),
-                              ],
-                            );
-                          }
+                          return LayoutBuilder(
+                            builder: (context, constraints) {
+                              double availableWidth = constraints.maxWidth;
+                              int itemsPerRow = (availableWidth / 250).floor();
+                              itemsPerRow = itemsPerRow < 1 ? 1 : itemsPerRow;
+
+                              return FloorWrapView(
+                                itemsPerRow: itemsPerRow,
+                                aspectRatio: 29.7 / 21,
+                                children: documentPreviews.map(buildPreviewCard).toList(),
+                                endGap: useDesktopLayout ? null : SizedBox(height: 64),
+                              );
+                            },
+                          );
                         }
-                      },
-                    ),
-                  ],
-                ),
+                      }
+                    },
+                  ),
+                ],
               ),
             ),
           ),
