@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:paper_cv/components/floor_icon_button.dart';
 import 'package:paper_cv/components/floor_text_field.dart';
 import 'package:paper_cv/config/config.dart';
+import 'package:paper_cv/utils/date_format_utils.dart';
 import 'package:paper_cv/utils/widget_utils.dart';
 
 class FloorDatePicker extends StatefulWidget {
@@ -18,7 +19,7 @@ class FloorDatePicker extends StatefulWidget {
 }
 
 class _FloorDatePickerState extends State<FloorDatePicker> {
-  String _toDateString(DateTime date) => DateFormat.yMEd('de').format(date);
+  String _toDateString(DateTime date) => dateFormatWeekdayDate.format(date);
 
   @override
   Widget build(BuildContext context) {

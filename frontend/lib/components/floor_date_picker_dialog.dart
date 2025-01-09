@@ -1,8 +1,8 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:paper_cv/components/floor_buttons.dart';
 import 'package:paper_cv/config/config.dart';
+import 'package:paper_cv/utils/date_format_utils.dart';
 import 'package:paper_cv/utils/list_utils.dart';
 import 'package:paper_cv/utils/widget_utils.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -43,7 +43,7 @@ class _FloorDatePickerDialogState extends State<FloorDatePickerDialog> {
                 gap: AppSizes.kSmallGap,
                 children: [
                   Text(
-                    _selectedDay != null ? DateFormat.yMEd('de').format(_selectedDay!) : 'Kein Datum ausgewählt',
+                    _selectedDay != null ? dateFormatWeekdayDate.format(_selectedDay!) : 'Kein Datum ausgewählt',
                     style: textTheme.titleMedium?.copyWith(color: _selectedDay != null ? colorScheme.onSurface : colorScheme.outlineVariant),
                   ),
                   SizedBox(

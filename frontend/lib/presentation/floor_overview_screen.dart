@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart';
-import 'package:intl/intl.dart';
 import 'package:paper_cv/components/floor_app_bar.dart';
 import 'package:paper_cv/components/floor_attachment_card.dart';
 import 'package:paper_cv/components/floor_buttons.dart';
@@ -19,6 +18,7 @@ import 'package:paper_cv/data/repositories/floor_repository.dart';
 import 'package:paper_cv/domain/floor_models.dart';
 import 'package:paper_cv/presentation/floor_edit_table_screen.dart';
 import 'package:paper_cv/presentation/floor_table_selection_screen.dart';
+import 'package:paper_cv/utils/date_format_utils.dart';
 import 'package:paper_cv/utils/file_picker_models.dart';
 import 'package:paper_cv/utils/file_picker_utils.dart';
 import 'package:paper_cv/utils/image_utils.dart';
@@ -114,7 +114,7 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
                   final fileBytes = await file.readAsBytes();
                   if (!(ImageUtils.isImage(fileBytes))) continue;
                   final now = DateTime.now();
-                  final String formattedDate = DateFormat('dd.MM.yy HH:mm').format(now);
+                  final String formattedDate = dateFormatDateTime.format(now);
                   files.add(
                     SelectedFile(
                       filename: 'Aufnahme $formattedDate.jpg',
@@ -139,7 +139,7 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
               final file = await FloorFilePicker.pickFile(context, pickerOption: FilePickerOption.camera);
               if (file == null) return null;
               final now = DateTime.now();
-              final String formattedDate = DateFormat('dd.MM.yy HH:mm').format(now);
+              final String formattedDate = dateFormatDateTime.format(now);
               file.filename = 'Aufnahme $formattedDate.jpg';
               file.fileType = FileType.capture;
               return [file];
@@ -148,7 +148,7 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
               final files = await FilePickerHelper.pickImageSelectedFile(context, allowMultiple: true);
               for (final file in files) {
                 final now = DateTime.now();
-                final String formattedDate = DateFormat('dd.MM.yy HH:mm').format(now);
+                final String formattedDate = dateFormatDateTime.format(now);
                 file.filename = 'Aufnahme $formattedDate.jpg';
                 file.fileType = FileType.capture;
               }
@@ -263,7 +263,7 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
             }
             final pdfData = await FloorRepository.createPdf(_form, scanResultList);
             final now = DateTime.now();
-            final String formattedDate = DateFormat('dd.MM.yy HH:mm').format(now);
+            final String formattedDate = dateFormatDateTime.format(now);
             final selectedFile = SelectedFile(
               filename: 'Bericht $formattedDate.pdf',
               data: pdfData,
@@ -340,13 +340,15 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
                                         size: AppSizes.kSubIconSize,
                                       ),
                                       Timeago(
-                                        locale: 'de',
-                                        date: _form.modifiedAt!,
-                                        builder: (context, value) => Text(
-                                          value,
-                                          style: textTheme.labelMedium?.copyWith(color: colorScheme.outline),
-                                        ),
-                                      ),
+                                          locale: 'de',
+                                          date: _form.modifiedAt!,
+                                          builder: (context, value) {
+                                            final now = DateTime.now();
+                                            return Text(
+                                              now.difference(_form.modifiedAt!).inDays > 7 ? dateFormatDateTime.format(_form.modifiedAt!) : value,
+                                              style: textTheme.labelMedium?.copyWith(color: colorScheme.outline),
+                                            );
+                                          }),
                                     ],
                                   ),
                                 FloorCard(

@@ -3,7 +3,7 @@ import 'package:paper_cv/data/models/floor_enums.dart';
 import 'package:paper_cv/domain/floor_models.dart';
 import 'package:paper_cv/utils/api_utils.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:intl/intl.dart';
+import 'package:paper_cv/utils/date_format_utils.dart';
 import 'package:paper_cv/utils/file_picker_models.dart';
 
 part 'floor_dto_models.freezed.dart';
@@ -53,7 +53,7 @@ class ScanResultDto with _$ScanResultDto {
 
   SelectedFile toSelectedFile() {
     final now = DateTime.now();
-    final String formattedDate = DateFormat('dd.MM.yy HH:mm').format(now);
+    final String formattedDate = dateFormatDateTime.format(now);
     final data = utf8.encode(jsonEncode(toJson()));
     return SelectedFile(
       uuid: uuid,
