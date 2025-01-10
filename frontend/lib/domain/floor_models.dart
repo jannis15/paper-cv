@@ -12,12 +12,24 @@ enum SortDirection {
 }
 
 enum DocumentSortType {
+  title,
   modifiedAt,
   documentDate;
 
   String get name => switch (this) {
+        DocumentSortType.title => 'Titel',
         DocumentSortType.modifiedAt => 'Bearbeitungsdatum',
         DocumentSortType.documentDate => 'Dokumentdatum',
+      };
+}
+
+enum DocumentViewType {
+  list,
+  grid;
+
+  String get label => switch (this) {
+        DocumentViewType.list => 'Liste',
+        DocumentViewType.grid => 'Kachel',
       };
 }
 
