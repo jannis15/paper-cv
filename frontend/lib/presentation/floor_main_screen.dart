@@ -131,7 +131,7 @@ class _FloorMainScreenState extends State<FloorMainScreen> {
         final sortB = _sortDirection == SortDirection.ascending ? b : a;
         switch (_sortType) {
           case DocumentSortType.title:
-            return sortA.title.compareTo(sortB.title);
+            return sortA.title.toLowerCase().compareTo(sortB.title.toLowerCase());
           case DocumentSortType.modifiedAt:
             return sortA.modifiedAt.compareTo(sortB.modifiedAt);
           case DocumentSortType.documentDate:
