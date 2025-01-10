@@ -1,7 +1,7 @@
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
-import 'package:paper_cv/components/floor_app_bar.dart';
 import 'package:paper_cv/components/floor_buttons.dart';
+import 'package:paper_cv/components/floor_layout_body.dart';
 import 'package:paper_cv/config/config.dart';
 import 'package:paper_cv/data/models/floor_enums.dart';
 import 'package:paper_cv/domain/floor_models.dart';
@@ -116,103 +116,175 @@ class _FloorTableSelectionScreenState extends State<FloorTableSelectionScreen> {
 
   _SelectionPaint get _currentSelectionPaint => _selectionType == SelectionType.header ? _headerSelection : _tableSelection;
 
+  void _saveChanges() {
+    bool newAssign = true;
+    Selection? selection = widget.document.selections[widget.file];
+    if (selection != null && _tableSelection.area == 0 && _headerSelection.area == 0) {
+      widget.document.selections.remove(widget.file);
+    } else if (_oldImageRect != null) {
+      double? tX1;
+      double? tX2;
+      double? tY1;
+      double? tY2;
+      if (_tableSelection.area != 0) {
+        final Rect tableSelectionRect = MathHelper.applyTransformToSelection(
+          oldRect: _oldImageRect!.translateToOrigin(),
+          newRect: Rect.fromLTRB(
+            0,
+            0,
+            _image.width.toDouble(),
+            _image.height.toDouble(),
+          ),
+          selectionRect: Rect.fromLTRB(
+            _tableSelection.startDrag!.dx - _oldImageRect!.left,
+            _tableSelection.startDrag!.dy - _oldImageRect!.top,
+            _tableSelection.endDrag!.dx - _oldImageRect!.left,
+            _tableSelection.endDrag!.dy - _oldImageRect!.top,
+          ),
+        );
+        tX1 = tableSelectionRect.left;
+        tX2 = tableSelectionRect.right;
+        tY1 = tableSelectionRect.top;
+        tY2 = tableSelectionRect.bottom;
+      }
+      double? hX1;
+      double? hX2;
+      double? hY1;
+      double? hY2;
+      if (_headerSelection.area != 0) {
+        final Rect headerSelectionRect = MathHelper.applyTransformToSelection(
+          oldRect: _oldImageRect!.translateToOrigin(),
+          newRect: Rect.fromLTRB(
+            0,
+            0,
+            _image.width.toDouble(),
+            _image.height.toDouble(),
+          ),
+          selectionRect: Rect.fromLTRB(
+            _headerSelection.startDrag!.dx - _oldImageRect!.left,
+            _headerSelection.startDrag!.dy - _oldImageRect!.top,
+            _headerSelection.endDrag!.dx - _oldImageRect!.left,
+            _headerSelection.endDrag!.dy - _oldImageRect!.top,
+          ),
+        );
+        hX1 = headerSelectionRect.left;
+        hX2 = headerSelectionRect.right;
+        hY1 = headerSelectionRect.top;
+        hY2 = headerSelectionRect.bottom;
+      }
+      if (selection == null) {
+        widget.document.selections[widget.file] = Selection(
+          tX1: tX1,
+          tX2: tX2,
+          tY1: tY1,
+          tY2: tY2,
+          hX1: hX1,
+          hX2: hX2,
+          hY1: hY1,
+          hY2: hY2,
+        );
+      } else {
+        selection
+          ..tX1 = tX1
+          ..tY1 = tY1
+          ..tX2 = tX2
+          ..tY2 = tY2
+          ..hX1 = hX1
+          ..hY1 = hY1
+          ..hX2 = hX2
+          ..hY2 = hY2;
+      }
+    } else {
+      newAssign = false;
+    }
+    Navigator.of(context).pop<bool>(newAssign);
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: FloorAppBar(
-        backgroundColor: colorScheme.surface,
-        actions: [
-          FloorButton(
-            type: !_isFirstBuild && (_headerSelection.isSet && _tableSelection.isSet) ? FloorButtonType.filled : FloorButtonType.outlined,
-            iconData: Icons.check,
-            text: 'Bestätigen',
-            onPressed: () {
-              bool newAssign = true;
-              Selection? selection = widget.document.selections[widget.file];
-              if (selection != null && _tableSelection.area == 0 && _headerSelection.area == 0) {
-                widget.document.selections.remove(widget.file);
-              } else if (_oldImageRect != null) {
-                double? tX1;
-                double? tX2;
-                double? tY1;
-                double? tY2;
-                if (_tableSelection.area != 0) {
-                  final Rect tableSelectionRect = MathHelper.applyTransformToSelection(
-                    oldRect: _oldImageRect!.translateToOrigin(),
-                    newRect: Rect.fromLTRB(
-                      0,
-                      0,
-                      _image.width.toDouble(),
-                      _image.height.toDouble(),
-                    ),
-                    selectionRect: Rect.fromLTRB(
-                      _tableSelection.startDrag!.dx - _oldImageRect!.left,
-                      _tableSelection.startDrag!.dy - _oldImageRect!.top,
-                      _tableSelection.endDrag!.dx - _oldImageRect!.left,
-                      _tableSelection.endDrag!.dy - _oldImageRect!.top,
-                    ),
-                  );
-                  tX1 = tableSelectionRect.left;
-                  tX2 = tableSelectionRect.right;
-                  tY1 = tableSelectionRect.top;
-                  tY2 = tableSelectionRect.bottom;
-                }
-                double? hX1;
-                double? hX2;
-                double? hY1;
-                double? hY2;
-                if (_headerSelection.area != 0) {
-                  final Rect headerSelectionRect = MathHelper.applyTransformToSelection(
-                    oldRect: _oldImageRect!.translateToOrigin(),
-                    newRect: Rect.fromLTRB(
-                      0,
-                      0,
-                      _image.width.toDouble(),
-                      _image.height.toDouble(),
-                    ),
-                    selectionRect: Rect.fromLTRB(
-                      _headerSelection.startDrag!.dx - _oldImageRect!.left,
-                      _headerSelection.startDrag!.dy - _oldImageRect!.top,
-                      _headerSelection.endDrag!.dx - _oldImageRect!.left,
-                      _headerSelection.endDrag!.dy - _oldImageRect!.top,
-                    ),
-                  );
-                  hX1 = headerSelectionRect.left;
-                  hX2 = headerSelectionRect.right;
-                  hY1 = headerSelectionRect.top;
-                  hY2 = headerSelectionRect.bottom;
-                }
-                if (selection == null) {
-                  widget.document.selections[widget.file] = Selection(
-                    tX1: tX1,
-                    tX2: tX2,
-                    tY1: tY1,
-                    tY2: tY2,
-                    hX1: hX1,
-                    hX2: hX2,
-                    hY1: hY1,
-                    hY2: hY2,
-                  );
-                } else {
-                  selection
-                    ..tX1 = tX1
-                    ..tY1 = tY1
-                    ..tX2 = tX2
-                    ..tY2 = tY2
-                    ..hX1 = hX1
-                    ..hY1 = hY1
-                    ..hX2 = hX2
-                    ..hY2 = hY2;
-                }
-              } else {
-                newAssign = false;
-              }
-              Navigator.of(context).pop<bool>(newAssign);
-            },
-          )
-        ],
-      ),
-      body: LayoutBuilder(
+    Widget buildConfirmButton() => FloorButton(
+          type: !_isFirstBuild && (_headerSelection.isSet && _tableSelection.isSet) ? FloorButtonType.filled : FloorButtonType.outlined,
+          iconData: Icons.check,
+          text: 'Bestätigen',
+          onPressed: _saveChanges,
+        );
+
+    Widget buildHeaderButton() => FloorButton(
+          iconData: Icons.branding_watermark,
+          type: _selectionType == SelectionType.header ? FloorButtonType.filled : FloorButtonType.outlined,
+          foregroundColor: _selectionType == SelectionType.header ? Color(0xFF212121) : null,
+          backgroundColor: _selectionType == SelectionType.header ? Colors.orange : null,
+          text: 'Kopfzeile',
+          onPressed: () {
+            _selectionType = SelectionType.header;
+            setState(() {});
+          },
+        );
+
+    Widget buildTableButton() => FloorButton(
+          iconData: Icons.table_rows,
+          type: _selectionType == SelectionType.table ? FloorButtonType.filled : FloorButtonType.outlined,
+          foregroundColor: _selectionType == SelectionType.table ? Colors.white : null,
+          backgroundColor: _selectionType == SelectionType.table ? Colors.blue : null,
+          text: 'Tabelle',
+          onPressed: () {
+            _selectionType = SelectionType.table;
+            setState(() {});
+          },
+        );
+
+    return FloorLayoutBody(
+      title: Text('Aufnahme'),
+      actions: useDesktopLayout ? null : [buildConfirmButton()],
+      sideChildren: useDesktopLayout
+          ? [
+              FloorTransparentButton(
+                text: 'Zurück',
+                iconData: Icons.chevron_left,
+                onPressed: Navigator.of(context).pop,
+              ),
+              Divider(),
+              buildHeaderButton(),
+              buildTableButton(),
+              Divider(),
+              buildConfirmButton(),
+            ]
+          : [],
+      bottomNavigationBar: useDesktopLayout
+          ? null
+          : SizedBox(
+              height: AppSizes.kComponentHeight + AppSizes.kSmallGap,
+              child: RowGap(
+                gap: AppSizes.kSmallGap,
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  FloorButton(
+                    iconData: Icons.branding_watermark,
+                    type: _selectionType == SelectionType.header ? FloorButtonType.filled : FloorButtonType.outlined,
+                    foregroundColor: _selectionType == SelectionType.header ? Color(0xFF212121) : null,
+                    backgroundColor: _selectionType == SelectionType.header ? Colors.orange : null,
+                    text: 'Kopfzeile',
+                    onPressed: () {
+                      _selectionType = SelectionType.header;
+                      setState(() {});
+                    },
+                  ),
+                  FloorButton(
+                    iconData: Icons.table_rows,
+                    type: _selectionType == SelectionType.table ? FloorButtonType.filled : FloorButtonType.outlined,
+                    foregroundColor: _selectionType == SelectionType.table ? Colors.white : null,
+                    backgroundColor: _selectionType == SelectionType.table ? Colors.blue : null,
+                    text: 'Tabelle',
+                    onPressed: () {
+                      _selectionType = SelectionType.table;
+                      setState(() {});
+                    },
+                  ),
+                ],
+              ),
+            ),
+      child: LayoutBuilder(
         builder: (context, constraints) {
           final containerSize = Size(constraints.maxWidth, constraints.maxHeight);
           final imageAspectRatio = _image.width / _image.height;
@@ -289,35 +361,6 @@ class _FloorTableSelectionScreenState extends State<FloorTableSelectionScreen> {
             ),
           );
         },
-      ),
-      bottomNavigationBar: RowGap(
-        gap: AppSizes.kSmallGap,
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          FloorButton(
-            iconData: Icons.branding_watermark,
-            type: _selectionType == SelectionType.header ? FloorButtonType.filled : FloorButtonType.outlined,
-            foregroundColor: _selectionType == SelectionType.header ? Color(0xFF212121) : null,
-            backgroundColor: _selectionType == SelectionType.header ? Colors.orange : null,
-            text: 'Kopfzeile',
-            onPressed: () {
-              _selectionType = SelectionType.header;
-              setState(() {});
-            },
-          ),
-          FloorButton(
-            iconData: Icons.table_rows,
-            type: _selectionType == SelectionType.table ? FloorButtonType.filled : FloorButtonType.outlined,
-            foregroundColor: _selectionType == SelectionType.table ? Colors.white : null,
-            backgroundColor: _selectionType == SelectionType.table ? Colors.blue : null,
-            text: 'Tabelle',
-            onPressed: () {
-              _selectionType = SelectionType.table;
-              setState(() {});
-            },
-          ),
-        ],
       ),
     );
   }

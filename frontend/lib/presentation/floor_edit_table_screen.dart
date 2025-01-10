@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-import 'package:paper_cv/components/floor_app_bar.dart';
 import 'package:paper_cv/components/floor_buttons.dart';
 import 'package:paper_cv/components/floor_layout_body.dart';
 import 'package:paper_cv/components/floor_text_field.dart';
@@ -75,75 +74,82 @@ class _FloorEditTableScreenState extends State<FloorEditTableScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: FloorAppBar(
-        backgroundColor: colorScheme.surface,
-        actions: [
-          FloorButton(
-            type: FloorButtonType.outlined,
-            iconData: Icons.check,
-            text: 'Bestätigen',
-            onPressed: _saveChanges,
-          )
-        ],
-      ),
-      body: FloorLayoutBody(
-        child: SizedBox(
-          height: 500,
-          width: 400,
+    Widget buildConfirmButton() => FloorButton(
+          type: FloorButtonType.outlined,
+          iconData: Icons.check,
+          text: 'Bestätigen',
+          onPressed: _saveChanges,
+        );
+
+    return FloorLayoutBody(
+      title: Text('Scan'),
+      actions: useDesktopLayout ? null : [buildConfirmButton()],
+      sideChildren: useDesktopLayout
+          ? [
+              FloorTransparentButton(
+                text: 'Zurück',
+                iconData: Icons.chevron_left,
+                onPressed: Navigator.of(context).pop,
+              ),
+              Divider(),
+              buildConfirmButton(),
+            ]
+          : [],
+      child: SizedBox(
+        height: 500,
+        width: 400,
+        child: Scrollbar(
+          controller: _vertController,
+          thumbVisibility: true,
           child: Scrollbar(
-            controller: _vertController,
+            controller: _horzController,
             thumbVisibility: true,
-            child: Scrollbar(
-              controller: _horzController,
-              thumbVisibility: true,
-              notificationPredicate: (notif) => notif.depth == 1,
+            notificationPredicate: (notif) => notif.depth == 1,
+            child: SingleChildScrollView(
+              controller: _vertController,
               child: SingleChildScrollView(
-                controller: _vertController,
-                child: SingleChildScrollView(
-                  controller: _horzController,
-                  scrollDirection: Axis.horizontal,
-                  child: Table(
-                    columnWidths: {
-                      for (int i = 0; i < _form.columnWidthsCm.length; i++) i: FixedColumnWidth(_form.columnWidthsCm[i] * 100),
-                    },
-                    children: _form.cellTexts[0]
-                        .mapIndexed(
-                          (rowIdx, _) => TableRow(
-                            children: _form.cellTexts.mapIndexed((colIdx, _) {
-                              final bool isTextEmpty = _controllers[colIdx][rowIdx]?.value.text.isEmpty ?? false;
-                              return Padding(
-                                padding: EdgeInsets.all(AppSizes.kSmallGap),
-                                child: _editableMap[colIdx][rowIdx]
-                                    ? FloorTextField(
-                                        controller: _controllers[colIdx][rowIdx],
-                                        decoration: InputDecoration(
-                                            hintText: isTextEmpty ? '[...]' : null,
-                                            hintStyle: textTheme.bodyMedium?.copyWith(color: colorScheme.outline.withOpacity(.5)),
-                                            border: InputBorder.none),
-                                        style: textTheme.bodyMedium?.copyWith(
-                                          fontWeight: rowIdx == 0 ? FontWeight.bold : FontWeight.normal,
-                                        ),
-                                        onChanged: (value) {
-                                          _form.cellTexts[colIdx][rowIdx] = value;
-                                        },
-                                      )
-                                    : Text(
-                                        _form.cellTexts[colIdx][rowIdx],
-                                        style: textTheme.bodyMedium?.copyWith(
-                                          color: Color.alphaBlend(
-                                            colorScheme.onSurface.withOpacity(.5),
-                                            colorScheme.surface,
-                                          ),
-                                          fontWeight: rowIdx == 0 ? FontWeight.bold : FontWeight.normal,
-                                        ),
+                controller: _horzController,
+                scrollDirection: Axis.horizontal,
+                child: Table(
+                  columnWidths: {
+                    for (int i = 0; i < _form.columnWidthsCm.length; i++) i: FixedColumnWidth(_form.columnWidthsCm[i] * 100),
+                  },
+                  children: _form.cellTexts[0]
+                      .mapIndexed(
+                        (rowIdx, _) => TableRow(
+                          children: _form.cellTexts.mapIndexed((colIdx, _) {
+                            final bool isTextEmpty = _controllers[colIdx][rowIdx]?.value.text.isEmpty ?? false;
+                            return Padding(
+                              padding: EdgeInsets.all(AppSizes.kSmallGap),
+                              child: _editableMap[colIdx][rowIdx]
+                                  ? FloorTextField(
+                                      controller: _controllers[colIdx][rowIdx],
+                                      decoration: InputDecoration(
+                                          hintText: isTextEmpty ? '[...]' : null,
+                                          hintStyle: textTheme.bodyMedium?.copyWith(color: colorScheme.outline.withOpacity(.5)),
+                                          border: InputBorder.none),
+                                      style: textTheme.bodyMedium?.copyWith(
+                                        fontWeight: rowIdx == 0 ? FontWeight.bold : FontWeight.normal,
                                       ),
-                              );
-                            }).toList(),
-                          ),
-                        )
-                        .toList(),
-                  ),
+                                      onChanged: (value) {
+                                        _form.cellTexts[colIdx][rowIdx] = value;
+                                      },
+                                    )
+                                  : Text(
+                                      _form.cellTexts[colIdx][rowIdx],
+                                      style: textTheme.bodyMedium?.copyWith(
+                                        color: Color.alphaBlend(
+                                          colorScheme.onSurface.withOpacity(.5),
+                                          colorScheme.surface,
+                                        ),
+                                        fontWeight: rowIdx == 0 ? FontWeight.bold : FontWeight.normal,
+                                      ),
+                                    ),
+                            );
+                          }).toList(),
+                        ),
+                      )
+                      .toList(),
                 ),
               ),
             ),

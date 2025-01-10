@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart';
-import 'package:paper_cv/components/floor_app_bar.dart';
 import 'package:paper_cv/components/floor_attachment_card.dart';
 import 'package:paper_cv/components/floor_buttons.dart';
 import 'package:paper_cv/components/floor_card.dart';
@@ -23,6 +22,7 @@ import 'package:paper_cv/utils/file_picker_models.dart';
 import 'package:paper_cv/utils/file_picker_utils.dart';
 import 'package:paper_cv/utils/image_utils.dart';
 import 'package:paper_cv/utils/list_utils.dart';
+import 'package:paper_cv/utils/navigator_utils.dart';
 import 'package:paper_cv/utils/widget_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:timeago_flutter/timeago_flutter.dart';
@@ -163,13 +163,12 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
             }),
             onTapFile: (file, _, image) async {
               if (image != null) {
-                final selectionResult = await Navigator.of(context).push<bool?>(
-                  MaterialPageRoute(
-                    builder: (context) => FloorTableSelectionScreen(
-                      file: file,
-                      image: image,
-                      document: _form,
-                    ),
+                final selectionResult = await pushNoAnimation<bool?>(
+                  context,
+                  widget: FloorTableSelectionScreen(
+                    file: file,
+                    image: image,
+                    document: _form,
                   ),
                 );
                 if (mounted && selectionResult == true)
@@ -228,8 +227,7 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
             _setIsDirty();
           }),
           onTapFile: (file, idx, _) async {
-            final selectionResult =
-                await Navigator.of(context).push<SelectedFile?>(MaterialPageRoute(builder: (context) => FloorEditTableScreen(file: file)));
+            final selectionResult = await pushNoAnimation(context, widget: FloorEditTableScreen(file: file));
             if (mounted && selectionResult != null) _form.scans[idx] = selectionResult;
             setState(() {
               _isDirty = true;

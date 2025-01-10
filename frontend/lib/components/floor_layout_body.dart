@@ -12,6 +12,7 @@ class FloorLayoutBody extends StatefulWidget {
   final List<Widget>? actions;
   final Widget? floatingActionButton;
   final List<Widget> sideChildren;
+  final Widget? bottomNavigationBar;
   final Widget child;
 
   const FloorLayoutBody({
@@ -22,6 +23,7 @@ class FloorLayoutBody extends StatefulWidget {
     this.title,
     this.actions,
     this.customPop,
+    this.bottomNavigationBar,
   });
 
   @override
@@ -107,6 +109,7 @@ class _FloorLayoutBodyState extends State<FloorLayoutBody> {
               ],
             )
           : buildBody(),
+      bottomNavigationBar: widget.bottomNavigationBar,
     );
   }
 }

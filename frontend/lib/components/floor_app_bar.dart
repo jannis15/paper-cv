@@ -66,5 +66,5 @@ class FloorAppBar extends ConsumerWidget implements PreferredSizeWidget {
   }
 
   @override
-  Size get preferredSize => const Size.fromHeight(45);
+  Size get preferredSize => const Size.fromHeight(AppSizes.kComponentHeight + AppSizes.kSmallGap);
 }

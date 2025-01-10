@@ -23,6 +23,7 @@ import 'package:flutter/material.dart';
 import 'package:timeago_flutter/timeago_flutter.dart';
 
 import '../components/floor_toggle_switch.dart';
+import '../utils/navigator_utils.dart';
 
 class FloorMainScreen extends StatefulWidget {
   const FloorMainScreen({super.key});
@@ -101,12 +102,7 @@ class _FloorMainScreenState extends State<FloorMainScreen> {
 
   void _seeInfo() async => showDialog(context: context, barrierLabel: 'ewfiji', builder: (_) => FloorInfoScreen());
 
-  void _openOverviewScreen() async => await Navigator.of(context).push(
-        PageRouteBuilder(
-          pageBuilder: (_, __, ___) => FloorOverviewScreen(),
-          transitionDuration: Duration(seconds: 0),
-        ),
-      );
+  void _openOverviewScreen() async => pushNoAnimation(context, widget: FloorOverviewScreen());
 
   @override
   Widget build(BuildContext context) {
@@ -194,19 +190,14 @@ class _FloorMainScreenState extends State<FloorMainScreen> {
                 }
               : (selected) async {
                   if (!(selected ?? true)) return;
-                  await Navigator.of(context).push(
-                    PageRouteBuilder(
-                      pageBuilder: (_, __, ___) => FloorOverviewScreen(documentId: documentPreview.uuid),
-                      transitionDuration: Duration(seconds: 0),
-                    ),
-                  );
+                  await pushNoAnimation(context, widget: FloorOverviewScreen(documentId: documentPreview.uuid));
                 },
           cells: [
             DataCell(_buildTableCell(
               RowGap(
                 gap: AppSizes.kSmallGap,
                 children: [
-                  Text(documentPreview.title),
+                  Text(documentPreview.title.isNotEmpty ? documentPreview.title : 'Unbenanntes Dokument'),
                   if (documentPreview.isExample) buildExampleContainer(documentPreview),
                 ],
               ),
@@ -325,12 +316,7 @@ class _FloorMainScreenState extends State<FloorMainScreen> {
                         setState(() {});
                       }
                     : () async {
-                        await Navigator.of(context).push(
-                          PageRouteBuilder(
-                            pageBuilder: (_, __, ___) => FloorOverviewScreen(documentId: documentPreview.uuid),
-                            transitionDuration: Duration(seconds: 0),
-                          ),
-                        );
+                        await pushNoAnimation(context, widget: FloorOverviewScreen(documentId: documentPreview.uuid));
                       },
                 child: ColumnGap(
                   gap: AppSizes.kSmallGap,
@@ -390,7 +376,7 @@ class _FloorMainScreenState extends State<FloorMainScreen> {
                           children: [
                             Flexible(
                               child: Text(
-                                documentPreview.title.trim().isNotEmpty ? documentPreview.title : 'Gescanntes Dokument',
+                                documentPreview.title.trim().isNotEmpty ? documentPreview.title : 'Unbenanntes Dokument',
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 style: textTheme.titleMedium,
