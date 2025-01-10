@@ -60,7 +60,7 @@ class FloorToggleSwitchState<E extends Enum> extends State<FloorToggleSwitch<E>>
       message: widget.labels[index],
       child: InkWell(
         onTap: () => _onOptionTapped(widget.options[index]),
-        borderRadius: BorderRadius.circular(borderRadius),
+        borderRadius: borderRadiusValue,
         child: Container(
           width: _kOptionWidth,
           height: AppSizes.kComponentHeight,

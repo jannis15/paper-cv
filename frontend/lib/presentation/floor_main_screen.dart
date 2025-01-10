@@ -2,7 +2,7 @@ import 'package:flutter/services.dart';
 import 'package:paper_cv/components/floor_app_bar.dart';
 import 'package:paper_cv/components/floor_buttons.dart';
 import 'package:paper_cv/components/floor_card.dart';
-import 'package:paper_cv/components/floor_chip.dart';
+import 'package:paper_cv/components/floor_dropdown_sort.dart';
 import 'package:paper_cv/components/floor_icon_button.dart';
 import 'package:paper_cv/components/floor_layout_body.dart';
 import 'package:paper_cv/components/floor_wrap_view.dart';
@@ -174,10 +174,12 @@ class _FloorMainScreenState extends State<FloorMainScreen> {
       DataRow _buildDataRow(DocumentPreviewDto documentPreview) {
         final bool isRowSelected = _isSelectionMode && _selectedDocuments.contains(documentPreview);
         return DataRow(
-          onLongPress: () {
-            _selectDocument(documentPreview);
-            setState(() {});
-          },
+          onLongPress: useDesktopLayout
+              ? null
+              : () {
+                  _selectDocument(documentPreview);
+                  setState(() {});
+                },
           selected: isRowSelected,
           onSelectChanged: _isSelectionMode
               ? (selected) {
@@ -622,54 +624,16 @@ class _FloorMainScreenState extends State<FloorMainScreen> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       if (_toggleSwitchKey.currentState?.selectedOption == DocumentViewType.grid)
-                        Flexible(
-                          child: RowGap(
-                            gap: AppSizes.kSmallGap,
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Text(
-                                'Sortiert nach',
-                                style: textTheme.labelMedium,
-                              ),
-                              Flexible(
-                                fit: FlexFit.loose,
-                                child: SingleChildScrollView(
-                                  scrollDirection: Axis.horizontal,
-                                  child: Row(
-                                    children: [
-                                      SizedBox(width: AppSizes.kSmallGap),
-                                      RowGap(
-                                          gap: AppSizes.kSmallGap,
-                                          crossAxisAlignment: CrossAxisAlignment.baseline,
-                                          children: DocumentSortType.values
-                                              .map(
-                                                (sortType) => AnimatedSize(
-                                                  duration: Duration(milliseconds: 200),
-                                                  curve: Curves.easeIn,
-                                                  child: FloorChip(
-                                                    iconData: sortType != _sortType
-                                                        ? null
-                                                        : _sortDirection == SortDirection.ascending
-                                                            ? Icons.arrow_upward
-                                                            : Icons.arrow_downward,
-                                                    text: sortType.name,
-                                                    isSelected: sortType == _sortType,
-                                                    onPressed: _documentPreviews == null
-                                                        ? null
-                                                        : () => sortDocumentPreviews(_documentPreviews!, sortType: sortType),
-                                                  ),
-                                                ),
-                                              )
-                                              .toList()),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
+                        FloorDropdownSort<DocumentSortType>(
+                          options: DocumentSortType.values,
+                          labels: {for (final sortType in DocumentSortType.values) sortType: sortType.name},
+                          value: _sortType,
+                          sortDirection: _sortDirection,
+                          onOptionChanged: (value) {
+                            sortDocumentPreviews(_documentPreviews!, sortType: value);
+                          },
                         )
-                      else if (_toggleSwitchKey.currentState != null && !_isSelectionMode)
+                      else if (_toggleSwitchKey.currentState != null && !_isSelectionMode && useDesktopLayout)
                         FloorOutlinedButton(
                           text: 'Auswählen',
                           onPressed: () {
