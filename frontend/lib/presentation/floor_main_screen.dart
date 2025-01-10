@@ -620,7 +620,7 @@ class _FloorMainScreenState extends State<FloorMainScreen> {
                   ),
                   RowGap(
                     gap: AppSizes.kSmallGap,
-                    mainAxisAlignment: MainAxisAlignment.end,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       if (_toggleSwitchKey.currentState?.selectedOption == DocumentViewType.grid)
@@ -640,7 +640,9 @@ class _FloorMainScreenState extends State<FloorMainScreen> {
                             _isSelectionMode = true;
                             setState(() {});
                           },
-                        ),
+                        )
+                      else
+                        SizedBox(),
                       FloorToggleSwitch<DocumentViewType>(
                         key: _toggleSwitchKey,
                         icons: [Icons.list, Icons.grid_view],
