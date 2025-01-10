@@ -117,18 +117,19 @@ class _FloorEditTableScreenState extends State<FloorEditTableScreen> {
                                 child: _editableMap[colIdx][rowIdx]
                                     ? FloorTextField(
                                         controller: _controllers[colIdx][rowIdx],
-                                        decoration: InputDecoration(hintText: isTextEmpty ? '[...]' : null, border: InputBorder.none),
+                                        decoration: InputDecoration(
+                                            hintText: isTextEmpty ? '[...]' : null,
+                                            hintStyle: textTheme.bodyMedium?.copyWith(color: colorScheme.outline.withOpacity(.5)),
+                                            border: InputBorder.none),
                                         style: textTheme.bodyMedium?.copyWith(
                                           fontWeight: rowIdx == 0 ? FontWeight.bold : FontWeight.normal,
-                                          fontStyle: isTextEmpty ? FontStyle.italic : FontStyle.normal,
                                         ),
                                         onChanged: (value) {
                                           _form.cellTexts[colIdx][rowIdx] = value;
-                                          setState(() {});
                                         },
                                       )
                                     : Text(
-                                        _form.cellTexts[colIdx][rowIdx] + 'static text',
+                                        _form.cellTexts[colIdx][rowIdx],
                                         style: textTheme.bodyMedium?.copyWith(
                                           color: Color.alphaBlend(
                                             colorScheme.onSurface.withOpacity(.5),

@@ -18,7 +18,7 @@ from lib.schemas import Selection, ScanProperties
 app = FastAPI()
 limiter = Limiter(key_func=get_remote_address)
 app.state.limiter = limiter
-client = vision.ImageAnnotatorClient()
+vision_client = vision.ImageAnnotatorClient()
 
 MAX_FILE_SIZE_MB = 10
 MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024
@@ -81,7 +81,7 @@ async def scan_file(request: Request, scan_properties: str = Form(...), file: Up
     scan_properties = json.loads(scan_properties)
     scan_properties = ScanProperties(**scan_properties)
     file_bytes = await validate_file(request, file)
-    return FloorCvController.scan_file(client=client, file_bytes=file_bytes, scan_properties=scan_properties,
+    return FloorCvController.scan_file(vision_client=vision_client, file_bytes=file_bytes, scan_properties=scan_properties,
                                        logging=True)
 
 

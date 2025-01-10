@@ -70,7 +70,7 @@ class FloorCvController(ABC):
         return cropped_image
 
     @staticmethod
-    def scan_file(client: vision.ImageAnnotatorClient, file_bytes: bytes, scan_properties: ScanProperties,
+    def scan_file(vision_client: vision.ImageAnnotatorClient, file_bytes: bytes, scan_properties: ScanProperties,
                   logging: bool = False):
         np_arr = np.frombuffer(file_bytes, np.uint8)
         img_grayscale = FloorCV.read_grayscale_img_from_bytes(np_arr)
@@ -150,28 +150,29 @@ class FloorCvController(ABC):
             FloorCV.log_image(root_dir, img=img_structure_straightened_cropped,
                               title='93_structure_straightened_cropped')
 
-        # img_threshold_warped = FloorCV.warp_image(img_threshold, perspective_transform)
-        # img_threshold_warped_cropped = img_threshold_warped[int(new_corners[0][1]):int(new_corners[2][1]),
-        #                                int(new_corners[0][0]):int(new_corners[2][0])]
-        # ocr_res = FloorCvController.__detect_handwriting(client=client, content=img_threshold_warped_cropped,
-        #                                                  column_widths=column_widths)
-        # if logging:
-        #     FloorCV.log_image(root_dir, img_threshold_warped_cropped, '94_theshold_warped_cropped')
-        #     FloorCV.add_lines_to_img(img_threshold_warped, filtered_lines)
-        #     FloorCV.log_image(root_dir, img_threshold_warped, '95_theshold_warped_with_lines')
-        # 
-        # for cell in ocr_res:
-        #     best_fit_index = find_best_fit(cells, cell)
-        #     if best_fit_index is not None:
-        #         if cell_texts[best_fit_index] != '':
-        #             cell_texts[best_fit_index] += ' '
-        #         cell_texts[best_fit_index] += cell.text.strip().strip('|').strip()
-        # 
-        # if logging:
-        #     filtered_lines_cropped_bgr = FloorCV.img_to_bgr(filtered_lines_cropped)
-        #     FloorCV.export_cells(root_dir, ocr_res, filtered_lines_cropped_bgr)
+        img_threshold_warped = FloorCV.warp_image(img_threshold, perspective_transform)
+        img_threshold_warped_cropped = img_threshold_warped[int(new_corners[0][1]):int(new_corners[2][1]),
+                                       int(new_corners[0][0]):int(new_corners[2][0])]
+        ocr_res = FloorCvController.__detect_handwriting(client=vision_client, content=img_threshold_warped_cropped,
+                                                         column_widths=column_widths)
+        if logging:
+            FloorCV.log_image(root_dir, img_threshold_warped_cropped, '94_theshold_warped_cropped')
+            FloorCV.add_lines_to_img(img_threshold_warped, filtered_lines)
+            FloorCV.log_image(root_dir, img_threshold_warped, '95_theshold_warped_with_lines')
 
-        cell_texts = FloorCV.make_2d_list(cell_texts, rows)
+        for ocr_cell in ocr_res:
+            best_fit_index = find_best_fit(cells, ocr_cell)
+            if best_fit_index is not None:
+                if cell_texts[best_fit_index] != '':
+                    cell_texts[best_fit_index] += ' '
+                cell_texts[best_fit_index] += ocr_cell.text.strip().strip('|').strip()
+
+        if logging:
+            filtered_lines_cropped_bgr = FloorCV.img_to_bgr(filtered_lines_cropped)
+            FloorCV.export_cells(root_dir, ocr_res, filtered_lines_cropped_bgr)
+
+        cell_texts = FloorCV.make_2d_list(cell_texts, columns)
+        cell_texts = [list(row) for row in zip(*cell_texts)]
 
         img_height, img_width = img_grayscale.shape
         avg_vertical_distance_cm = (avg_vertical_distance / img_height) * a4_height

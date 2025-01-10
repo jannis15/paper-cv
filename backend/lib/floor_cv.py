@@ -511,14 +511,14 @@ class FloorCV(ABC):
 
     @staticmethod
     def __add_missing_x(cell_texts: List[List[str]]):
-        for row in cell_texts:
-            if row[3] != '' and row[5] != '':
-                row[4] = 'x'
+        for row,_ in enumerate(cell_texts[0]):
+            if cell_texts[3][row] != '' and cell_texts[5][row] != '':
+                cell_texts[4][row] = 'x'
 
-            if row[5] != '' and row[7] != '':
-                row[6] = 'x'
+            if cell_texts[5][row] != '' and cell_texts[7][row] != '':
+                cell_texts[6][row] = 'x'
             else:
-                row[7] = ''
+                cell_texts[7][row] = ''
 
     @staticmethod
     def __sum_column(cell_texts: List[List[str]], column_idx: int, row_start: int, row_end: int) -> str:
@@ -533,6 +533,12 @@ class FloorCV(ABC):
 
     @staticmethod
     def __calculate_missing_fields(cell_texts: List[List[str]]):
+        def transpose_cell_texts():
+            transposed = [list(row) for row in zip(*cell_texts)]
+            cell_texts.clear()
+            cell_texts.extend(transposed)
+
+        transpose_cell_texts()
         segment_start = None
         floor_start = None
         for row_idx, row in enumerate(cell_texts):
@@ -569,6 +575,7 @@ class FloorCV(ABC):
                 segment_start = None
         cell_texts[-2][-1] = FloorCV.__sum_column(cell_texts, column_idx=10, row_start=1,
                                                      row_end=len(cell_texts) - 3)
+        transpose_cell_texts()
 
     @staticmethod
     def adjust_cell_texts_for_template(template_no, cell_texts: List[List[str]]) -> List[List[str]]:
