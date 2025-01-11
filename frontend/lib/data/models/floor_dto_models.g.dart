@@ -12,6 +12,7 @@ _$ScanResultDtoImpl _$$ScanResultDtoImplFromJson(Map<String, dynamic> json) =>
       columnWidthsCm: (json['column_widths_cm'] as List<dynamic>)
           .map((e) => (e as num).toDouble())
           .toList(),
+      refUuid: json['ref_uuid'] as String,
       avgRowHeightCm: (json['avg_row_height_cm'] as num).toDouble(),
       rows: (json['rows'] as num).toInt(),
       tableXCm: (json['table_x_cm'] as num).toDouble(),
@@ -27,6 +28,7 @@ Map<String, dynamic> _$$ScanResultDtoImplToJson(_$ScanResultDtoImpl instance) =>
     <String, dynamic>{
       'uuid': instance.uuid,
       'column_widths_cm': instance.columnWidthsCm,
+      'ref_uuid': instance.refUuid,
       'avg_row_height_cm': instance.avgRowHeightCm,
       'rows': instance.rows,
       'table_x_cm': instance.tableXCm,
@@ -55,6 +57,7 @@ Map<String, dynamic> _$$SelectionDtoImplToJson(_$SelectionDtoImpl instance) =>
 _$ScanPropertiesDtoImpl _$$ScanPropertiesDtoImplFromJson(
         Map<String, dynamic> json) =>
     _$ScanPropertiesDtoImpl(
+      refUuid: json['ref_uuid'] as String,
       selection:
           SelectionDto.fromJson(json['selection'] as Map<String, dynamic>),
       templateNo: (json['template_no'] as num).toInt(),
@@ -63,6 +66,7 @@ _$ScanPropertiesDtoImpl _$$ScanPropertiesDtoImplFromJson(
 Map<String, dynamic> _$$ScanPropertiesDtoImplToJson(
         _$ScanPropertiesDtoImpl instance) =>
     <String, dynamic>{
+      'ref_uuid': instance.refUuid,
       'selection': instance.selection,
       'template_no': instance.templateNo,
     };

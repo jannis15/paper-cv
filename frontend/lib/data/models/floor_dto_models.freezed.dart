@@ -261,6 +261,8 @@ mixin _$ScanResultDto {
   String? get uuid => throw _privateConstructorUsedError;
   @JsonKey(name: 'column_widths_cm')
   List<double> get columnWidthsCm => throw _privateConstructorUsedError;
+  @JsonKey(name: 'ref_uuid')
+  String get refUuid => throw _privateConstructorUsedError;
   @JsonKey(name: 'avg_row_height_cm')
   double get avgRowHeightCm => throw _privateConstructorUsedError;
   @JsonKey(name: 'rows')
@@ -295,6 +297,7 @@ abstract class $ScanResultDtoCopyWith<$Res> {
   $Res call(
       {String? uuid,
       @JsonKey(name: 'column_widths_cm') List<double> columnWidthsCm,
+      @JsonKey(name: 'ref_uuid') String refUuid,
       @JsonKey(name: 'avg_row_height_cm') double avgRowHeightCm,
       @JsonKey(name: 'rows') int rows,
       @JsonKey(name: 'table_x_cm') double tableXCm,
@@ -321,6 +324,7 @@ class _$ScanResultDtoCopyWithImpl<$Res, $Val extends ScanResultDto>
   $Res call({
     Object? uuid = freezed,
     Object? columnWidthsCm = null,
+    Object? refUuid = null,
     Object? avgRowHeightCm = null,
     Object? rows = null,
     Object? tableXCm = null,
@@ -338,6 +342,10 @@ class _$ScanResultDtoCopyWithImpl<$Res, $Val extends ScanResultDto>
           ? _value.columnWidthsCm
           : columnWidthsCm // ignore: cast_nullable_to_non_nullable
               as List<double>,
+      refUuid: null == refUuid
+          ? _value.refUuid
+          : refUuid // ignore: cast_nullable_to_non_nullable
+              as String,
       avgRowHeightCm: null == avgRowHeightCm
           ? _value.avgRowHeightCm
           : avgRowHeightCm // ignore: cast_nullable_to_non_nullable
@@ -381,6 +389,7 @@ abstract class _$$ScanResultDtoImplCopyWith<$Res>
   $Res call(
       {String? uuid,
       @JsonKey(name: 'column_widths_cm') List<double> columnWidthsCm,
+      @JsonKey(name: 'ref_uuid') String refUuid,
       @JsonKey(name: 'avg_row_height_cm') double avgRowHeightCm,
       @JsonKey(name: 'rows') int rows,
       @JsonKey(name: 'table_x_cm') double tableXCm,
@@ -405,6 +414,7 @@ class __$$ScanResultDtoImplCopyWithImpl<$Res>
   $Res call({
     Object? uuid = freezed,
     Object? columnWidthsCm = null,
+    Object? refUuid = null,
     Object? avgRowHeightCm = null,
     Object? rows = null,
     Object? tableXCm = null,
@@ -422,6 +432,10 @@ class __$$ScanResultDtoImplCopyWithImpl<$Res>
           ? _value._columnWidthsCm
           : columnWidthsCm // ignore: cast_nullable_to_non_nullable
               as List<double>,
+      refUuid: null == refUuid
+          ? _value.refUuid
+          : refUuid // ignore: cast_nullable_to_non_nullable
+              as String,
       avgRowHeightCm: null == avgRowHeightCm
           ? _value.avgRowHeightCm
           : avgRowHeightCm // ignore: cast_nullable_to_non_nullable
@@ -461,6 +475,7 @@ class _$ScanResultDtoImpl extends _ScanResultDto {
       {this.uuid,
       @JsonKey(name: 'column_widths_cm')
       required final List<double> columnWidthsCm,
+      @JsonKey(name: 'ref_uuid') required this.refUuid,
       @JsonKey(name: 'avg_row_height_cm') required this.avgRowHeightCm,
       @JsonKey(name: 'rows') required this.rows,
       @JsonKey(name: 'table_x_cm') required this.tableXCm,
@@ -486,6 +501,9 @@ class _$ScanResultDtoImpl extends _ScanResultDto {
     return EqualUnmodifiableListView(_columnWidthsCm);
   }
 
+  @override
+  @JsonKey(name: 'ref_uuid')
+  final String refUuid;
   @override
   @JsonKey(name: 'avg_row_height_cm')
   final double avgRowHeightCm;
@@ -515,7 +533,7 @@ class _$ScanResultDtoImpl extends _ScanResultDto {
 
   @override
   String toString() {
-    return 'ScanResultDto(uuid: $uuid, columnWidthsCm: $columnWidthsCm, avgRowHeightCm: $avgRowHeightCm, rows: $rows, tableXCm: $tableXCm, tableYCm: $tableYCm, imgWidthPx: $imgWidthPx, imgHeightPx: $imgHeightPx, cellTexts: $cellTexts)';
+    return 'ScanResultDto(uuid: $uuid, columnWidthsCm: $columnWidthsCm, refUuid: $refUuid, avgRowHeightCm: $avgRowHeightCm, rows: $rows, tableXCm: $tableXCm, tableYCm: $tableYCm, imgWidthPx: $imgWidthPx, imgHeightPx: $imgHeightPx, cellTexts: $cellTexts)';
   }
 
   @override
@@ -526,6 +544,7 @@ class _$ScanResultDtoImpl extends _ScanResultDto {
             (identical(other.uuid, uuid) || other.uuid == uuid) &&
             const DeepCollectionEquality()
                 .equals(other._columnWidthsCm, _columnWidthsCm) &&
+            (identical(other.refUuid, refUuid) || other.refUuid == refUuid) &&
             (identical(other.avgRowHeightCm, avgRowHeightCm) ||
                 other.avgRowHeightCm == avgRowHeightCm) &&
             (identical(other.rows, rows) || other.rows == rows) &&
@@ -547,6 +566,7 @@ class _$ScanResultDtoImpl extends _ScanResultDto {
       runtimeType,
       uuid,
       const DeepCollectionEquality().hash(_columnWidthsCm),
+      refUuid,
       avgRowHeightCm,
       rows,
       tableXCm,
@@ -576,6 +596,7 @@ abstract class _ScanResultDto extends ScanResultDto {
       {final String? uuid,
       @JsonKey(name: 'column_widths_cm')
       required final List<double> columnWidthsCm,
+      @JsonKey(name: 'ref_uuid') required final String refUuid,
       @JsonKey(name: 'avg_row_height_cm') required final double avgRowHeightCm,
       @JsonKey(name: 'rows') required final int rows,
       @JsonKey(name: 'table_x_cm') required final double tableXCm,
@@ -594,6 +615,9 @@ abstract class _ScanResultDto extends ScanResultDto {
   @override
   @JsonKey(name: 'column_widths_cm')
   List<double> get columnWidthsCm;
+  @override
+  @JsonKey(name: 'ref_uuid')
+  String get refUuid;
   @override
   @JsonKey(name: 'avg_row_height_cm')
   double get avgRowHeightCm;
@@ -834,6 +858,8 @@ ScanPropertiesDto _$ScanPropertiesDtoFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$ScanPropertiesDto {
+  @JsonKey(name: 'ref_uuid')
+  String get refUuid => throw _privateConstructorUsedError;
   @JsonKey(name: 'selection')
   SelectionDto get selection => throw _privateConstructorUsedError;
   @JsonKey(name: 'template_no')
@@ -856,7 +882,8 @@ abstract class $ScanPropertiesDtoCopyWith<$Res> {
       _$ScanPropertiesDtoCopyWithImpl<$Res, ScanPropertiesDto>;
   @useResult
   $Res call(
-      {@JsonKey(name: 'selection') SelectionDto selection,
+      {@JsonKey(name: 'ref_uuid') String refUuid,
+      @JsonKey(name: 'selection') SelectionDto selection,
       @JsonKey(name: 'template_no') int templateNo});
 
   $SelectionDtoCopyWith<$Res> get selection;
@@ -877,10 +904,15 @@ class _$ScanPropertiesDtoCopyWithImpl<$Res, $Val extends ScanPropertiesDto>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? refUuid = null,
     Object? selection = null,
     Object? templateNo = null,
   }) {
     return _then(_value.copyWith(
+      refUuid: null == refUuid
+          ? _value.refUuid
+          : refUuid // ignore: cast_nullable_to_non_nullable
+              as String,
       selection: null == selection
           ? _value.selection
           : selection // ignore: cast_nullable_to_non_nullable
@@ -912,7 +944,8 @@ abstract class _$$ScanPropertiesDtoImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {@JsonKey(name: 'selection') SelectionDto selection,
+      {@JsonKey(name: 'ref_uuid') String refUuid,
+      @JsonKey(name: 'selection') SelectionDto selection,
       @JsonKey(name: 'template_no') int templateNo});
 
   @override
@@ -932,10 +965,15 @@ class __$$ScanPropertiesDtoImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? refUuid = null,
     Object? selection = null,
     Object? templateNo = null,
   }) {
     return _then(_$ScanPropertiesDtoImpl(
+      refUuid: null == refUuid
+          ? _value.refUuid
+          : refUuid // ignore: cast_nullable_to_non_nullable
+              as String,
       selection: null == selection
           ? _value.selection
           : selection // ignore: cast_nullable_to_non_nullable
@@ -952,13 +990,17 @@ class __$$ScanPropertiesDtoImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$ScanPropertiesDtoImpl extends _ScanPropertiesDto {
   _$ScanPropertiesDtoImpl(
-      {@JsonKey(name: 'selection') required this.selection,
+      {@JsonKey(name: 'ref_uuid') required this.refUuid,
+      @JsonKey(name: 'selection') required this.selection,
       @JsonKey(name: 'template_no') required this.templateNo})
       : super._();
 
   factory _$ScanPropertiesDtoImpl.fromJson(Map<String, dynamic> json) =>
       _$$ScanPropertiesDtoImplFromJson(json);
 
+  @override
+  @JsonKey(name: 'ref_uuid')
+  final String refUuid;
   @override
   @JsonKey(name: 'selection')
   final SelectionDto selection;
@@ -968,7 +1010,7 @@ class _$ScanPropertiesDtoImpl extends _ScanPropertiesDto {
 
   @override
   String toString() {
-    return 'ScanPropertiesDto(selection: $selection, templateNo: $templateNo)';
+    return 'ScanPropertiesDto(refUuid: $refUuid, selection: $selection, templateNo: $templateNo)';
   }
 
   @override
@@ -976,6 +1018,7 @@ class _$ScanPropertiesDtoImpl extends _ScanPropertiesDto {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$ScanPropertiesDtoImpl &&
+            (identical(other.refUuid, refUuid) || other.refUuid == refUuid) &&
             (identical(other.selection, selection) ||
                 other.selection == selection) &&
             (identical(other.templateNo, templateNo) ||
@@ -984,7 +1027,7 @@ class _$ScanPropertiesDtoImpl extends _ScanPropertiesDto {
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, selection, templateNo);
+  int get hashCode => Object.hash(runtimeType, refUuid, selection, templateNo);
 
   /// Create a copy of ScanPropertiesDto
   /// with the given fields replaced by the non-null parameter values.
@@ -1005,7 +1048,8 @@ class _$ScanPropertiesDtoImpl extends _ScanPropertiesDto {
 
 abstract class _ScanPropertiesDto extends ScanPropertiesDto {
   factory _ScanPropertiesDto(
-          {@JsonKey(name: 'selection') required final SelectionDto selection,
+          {@JsonKey(name: 'ref_uuid') required final String refUuid,
+          @JsonKey(name: 'selection') required final SelectionDto selection,
           @JsonKey(name: 'template_no') required final int templateNo}) =
       _$ScanPropertiesDtoImpl;
   _ScanPropertiesDto._() : super._();
@@ -1013,6 +1057,9 @@ abstract class _ScanPropertiesDto extends ScanPropertiesDto {
   factory _ScanPropertiesDto.fromJson(Map<String, dynamic> json) =
       _$ScanPropertiesDtoImpl.fromJson;
 
+  @override
+  @JsonKey(name: 'ref_uuid')
+  String get refUuid;
   @override
   @JsonKey(name: 'selection')
   SelectionDto get selection;

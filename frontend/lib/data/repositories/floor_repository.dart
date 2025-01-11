@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:math';
 import 'dart:typed_data';
 import 'package:image/image.dart' as img;
@@ -34,7 +35,13 @@ abstract class FloorRepository {
   static Future<void> saveDocumentFile({required SelectedFile file, required String documentId}) =>
       FloorDatabase.instance.saveDocumentFile(file: file, documentId: documentId);
 
-  static Future<Uint8List> createPdf(DocumentForm form, List<ScanResultDto> dtoList) async {
+  static Future<Uint8List> createPdf(DocumentForm form) async {
+    final List<ScanResultDto> dtoList = [];
+    for (final scan in form.scans) {
+      final scanResult = ScanResultDto.fromJson(jsonDecode(utf8.decode(scan.data)));
+      dtoList.add(scanResult);
+    }
+
     img.Image cropImage(Uint8List imageData, int x1, int x2, int y1, int y2) =>
         img.copyCrop(img.decodeImage(imageData)!, x: x1, y: y1, width: (x2 - x1).abs(), height: (y2 - y1).abs());
 

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:paper_cv/data/models/floor_enums.dart';
+import 'package:uuid/uuid.dart';
 
 enum FilePickerOption {
   camera,
@@ -8,7 +9,8 @@ enum FilePickerOption {
 }
 
 class SelectedFile {
-  String? uuid;
+  final String uuid;
+  String? refUuid;
   String filename;
   final Uint8List data;
   final int? index;
@@ -19,17 +21,19 @@ class SelectedFile {
   String get base64String => base64Encode(data);
 
   SelectedFile({
-    this.uuid,
+    String? uuid,
+    this.refUuid,
     required this.filename,
     required this.data,
     this.index,
     this.fileType = FileType.attachment,
     required this.createdAt,
     required this.modifiedAt,
-  });
+  }) : uuid = uuid ?? Uuid().v4();
 
   SelectedFile copyWith({
     String? uuid,
+    String? refUuid,
     String? filename,
     Uint8List? data,
     int? index,
@@ -39,6 +43,7 @@ class SelectedFile {
   }) {
     return SelectedFile(
       uuid: uuid ?? this.uuid,
+      refUuid: refUuid ?? this.refUuid,
       filename: filename ?? this.filename,
       data: data ?? this.data,
       index: index ?? this.index,

@@ -5,6 +5,7 @@ import 'package:paper_cv/utils/api_utils.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:paper_cv/utils/date_format_utils.dart';
 import 'package:paper_cv/utils/file_picker_models.dart';
+import 'package:uuid/uuid.dart';
 
 part 'floor_dto_models.freezed.dart';
 
@@ -29,6 +30,7 @@ class ScanResultDto with _$ScanResultDto {
   factory ScanResultDto({
     String? uuid,
     @JsonKey(name: 'column_widths_cm') required List<double> columnWidthsCm,
+    @JsonKey(name: 'ref_uuid') required String refUuid,
     @JsonKey(name: 'avg_row_height_cm') required double avgRowHeightCm,
     @JsonKey(name: 'rows') required int rows,
     @JsonKey(name: 'table_x_cm') required double tableXCm,
@@ -41,7 +43,8 @@ class ScanResultDto with _$ScanResultDto {
   factory ScanResultDto.fromJson(JsonObject json) => _$ScanResultDtoFromJson(json);
 
   ScanForm toForm() => ScanForm(
-        uuid: this.uuid,
+        uuid: this.uuid ?? Uuid().v4(),
+        refUuid: this.refUuid,
         columnWidthsCm: this.columnWidthsCm,
         avgRowHeightCm: this.avgRowHeightCm,
         rows: this.rows,
@@ -57,7 +60,7 @@ class ScanResultDto with _$ScanResultDto {
     final String formattedDate = dateFormatDateTime.format(now);
     final data = utf8.encode(jsonEncode(toJson()));
     return SelectedFile(
-      uuid: uuid,
+      uuid: uuid ?? Uuid().v4(),
       filename: 'Scan $formattedDate.json',
       data: data,
       index: null,
@@ -87,6 +90,7 @@ class ScanPropertiesDto with _$ScanPropertiesDto {
   ScanPropertiesDto._();
 
   factory ScanPropertiesDto({
+    @JsonKey(name: 'ref_uuid') required String refUuid,
     @JsonKey(name: 'selection') required SelectionDto selection,
     @JsonKey(name: 'template_no') required int templateNo,
   }) = _ScanPropertiesDto;

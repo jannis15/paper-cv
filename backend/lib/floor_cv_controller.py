@@ -191,6 +191,7 @@ class FloorCvController(ABC):
                                                             cell_texts=cell_texts)
 
         return ScanResult(
+            ref_uuid=scan_properties.ref_uuid,
             column_widths_cm=column_widths_cm,
             rows=rows,
             table_x_cm=corner_x_cm,

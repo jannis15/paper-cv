@@ -103,6 +103,7 @@ class DocumentForm {
 
 class ScanForm {
   String? uuid;
+  String refUuid;
   List<double> columnWidthsCm;
   double avgRowHeightCm;
   int rows;
@@ -114,6 +115,7 @@ class ScanForm {
 
   ScanForm({
     this.uuid,
+    required this.refUuid,
     required this.columnWidthsCm,
     required this.avgRowHeightCm,
     required this.rows,
@@ -126,6 +128,7 @@ class ScanForm {
 
   ScanResultDto toDto() => ScanResultDto(
         uuid: this.uuid,
+        refUuid: this.refUuid,
         columnWidthsCm: this.columnWidthsCm,
         avgRowHeightCm: this.avgRowHeightCm,
         rows: this.rows,

@@ -10,7 +10,7 @@ class ScanResult(BaseModel):
     table_y_cm: float
     img_width_px: float
     img_height_px: float
-
+    ref_uuid: str
     cell_texts: List[List[str]]
 
 
@@ -23,4 +23,5 @@ class Selection(BaseModel):
 
 class ScanProperties(BaseModel):
     selection: Selection
+    ref_uuid: str
     template_no: int

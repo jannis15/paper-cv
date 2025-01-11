@@ -43,6 +43,7 @@ class FloorDatabase extends _$FloorDatabase with DbMixin {
 
   SelectedFile _mapToSelectedFile(TbFileData row) => SelectedFile(
         uuid: row.uuid,
+        refUuid: row.refUuid,
         filename: row.filename,
         data: row.data,
         index: row.index,
@@ -119,12 +120,9 @@ class FloorDatabase extends _$FloorDatabase with DbMixin {
   }
 
   Future<void> saveDocumentFile({required SelectedFile file, required String documentId}) async {
-    if (file.uuid != null) return;
-    final String newUuid = Uuid().v4().toString();
-    file.uuid ??= newUuid;
     await into(tbFile).insertOnConflictUpdate(
       TbFileCompanion(
-        uuid: Value(file.uuid!),
+        uuid: Value(file.uuid),
         refUuid: Value(documentId),
         filename: Value(file.filename),
         fileType: Value(file.fileType),
@@ -155,7 +153,7 @@ class FloorDatabase extends _$FloorDatabase with DbMixin {
     query.where((_) => tbSelection.documentId.isValue(form.uuid!));
     final selections = await query.get();
     for (final selection in selections) {
-      final capture = form.captures.firstWhereOrNull((capture) => capture.uuid! == selection.fileId);
+      final capture = form.captures.firstWhereOrNull((capture) => capture.uuid == selection.fileId);
       if (capture == null) continue;
       form.selections[capture] = Selection(
         tX1: selection.tX1,
@@ -222,7 +220,7 @@ class FloorDatabase extends _$FloorDatabase with DbMixin {
         }
         await _deleteUnlinkedSelections(formUuid, form.selections.values.map((selection) => formUuid).whereNotNull().toList());
         for (final selectionEntry in form.selections.entries) {
-          await _saveSelection(documentId: formUuid, fileId: selectionEntry.key.uuid!, selection: selectionEntry.value);
+          await _saveSelection(documentId: formUuid, fileId: selectionEntry.key.uuid, selection: selectionEntry.value);
         }
       },
     );

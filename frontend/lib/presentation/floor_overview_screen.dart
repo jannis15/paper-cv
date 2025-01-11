@@ -26,7 +26,6 @@ import 'package:paper_cv/utils/navigator_utils.dart';
 import 'package:paper_cv/utils/widget_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:timeago_flutter/timeago_flutter.dart';
-import 'dart:convert';
 
 class FloorOverviewScreen extends StatefulWidget {
   final String? documentId;
@@ -210,6 +209,7 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
               final scanResult = await FloorRepository.scanCapture(
                 capture,
                 ScanPropertiesDto(
+                  refUuid: capture.uuid,
                   selection: selection.toTDto(),
                   templateNo: 1,
                 ),
@@ -227,7 +227,7 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
             _setIsDirty();
           }),
           onTapFile: (file, idx, _) async {
-            final selectionResult = await pushNoAnimation(context, widget: FloorEditTableScreen(file: file));
+            final selectionResult = await pushNoAnimation(context, widget: FloorEditTableScreen(form: _form, file: file));
             if (mounted && selectionResult != null) _form.scans[idx] = selectionResult;
             setState(() {
               _isDirty = true;
@@ -254,12 +254,7 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
           iconData: Icons.auto_awesome,
           iconText: 'Generieren',
           onPickFiles: () async {
-            final List<ScanResultDto> scanResultList = [];
-            for (final scan in _form.scans) {
-              final scanResult = ScanResultDto.fromJson(jsonDecode(utf8.decode(scan.data)));
-              scanResultList.add(scanResult);
-            }
-            final pdfData = await FloorRepository.createPdf(_form, scanResultList);
+            final pdfData = await FloorRepository.createPdf(_form);
             final now = DateTime.now();
             final String formattedDate = dateFormatDateTime.format(now);
             final selectedFile = SelectedFile(
