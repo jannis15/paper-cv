@@ -13,7 +13,7 @@ from PIL import Image
 import io
 import os
 
-from lib.schemas import Selection, ScanProperties
+from lib.schemas import Selection, ScanProperties, ScanRecalculation
 
 app = FastAPI()
 limiter = Limiter(key_func=get_remote_address)
@@ -75,13 +75,22 @@ async def rate_limit_error(request, exc):
     )
 
 
+@app.post('/recalculate')
+@limiter.limit('6/minute')
+async def scan_file(request: Request, scan_recalculation: ScanRecalculation):
+    new_cell_texts = FloorCvController.adjust_cell_texts_for_template(template_no=scan_recalculation.template_no,
+                                                                      cell_texts=scan_recalculation.cell_texts)
+    return ScanRecalculation(cell_texts=new_cell_texts, template_no=scan_recalculation.template_no)
+
+
 @app.post('/scan')
 @limiter.limit('6/minute')
 async def scan_file(request: Request, scan_properties: str = Form(...), file: UploadFile = File(...)):
     scan_properties = json.loads(scan_properties)
     scan_properties = ScanProperties(**scan_properties)
     file_bytes = await validate_file(request, file)
-    return FloorCvController.scan_file(vision_client=vision_client, file_bytes=file_bytes, scan_properties=scan_properties,
+    return FloorCvController.scan_file(vision_client=vision_client, file_bytes=file_bytes,
+                                       scan_properties=scan_properties,
                                        logging=True)
 
 

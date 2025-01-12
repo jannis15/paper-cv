@@ -32,6 +32,9 @@ abstract class FloorRepository {
   static Future<ScanResultDto> scanCapture(SelectedFile capture, ScanPropertiesDto scanPropertiesDto, {CancelToken? cancelToken}) =>
       FloorCvApi.instance.scanCapture(capture, scanPropertiesDto, cancelToken: cancelToken);
 
+  static Future<ScanRecalculationDto> recalculateScan(ScanRecalculationDto scanRecalculationDto, {CancelToken? cancelToken}) =>
+      FloorCvApi.instance.recalculateScan(scanRecalculationDto, cancelToken: cancelToken);
+
   static Future<void> saveDocumentFile({required SelectedFile file, required String documentId}) =>
       FloorDatabase.instance.saveDocumentFile(file: file, documentId: documentId);
 

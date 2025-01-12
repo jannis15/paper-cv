@@ -13,7 +13,12 @@ class FloorCvApi extends RestApi {
   static FloorCvApi get instance => _instance;
 
   Future<ScanResultDto> scanCapture(SelectedFile capture, ScanPropertiesDto scanPropertiesDto, {CancelToken? cancelToken}) async {
-    final response = await uploadFile<JsonObject>(route: '/scan', file: capture, json: scanPropertiesDto.toJson(), cancelToken: cancelToken);
+    final response = await post<JsonObject>(route: '/scan', file: capture, json: scanPropertiesDto.toJson(), cancelToken: cancelToken);
     return ScanResultDto.fromJson(response.data!);
+  }
+
+  Future<ScanRecalculationDto> recalculateScan(ScanRecalculationDto scanRecalculationDto, {CancelToken? cancelToken}) async {
+    final response = await FloorCvApi.instance.post(route: '/recalculate', json: scanRecalculationDto.toJson(), cancelToken: cancelToken);
+    return ScanRecalculationDto.fromJson(response.data!);
   }
 }

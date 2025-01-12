@@ -12,6 +12,11 @@ class ScanResult(BaseModel):
     img_height_px: float
     ref_uuid: str
     cell_texts: List[List[str]]
+    
+    
+class ScanRecalculation(BaseModel):
+    cell_texts: List[List[str]]
+    template_no: int
 
 
 class Selection(BaseModel):

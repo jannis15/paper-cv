@@ -52,7 +52,7 @@ class ScanResultDto with _$ScanResultDto {
         tableYCm: this.tableYCm,
         imgWidthPx: this.imgWidthPx,
         imgHeightPx: this.imgHeightPx,
-        cellTexts: this.cellTexts,
+        cellTexts: List.from(this.cellTexts),
       );
 
   SelectedFile toSelectedFile() {
@@ -83,6 +83,16 @@ class SelectionDto with _$SelectionDto {
   }) = _SelectionDto;
 
   factory SelectionDto.fromJson(Map<String, dynamic> json) => _$SelectionDtoFromJson(json);
+}
+
+@freezed
+class ScanRecalculationDto with _$ScanRecalculationDto {
+  factory ScanRecalculationDto({
+    @JsonKey(name: 'cell_texts') required List<List<String>> cellTexts,
+    @JsonKey(name: 'template_no') required int templateNo,
+  }) = _ScanRecalculationDto;
+
+  factory ScanRecalculationDto.fromJson(Map<String, dynamic> json) => _$ScanRecalculationDtoFromJson(json);
 }
 
 @freezed

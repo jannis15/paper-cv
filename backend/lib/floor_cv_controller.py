@@ -5,11 +5,10 @@ import re
 
 import numpy as np
 from google.cloud import vision
-from pydantic import constr
 
 from lib.floor_cv import FloorCV, Cell
 from lib.rect_fitter import find_best_fit
-from lib.schemas import ScanResult, ScanProperties, Selection
+from lib.schemas import ScanResult, ScanProperties, Selection, ScanRecalculation
 import cv2 as cv
 
 a4_height = 29.7
@@ -70,8 +69,12 @@ class FloorCvController(ABC):
         return cropped_image
 
     @staticmethod
+    def adjust_cell_texts_for_template(template_no, cell_texts: List[List[str]]) -> List[List[str]]:
+        return FloorCV.adjust_cell_texts_for_template(template_no=template_no, cell_texts=cell_texts)
+
+    @staticmethod
     def scan_file(vision_client: vision.ImageAnnotatorClient, file_bytes: bytes, scan_properties: ScanProperties,
-                  logging: bool = False):
+                  logging: bool = False)-> ScanResult:
         np_arr = np.frombuffer(file_bytes, np.uint8)
         img_grayscale = FloorCV.read_grayscale_img_from_bytes(np_arr)
         img_base = FloorCvController.__crop_image_by_selection(img_grayscale, scan_properties.selection)

@@ -852,6 +852,199 @@ abstract class _SelectionDto extends SelectionDto {
       throw _privateConstructorUsedError;
 }
 
+ScanRecalculationDto _$ScanRecalculationDtoFromJson(Map<String, dynamic> json) {
+  return _ScanRecalculationDto.fromJson(json);
+}
+
+/// @nodoc
+mixin _$ScanRecalculationDto {
+  @JsonKey(name: 'cell_texts')
+  List<List<String>> get cellTexts => throw _privateConstructorUsedError;
+  @JsonKey(name: 'template_no')
+  int get templateNo => throw _privateConstructorUsedError;
+
+  /// Serializes this ScanRecalculationDto to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of ScanRecalculationDto
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $ScanRecalculationDtoCopyWith<ScanRecalculationDto> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $ScanRecalculationDtoCopyWith<$Res> {
+  factory $ScanRecalculationDtoCopyWith(ScanRecalculationDto value,
+          $Res Function(ScanRecalculationDto) then) =
+      _$ScanRecalculationDtoCopyWithImpl<$Res, ScanRecalculationDto>;
+  @useResult
+  $Res call(
+      {@JsonKey(name: 'cell_texts') List<List<String>> cellTexts,
+      @JsonKey(name: 'template_no') int templateNo});
+}
+
+/// @nodoc
+class _$ScanRecalculationDtoCopyWithImpl<$Res,
+        $Val extends ScanRecalculationDto>
+    implements $ScanRecalculationDtoCopyWith<$Res> {
+  _$ScanRecalculationDtoCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of ScanRecalculationDto
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? cellTexts = null,
+    Object? templateNo = null,
+  }) {
+    return _then(_value.copyWith(
+      cellTexts: null == cellTexts
+          ? _value.cellTexts
+          : cellTexts // ignore: cast_nullable_to_non_nullable
+              as List<List<String>>,
+      templateNo: null == templateNo
+          ? _value.templateNo
+          : templateNo // ignore: cast_nullable_to_non_nullable
+              as int,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$ScanRecalculationDtoImplCopyWith<$Res>
+    implements $ScanRecalculationDtoCopyWith<$Res> {
+  factory _$$ScanRecalculationDtoImplCopyWith(_$ScanRecalculationDtoImpl value,
+          $Res Function(_$ScanRecalculationDtoImpl) then) =
+      __$$ScanRecalculationDtoImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call(
+      {@JsonKey(name: 'cell_texts') List<List<String>> cellTexts,
+      @JsonKey(name: 'template_no') int templateNo});
+}
+
+/// @nodoc
+class __$$ScanRecalculationDtoImplCopyWithImpl<$Res>
+    extends _$ScanRecalculationDtoCopyWithImpl<$Res, _$ScanRecalculationDtoImpl>
+    implements _$$ScanRecalculationDtoImplCopyWith<$Res> {
+  __$$ScanRecalculationDtoImplCopyWithImpl(_$ScanRecalculationDtoImpl _value,
+      $Res Function(_$ScanRecalculationDtoImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of ScanRecalculationDto
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? cellTexts = null,
+    Object? templateNo = null,
+  }) {
+    return _then(_$ScanRecalculationDtoImpl(
+      cellTexts: null == cellTexts
+          ? _value._cellTexts
+          : cellTexts // ignore: cast_nullable_to_non_nullable
+              as List<List<String>>,
+      templateNo: null == templateNo
+          ? _value.templateNo
+          : templateNo // ignore: cast_nullable_to_non_nullable
+              as int,
+    ));
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$ScanRecalculationDtoImpl implements _ScanRecalculationDto {
+  _$ScanRecalculationDtoImpl(
+      {@JsonKey(name: 'cell_texts') required final List<List<String>> cellTexts,
+      @JsonKey(name: 'template_no') required this.templateNo})
+      : _cellTexts = cellTexts;
+
+  factory _$ScanRecalculationDtoImpl.fromJson(Map<String, dynamic> json) =>
+      _$$ScanRecalculationDtoImplFromJson(json);
+
+  final List<List<String>> _cellTexts;
+  @override
+  @JsonKey(name: 'cell_texts')
+  List<List<String>> get cellTexts {
+    if (_cellTexts is EqualUnmodifiableListView) return _cellTexts;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_cellTexts);
+  }
+
+  @override
+  @JsonKey(name: 'template_no')
+  final int templateNo;
+
+  @override
+  String toString() {
+    return 'ScanRecalculationDto(cellTexts: $cellTexts, templateNo: $templateNo)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$ScanRecalculationDtoImpl &&
+            const DeepCollectionEquality()
+                .equals(other._cellTexts, _cellTexts) &&
+            (identical(other.templateNo, templateNo) ||
+                other.templateNo == templateNo));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(
+      runtimeType, const DeepCollectionEquality().hash(_cellTexts), templateNo);
+
+  /// Create a copy of ScanRecalculationDto
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$ScanRecalculationDtoImplCopyWith<_$ScanRecalculationDtoImpl>
+      get copyWith =>
+          __$$ScanRecalculationDtoImplCopyWithImpl<_$ScanRecalculationDtoImpl>(
+              this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$ScanRecalculationDtoImplToJson(
+      this,
+    );
+  }
+}
+
+abstract class _ScanRecalculationDto implements ScanRecalculationDto {
+  factory _ScanRecalculationDto(
+      {@JsonKey(name: 'cell_texts') required final List<List<String>> cellTexts,
+      @JsonKey(name: 'template_no')
+      required final int templateNo}) = _$ScanRecalculationDtoImpl;
+
+  factory _ScanRecalculationDto.fromJson(Map<String, dynamic> json) =
+      _$ScanRecalculationDtoImpl.fromJson;
+
+  @override
+  @JsonKey(name: 'cell_texts')
+  List<List<String>> get cellTexts;
+  @override
+  @JsonKey(name: 'template_no')
+  int get templateNo;
+
+  /// Create a copy of ScanRecalculationDto
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$ScanRecalculationDtoImplCopyWith<_$ScanRecalculationDtoImpl>
+      get copyWith => throw _privateConstructorUsedError;
+}
+
 ScanPropertiesDto _$ScanPropertiesDtoFromJson(Map<String, dynamic> json) {
   return _ScanPropertiesDto.fromJson(json);
 }

@@ -54,6 +54,22 @@ Map<String, dynamic> _$$SelectionDtoImplToJson(_$SelectionDtoImpl instance) =>
       'y2': instance.y2,
     };
 
+_$ScanRecalculationDtoImpl _$$ScanRecalculationDtoImplFromJson(
+        Map<String, dynamic> json) =>
+    _$ScanRecalculationDtoImpl(
+      cellTexts: (json['cell_texts'] as List<dynamic>)
+          .map((e) => (e as List<dynamic>).map((e) => e as String).toList())
+          .toList(),
+      templateNo: (json['template_no'] as num).toInt(),
+    );
+
+Map<String, dynamic> _$$ScanRecalculationDtoImplToJson(
+        _$ScanRecalculationDtoImpl instance) =>
+    <String, dynamic>{
+      'cell_texts': instance.cellTexts,
+      'template_no': instance.templateNo,
+    };
+
 _$ScanPropertiesDtoImpl _$$ScanPropertiesDtoImplFromJson(
         Map<String, dynamic> json) =>
     _$ScanPropertiesDtoImpl(

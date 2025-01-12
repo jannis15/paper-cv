@@ -27,29 +27,34 @@ class RestApi {
     _baseUrl = baseUrl;
   }
 
-  Future<Response<T>> uploadFile<T>({
+  Future<Response<T>> post<T>({
     required String route,
-    required SelectedFile file,
+    SelectedFile? file,
     Map<String, dynamic>? json,
     CancelToken? cancelToken,
   }) async {
-    final formData = FormData.fromMap({
-      'file': await MultipartFile.fromBytes(
-        file.data,
-        filename: file.filename,
-        contentType: DioMediaType.parse(lookupMimeType(file.filename) ?? ''),
-      ),
-      if (json != null) 'scan_properties': jsonEncode(json),
-    });
+    late final Object data;
+    if (file != null) {
+      data = FormData.fromMap({
+        'file': await MultipartFile.fromBytes(
+          file.data,
+          filename: file.filename,
+          contentType: DioMediaType.parse(lookupMimeType(file.filename) ?? ''),
+        ),
+        if (json != null) 'scan_properties': jsonEncode(json),
+      });
+    } else {
+      data = json!;
+    }
 
     try {
       return await _client.post<T>(
         _baseUrl + route,
         cancelToken: cancelToken,
-        data: formData,
+        data: data,
         options: Options(
           headers: {
-            HttpHeaders.contentTypeHeader: Headers.multipartFormDataContentType,
+            HttpHeaders.contentTypeHeader: file != null ? Headers.multipartFormDataContentType : Headers.jsonContentType,
             if (!kDebugMode) HttpHeaders.accessControlAllowOriginHeader: 'true',
           },
         ),

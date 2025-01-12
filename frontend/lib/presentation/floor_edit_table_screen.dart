@@ -4,10 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:paper_cv/components/floor_buttons.dart';
 import 'package:paper_cv/components/floor_card.dart';
 import 'package:paper_cv/components/floor_layout_body.dart';
+import 'package:paper_cv/components/floor_loader_overlay.dart';
 import 'package:paper_cv/components/floor_text_field.dart';
 import 'package:paper_cv/config/config.dart';
 import 'package:paper_cv/data/models/floor_dto_models.dart';
 import 'package:paper_cv/data/models/floor_enums.dart';
+import 'package:paper_cv/data/repositories/floor_repository.dart';
 import 'package:paper_cv/domain/floor_models.dart';
 import 'package:paper_cv/utils/file_picker_models.dart';
 import 'package:paper_cv/utils/list_utils.dart';
@@ -32,6 +34,7 @@ class FloorEditTableScreen extends StatefulWidget {
 
 class _FloorEditTableScreenState extends State<FloorEditTableScreen> {
   bool _showImage = true;
+  bool _isRecalculating = false;
   late final SelectedFile? _capture;
   late List<List<TextEditingController?>> _controllers;
   late final ScanForm _form;
@@ -94,6 +97,18 @@ class _FloorEditTableScreenState extends State<FloorEditTableScreen> {
     Navigator.of(context).pop(newSelectedFile);
   }
 
+  void _resyncTextControllers() {
+    _controllers.mapIndexed(
+      (col, list) => list.mapIndexed(
+        (row, controller) {
+          if (controller != null) {
+            controller.text = _form.cellTexts[col][row];
+          }
+        },
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     Widget buildScrollTable() => FloorScroll(
@@ -141,65 +156,89 @@ class _FloorEditTableScreenState extends State<FloorEditTableScreen> {
         );
 
     Widget buildConfirmButton() => FloorButton(
-          type: FloorButtonType.outlined,
+          type: FloorButtonType.filled,
           iconData: Icons.check,
           text: 'Bestätigen',
           onPressed: _saveChanges,
         );
 
-    return FloorLayoutBody(
-      title: Text('Scan'),
-      actions: useDesktopLayout ? null : [buildConfirmButton()],
-      sideChildren: useDesktopLayout
-          ? [
-              FloorTransparentButton(
-                text: 'Zurück',
-                iconData: Icons.chevron_left,
-                onPressed: Navigator.of(context).pop,
-              ),
-              Divider(),
-              if (_capture != null) ...[
-                FloorOutlinedButton(
-                  iconData: _showImage ? Icons.visibility : Icons.visibility_off,
-                  text: 'Bild',
-                  onPressed: () {
-                    setState(() {
-                      _showImage = !_showImage;
-                    });
-                  },
+    return FloorLoaderOverlay(
+      loading: _isRecalculating,
+      child: FloorLayoutBody(
+        title: Text('Scan'),
+        actions: useDesktopLayout ? null : [buildConfirmButton()],
+        sideChildren: useDesktopLayout
+            ? [
+                FloorTransparentButton(
+                  text: 'Zurück',
+                  iconData: Icons.chevron_left,
+                  onPressed: Navigator.of(context).pop,
                 ),
                 Divider(),
-              ],
-              buildConfirmButton(),
-            ]
-          : [],
-      child: _showImage && _capture != null && useDesktopLayout
-          ? Padding(
-              padding: EdgeInsets.all(AppSizes.kSmallGap),
-              child: LayoutBuilder(
-                builder: (context, constraints) {
-                  return RowGap(
-                    gap: AppSizes.kSmallGap,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      SizedBox(
-                        width: constraints.maxWidth * 0.4,
-                        child: FloorCard(
-                          usePadding: false,
-                          child: InteractiveViewer(
-                            maxScale: 4,
-                            minScale: 1,
-                            child: Image.memory(_capture.data, fit: BoxFit.contain),
+                if (_capture != null) ...[
+                  FloorOutlinedButton(
+                    iconData: _showImage ? Icons.visibility : Icons.visibility_off,
+                    text: 'Bild',
+                    onPressed: () {
+                      setState(() {
+                        _showImage = !_showImage;
+                      });
+                    },
+                  ),
+                  Divider(),
+                ],
+                FloorOutlinedButton(
+                  text: 'Neu berechnen',
+                  onPressed: () async {
+                    _isRecalculating = true;
+                    setState(() {});
+                    try {
+                      final ScanRecalculationDto response = await FloorRepository.recalculateScan(
+                        ScanRecalculationDto(
+                          cellTexts: _form.cellTexts,
+                          templateNo: 1,
+                        ),
+                      );
+                      _form.cellTexts.clear();
+                      _form.cellTexts.addAll(response.cellTexts);
+                      _resyncTextControllers();
+                    } finally {
+                      _isRecalculating = false;
+                      if (mounted) setState(() {});
+                    }
+                  },
+                ),
+                buildConfirmButton(),
+              ]
+            : [],
+        child: _showImage && _capture != null && useDesktopLayout
+            ? Padding(
+                padding: EdgeInsets.all(AppSizes.kSmallGap),
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    return RowGap(
+                      gap: AppSizes.kSmallGap,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        SizedBox(
+                          width: constraints.maxWidth * 0.4,
+                          child: FloorCard(
+                            usePadding: false,
+                            child: InteractiveViewer(
+                              maxScale: 4,
+                              minScale: 1,
+                              child: Image.memory(_capture.data, fit: BoxFit.contain),
+                            ),
                           ),
                         ),
-                      ),
-                      Expanded(child: FloorCard(usePadding: false, child: buildScrollTable())),
-                    ],
-                  );
-                },
-              ),
-            )
-          : buildScrollTable(),
+                        Expanded(child: FloorCard(usePadding: false, child: buildScrollTable())),
+                      ],
+                    );
+                  },
+                ),
+              )
+            : buildScrollTable(),
+      ),
     );
   }
 }
