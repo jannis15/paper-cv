@@ -78,9 +78,9 @@ abstract class FloorRepository {
 
       SelectedFile? capture;
       Selection? selection;
-      if (form.selections[form.captures.first]?.isHSet == true) {
-        capture = form.captures.first;
-        selection = form.selections[capture]!;
+      capture = form.captures.where((capture) => capture.uuid == dto.refUuid).firstOrNull;
+      if (capture != null && form.selections[capture]?.isHSet == true) {
+        selection = form.selections[capture];
       }
 
       pdf.addPage(

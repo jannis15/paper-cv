@@ -99,7 +99,7 @@ class _FloorEditTableScreenState extends State<FloorEditTableScreen> {
     Widget buildScrollTable() => FloorScroll(
           child: Table(
             columnWidths: {
-              for (int i = 0; i < _form.columnWidthsCm.length; i++) i: FixedColumnWidth(_form.columnWidthsCm[i] * 100),
+              for (int i = 0; i < _form.columnWidthsCm.length; i++) i: FixedColumnWidth(_form.columnWidthsCm[i] * 50),
             },
             children: _form.cellTexts[0]
                 .mapIndexed(
@@ -107,7 +107,7 @@ class _FloorEditTableScreenState extends State<FloorEditTableScreen> {
                     children: _form.cellTexts.mapIndexed((colIdx, _) {
                       final bool isTextEmpty = _controllers[colIdx][rowIdx]?.value.text.isEmpty ?? false;
                       return Padding(
-                        padding: EdgeInsets.all(AppSizes.kSmallGap),
+                        padding: EdgeInsets.symmetric(horizontal: AppSizes.kSmallGap),
                         child: _editableMap[colIdx][rowIdx]
                             ? FloorTextField(
                                 controller: _controllers[colIdx][rowIdx],
@@ -173,7 +173,7 @@ class _FloorEditTableScreenState extends State<FloorEditTableScreen> {
               buildConfirmButton(),
             ]
           : [],
-      child: _showImage && _capture != null
+      child: _showImage && _capture != null && useDesktopLayout
           ? Padding(
               padding: EdgeInsets.all(AppSizes.kSmallGap),
               child: LayoutBuilder(
