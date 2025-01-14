@@ -9,7 +9,7 @@ import '../../../utils/date_format_utils.dart';
 
 class FloorCvApi extends RestApi {
   static final FloorCvApi _instance =
-  FloorCvApi(baseUrl: kDebugMode ? 'http://192.168.178.46:8080' : 'https://floor-cv-249921154046.europe-west1.run.app');
+      FloorCvApi(baseUrl: kDebugMode ? 'http://192.168.178.46:53767' : 'https://floor-cv-249921154046.europe-west1.run.app');
 
   FloorCvApi({required super.baseUrl});
 
