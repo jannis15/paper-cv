@@ -14,7 +14,7 @@ class RestApi {
   late final String _baseUrl;
 
   RestApi({required String baseUrl}) {
-    _client = Dio(BaseOptions(connectTimeout: Duration(seconds: 3), receiveTimeout: Duration(minutes: 1)));
+    _client = Dio(BaseOptions(connectTimeout: Duration(seconds: 10), receiveTimeout: Duration(minutes: 1)));
     _client.interceptors.add(
       InterceptorsWrapper(
         onError: (error, handler) {
