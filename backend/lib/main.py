@@ -89,7 +89,7 @@ async def scan_file(request: Request, scan_properties: str = Form(...), file: Up
     file_bytes = await validate_file(request, file)
     return FloorCvController.scan_file(vision_client=vision_client, file_bytes=file_bytes,
                                        scan_properties=scan_properties,
-                                       logging=True)
+                                       logging=False)
 
 
 @app.post('/export-xlsx')
