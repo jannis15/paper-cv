@@ -1,8 +1,7 @@
 import json
-
 from fastapi import FastAPI, UploadFile, Request, HTTPException, Depends
 from fastapi.params import Form, File
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, StreamingResponse
 from lib.floor_cv_controller import FloorCvController
 from google.cloud import vision
 from fastapi.middleware.cors import CORSMiddleware
@@ -12,7 +11,6 @@ from slowapi.errors import RateLimitExceeded
 from PIL import Image
 import io
 import os
-
 from lib.schemas import Selection, ScanProperties, ScanRecalculation
 
 app = FastAPI()
@@ -92,6 +90,15 @@ async def scan_file(request: Request, scan_properties: str = Form(...), file: Up
     return FloorCvController.scan_file(vision_client=vision_client, file_bytes=file_bytes,
                                        scan_properties=scan_properties,
                                        logging=True)
+
+
+@app.post('/export-xlsx')
+@limiter.limit('6/minute')
+async def export_to_excel(request: Request, data_model: ScanRecalculation):
+    data = data_model.cell_texts
+    output_stream = FloorCvController.insert_data_into_excel(data)
+    return StreamingResponse(output_stream,
+                             media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 
 
 if __name__ == '__main__':

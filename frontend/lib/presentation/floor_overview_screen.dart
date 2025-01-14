@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:paper_cv/components/floor_attachment_card.dart';
 import 'package:paper_cv/components/floor_buttons.dart';
@@ -20,6 +22,7 @@ import 'package:paper_cv/presentation/floor_table_selection_screen.dart';
 import 'package:paper_cv/utils/date_format_utils.dart';
 import 'package:paper_cv/utils/file_picker_models.dart';
 import 'package:paper_cv/utils/file_picker_utils.dart';
+import 'package:paper_cv/utils/future_aggregator.dart';
 import 'package:paper_cv/utils/image_utils.dart';
 import 'package:paper_cv/utils/list_utils.dart';
 import 'package:paper_cv/utils/navigator_utils.dart';
@@ -254,17 +257,27 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
           iconData: Icons.auto_awesome,
           iconText: 'Generieren',
           onPickFiles: () async {
-            final pdfData = await FloorRepository.createPdf(_form);
-            final now = DateTime.now();
-            final String formattedDate = dateFormatDateTime.format(now);
-            final selectedFile = SelectedFile(
-              filename: 'Bericht $formattedDate.pdf',
-              data: pdfData,
-              fileType: FileType.report,
-              createdAt: now,
-              modifiedAt: now,
-            );
-            return [selectedFile];
+            Future<SelectedFile> _createPdf() async {
+              final pdfData = await FloorRepository.createPdf(_form);
+              final now = DateTime.now();
+              final String formattedDate = dateFormatDateTime.format(now);
+              final selectedFile = SelectedFile(
+                filename: 'Bericht $formattedDate.pdf',
+                data: pdfData,
+                fileType: FileType.report,
+                createdAt: now,
+                modifiedAt: now,
+              );
+              return selectedFile;
+            }
+
+            final results = await FutureAggregator.waitForAll<SelectedFile>([
+              ..._form.scans.map(
+                (scan) => FloorRepository.exportXLSX(ScanResultDto.fromJson(jsonDecode(utf8.decode(scan.data)))),
+              ),
+              _createPdf(),
+            ]);
+            return results.where((result) => result.isSuccess && result.value != null).map((result) => result.value!).toList();
           },
           onAddFiles: (_) => setState(() {
             _setIsDirty();

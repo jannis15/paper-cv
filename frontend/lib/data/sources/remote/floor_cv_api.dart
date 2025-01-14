@@ -1,8 +1,11 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:paper_cv/data/models/floor_dto_models.dart';
+import 'package:paper_cv/data/models/floor_enums.dart';
 import 'package:paper_cv/utils/api_utils.dart';
 import 'package:paper_cv/utils/file_picker_models.dart';
+
+import '../../../utils/date_format_utils.dart';
 
 class FloorCvApi extends RestApi {
   static final FloorCvApi _instance =
@@ -20,5 +23,28 @@ class FloorCvApi extends RestApi {
   Future<ScanRecalculationDto> recalculateScan(ScanRecalculationDto scanRecalculationDto, {CancelToken? cancelToken}) async {
     final response = await FloorCvApi.instance.post(route: '/recalculate', json: scanRecalculationDto.toJson(), cancelToken: cancelToken);
     return ScanRecalculationDto.fromJson(response.data!);
+  }
+
+  Future<SelectedFile> exportXLSX(ScanResultDto scanResultDto, {CancelToken? cancelToken}) async {
+    final response = await FloorCvApi.instance.post(
+      responseType: ResponseType.bytes,
+      route: '/export-xlsx',
+      json: ScanRecalculationDto(
+        cellTexts: scanResultDto.cellTexts,
+        templateNo: 1,
+      ).toJson(),
+      cancelToken: cancelToken,
+    );
+    final now = DateTime.now();
+    final String formattedDate = dateFormatDateTime.format(now);
+    final file = SelectedFile(
+      filename: 'Spreadsheet ${formattedDate}.xlsx',
+      data: Uint8List.fromList(response.data),
+      createdAt: now,
+      modifiedAt: now,
+      fileType: FileType.report,
+      refUuid: scanResultDto.refUuid,
+    );
+    return file;
   }
 }

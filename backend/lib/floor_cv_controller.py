@@ -1,11 +1,12 @@
 from abc import ABC
+from io import BytesIO
 from pathlib import Path
 from typing import List
 import re
 
 import numpy as np
 from google.cloud import vision
-
+import openpyxl
 from lib.floor_cv import FloorCV, Cell
 from lib.rect_fitter import find_best_fit
 from lib.schemas import ScanResult, ScanProperties, Selection, ScanRecalculation
@@ -15,6 +16,7 @@ a4_height = 29.7
 a4_width = 21
 root_dir = Path(__file__).resolve().parent.parent
 ALLOWED_PATTERN = r'^[A-Za-zÄÖÜäöüß,.\?!0-9\+\-\%\=\(\)\$€]+$'
+TEMPLATE_FILE = Path(__file__).parent.parent / "assets" / "template.xlsx"
 
 
 class FloorCvController(ABC):
@@ -74,7 +76,7 @@ class FloorCvController(ABC):
 
     @staticmethod
     def scan_file(vision_client: vision.ImageAnnotatorClient, file_bytes: bytes, scan_properties: ScanProperties,
-                  logging: bool = False)-> ScanResult:
+                  logging: bool = False) -> ScanResult:
         np_arr = np.frombuffer(file_bytes, np.uint8)
         img_grayscale = FloorCV.read_grayscale_img_from_bytes(np_arr)
         img_base = FloorCvController.__crop_image_by_selection(img_grayscale, scan_properties.selection)
@@ -204,3 +206,17 @@ class FloorCvController(ABC):
             avg_row_height_cm=avg_vertical_distance_cm,
             cell_texts=cell_texts,
         )
+
+    @staticmethod
+    def insert_data_into_excel(data: List[List[str]]) -> BytesIO:
+        OFFSET_ROW = 1
+        OFFSET_COL = 1
+        workbook = openpyxl.load_workbook(TEMPLATE_FILE)
+        sheet = workbook.active
+        for i, col in enumerate(data):
+            for j, value in enumerate(col):
+                sheet.cell(row=OFFSET_ROW + j, column=OFFSET_COL + i, value=value)
+        output_stream = BytesIO()
+        workbook.save(output_stream)
+        output_stream.seek(0)
+        return output_stream

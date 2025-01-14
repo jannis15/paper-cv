@@ -10,6 +10,7 @@ import 'package:paper_cv/data/sources/local/database.dart';
 import 'package:paper_cv/data/sources/remote/floor_cv_api.dart';
 import 'package:paper_cv/domain/floor_models.dart';
 import 'package:paper_cv/utils/file_picker_models.dart';
+import 'package:paper_cv/utils/offload_task.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 
@@ -38,7 +39,10 @@ abstract class FloorRepository {
   static Future<void> saveDocumentFile({required SelectedFile file, required String documentId}) =>
       FloorDatabase.instance.saveDocumentFile(file: file, documentId: documentId);
 
-  static Future<Uint8List> createPdf(DocumentForm form) async {
+  static Future<SelectedFile> exportXLSX(ScanResultDto scanResultDto, {CancelToken? cancelToken}) =>
+      FloorCvApi.instance.exportXLSX(scanResultDto, cancelToken: cancelToken);
+
+  static Future<Uint8List> _createPdf(DocumentForm form) {
     final List<ScanResultDto> dtoList = [];
     for (final scan in form.scans) {
       final scanResult = ScanResultDto.fromJson(jsonDecode(utf8.decode(scan.data)));
@@ -144,4 +148,6 @@ abstract class FloorRepository {
     }
     return pdf.save();
   }
+
+  static Future<Uint8List> createPdf(DocumentForm form) async => await OffloadTask.runInBackground(_createPdf, form);
 }

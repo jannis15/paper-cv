@@ -32,6 +32,7 @@ class RestApi {
     SelectedFile? file,
     Map<String, dynamic>? json,
     CancelToken? cancelToken,
+    ResponseType? responseType = ResponseType.json,
   }) async {
     late final Object data;
     if (file != null) {
@@ -53,6 +54,7 @@ class RestApi {
         cancelToken: cancelToken,
         data: data,
         options: Options(
+          responseType: responseType,
           headers: {
             HttpHeaders.contentTypeHeader: file != null ? Headers.multipartFormDataContentType : Headers.jsonContentType,
             if (!kDebugMode) HttpHeaders.accessControlAllowOriginHeader: 'true',
