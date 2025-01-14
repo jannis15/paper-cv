@@ -12,7 +12,8 @@ import 'package:paper_cv/data/repositories/floor_repository.dart';
 import 'package:paper_cv/components/floor_contact_banner.dart';
 import 'package:paper_cv/domain/floor_models.dart';
 import 'package:paper_cv/package_info.dart';
-import 'package:paper_cv/presentation/floor_info_screen.dart';
+
+// import 'package:paper_cv/presentation/floor_info_screen.dart';
 import 'package:paper_cv/presentation/floor_overview_screen.dart';
 import 'package:paper_cv/presentation/floor_settings_screen.dart';
 import 'package:paper_cv/utils/alert_dialog.dart';
@@ -100,7 +101,7 @@ class _FloorMainScreenState extends State<FloorMainScreen> {
     }
   }
 
-  void _seeInfo() async => showDialog(context: context, barrierLabel: 'ewfiji', builder: (_) => FloorInfoScreen());
+  // void _seeInfo() async => showDialog(context: context, barrierLabel: 'ewfiji', builder: (_) => FloorInfoScreen());
 
   void _openOverviewScreen() async => pushNoAnimation(context, widget: FloorOverviewScreen());
 
@@ -521,14 +522,14 @@ class _FloorMainScreenState extends State<FloorMainScreen> {
                     mainAxisAlignment: MainAxisAlignment.end,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      FloatingActionButton.extended(
-                        heroTag: UniqueKey(),
-                        backgroundColor: colorScheme.surfaceContainer,
-                        foregroundColor: colorScheme.onSurface,
-                        onPressed: _seeInfo,
-                        icon: Icon(Icons.info),
-                        label: Text('Info'),
-                      ),
+                      // FloatingActionButton.extended(
+                      //   heroTag: UniqueKey(),
+                      //   backgroundColor: colorScheme.surfaceContainer,
+                      //   foregroundColor: colorScheme.onSurface,
+                      //   onPressed: _seeInfo,
+                      //   icon: Icon(Icons.info),
+                      //   label: Text('Info'),
+                      // ),
                       FloatingActionButton.extended(
                         heroTag: UniqueKey(),
                         onPressed: _openOverviewScreen,
@@ -543,11 +544,11 @@ class _FloorMainScreenState extends State<FloorMainScreen> {
             iconData: Icons.post_add,
             onPressed: _openOverviewScreen,
           ),
-          FloorTransparentButton(
-            text: 'Mehr erfahren',
-            iconData: Icons.info,
-            onPressed: _seeInfo,
-          ),
+          // FloorTransparentButton(
+          //   text: 'Mehr erfahren',
+          //   iconData: Icons.info,
+          //   onPressed: _seeInfo,
+          // ),
         ],
         child: SingleChildScrollView(
           controller: _scrollController,
