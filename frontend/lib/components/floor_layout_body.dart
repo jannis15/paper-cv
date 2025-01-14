@@ -75,10 +75,10 @@ class _FloorLayoutBodyState extends State<FloorLayoutBody> {
                     ),
                   ),
                 Expanded(
-                  child: ShadowBox(
-                    isShowing: Theme.of(context).brightness == Brightness.light,
-                    child: Padding(
-                      padding: EdgeInsets.only(top: AppSizes.kGap),
+                  child: Padding(
+                    padding: EdgeInsets.only(top: AppSizes.kGap),
+                    child: ShadowBox(
+                      isShowing: Theme.of(context).brightness == Brightness.light,
                       child: FloorCard(
                         color: Theme.of(context).colorScheme.surface,
                         borderRadius: BorderRadius.only(

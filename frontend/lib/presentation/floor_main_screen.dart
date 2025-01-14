@@ -327,9 +327,9 @@ class _FloorMainScreenState extends State<FloorMainScreen> {
                         fit: StackFit.expand,
                         alignment: Alignment.center,
                         children: [
-                          Container(
+                          Ink(
                             decoration: BoxDecoration(
-                              color: Color.alphaBlend(colorScheme.surfaceContainer.withOpacity(.5), colorScheme.surface),
+                              color: colorScheme.surface,
                               borderRadius: BorderRadius.all(
                                 Radius.circular(AppSizes.kBorderRadius),
                               ),
@@ -337,7 +337,7 @@ class _FloorMainScreenState extends State<FloorMainScreen> {
                           ),
                           Icon(
                             Icons.article,
-                            size: AppSizes.kComponentHeight,
+                            size: 48,
                             color: colorScheme.secondary,
                           ),
                           Positioned(
@@ -370,20 +370,23 @@ class _FloorMainScreenState extends State<FloorMainScreen> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        RowGap(
-                          gap: AppSizes.kSmallGap,
-                          crossAxisAlignment: CrossAxisAlignment.baseline,
-                          children: [
-                            Flexible(
-                              child: Text(
-                                documentPreview.title.trim().isNotEmpty ? documentPreview.title : 'Unbenanntes Dokument',
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: textTheme.titleMedium,
+                        SizedBox(
+                          height: textTheme.titleMedium!.fontSize! * textTheme.titleMedium!.height!,
+                          child: RowGap(
+                            gap: AppSizes.kSmallGap,
+                            crossAxisAlignment: CrossAxisAlignment.baseline,
+                            children: [
+                              Flexible(
+                                child: Text(
+                                  documentPreview.title.trim().isNotEmpty ? documentPreview.title : 'Unbenanntes Dokument',
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: textTheme.titleMedium,
+                                ),
                               ),
-                            ),
-                            if (documentPreview.isExample) buildExampleContainer(documentPreview)
-                          ],
+                              if (documentPreview.isExample) buildExampleContainer(documentPreview)
+                            ],
+                          ),
                         ),
                         Text(
                           documentPreview.documentDate != null ? dateFormatWeekdayDate.format(documentPreview.documentDate!) : 'Kein Datum',

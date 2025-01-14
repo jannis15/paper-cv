@@ -34,7 +34,7 @@ class _FloorCardState extends State<FloorCard> {
     Widget buildCardChild() => Padding(padding: const EdgeInsets.all(AppSizes.kGap), child: widget.child);
 
     return Material(
-      color: widget.color ?? colorScheme.surfaceContainer,
+      color: widget.color ?? colorScheme.surfaceContainerHigh,
       elevation: 0,
       clipBehavior: Clip.hardEdge,
       borderRadius: widget.borderRadius ?? BorderRadius.circular(AppSizes.kBorderRadius),

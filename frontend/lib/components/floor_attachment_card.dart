@@ -5,11 +5,13 @@ import 'package:file_icon/file_icon.dart';
 import 'package:paper_cv/components/floor_buttons.dart';
 import 'package:paper_cv/components/floor_card.dart';
 import 'package:paper_cv/components/floor_icon_button.dart';
+import 'package:paper_cv/components/floor_icon_with_background.dart';
 import 'package:paper_cv/config/config.dart';
 import 'package:paper_cv/utils/alert_dialog.dart';
 import 'package:paper_cv/utils/file_picker_models.dart';
 import 'package:paper_cv/utils/image_utils.dart';
 import 'package:paper_cv/utils/list_utils.dart';
+import 'package:paper_cv/utils/string_extension.dart';
 import 'package:paper_cv/utils/ui_image_extension.dart';
 import 'package:paper_cv/utils/widget_utils.dart';
 import "package:flutter/material.dart";
@@ -113,6 +115,7 @@ class FloorAttachmentCardState extends State<FloorAttachmentCard> {
           GestureDetector(
             onTap: widget.onTapFile != null ? () => widget.onTapFile!(file, index, _previewImages[index]) : () => accessFile(file),
             child: Container(
+              clipBehavior: Clip.hardEdge,
               margin: EdgeInsets.only(
                 top: AppSizes.kIconButtonSize / 2,
                 right: AppSizes.kIconButtonSize / 2,
@@ -121,9 +124,12 @@ class FloorAttachmentCardState extends State<FloorAttachmentCard> {
                   ? previewImage.isLandscape
                       ? kMaxHeight * kAntiRatio
                       : kMaxHeight * kRatio
-                  : kMaxHeight,
+                  : kMaxHeight * kRatio,
               height: kMaxHeight,
-              decoration: BoxDecoration(color: colorScheme.surface),
+              decoration: BoxDecoration(
+                color: colorScheme.surface,
+                borderRadius: BorderRadius.all(Radius.circular(AppSizes.kBorderRadius)),
+              ),
               child: MouseRegion(
                 cursor: SystemMouseCursors.click,
                 child: previewImage != null
@@ -132,21 +138,9 @@ class FloorAttachmentCardState extends State<FloorAttachmentCard> {
                         alignment: Alignment.center,
                         child: RawImage(image: previewImage),
                       )
-                    : Padding(
-                        padding: const EdgeInsets.all(AppSizes.kSmallGap),
-                        child: ColumnGap(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          gap: 4,
-                          children: [
-                            FileIcon(file.filename, size: 32),
-                            Text(
-                              file.filename,
-                              textAlign: TextAlign.center,
-                              maxLines: 2,
-                              style: textTheme.labelSmall,
-                            ),
-                          ],
-                        ),
+                    : IconWithBackground(
+                        iconWidget: FileIcon(file.filename, size: 64),
+                        text: file.filename.removeFileExtension(),
                       ),
               ),
             ),
@@ -156,8 +150,8 @@ class FloorAttachmentCardState extends State<FloorAttachmentCard> {
             right: 0,
             child: FloorIconButton(
               iconData: Icons.close,
-              foregroundColor: colorScheme.onPrimary,
-              backgroundColor: colorScheme.primary,
+              foregroundColor: colorScheme.onPrimaryContainer,
+              backgroundColor: colorScheme.primaryContainer,
               onPressed: () async {
                 final alertResult = await showAlertDialog(
                   context,
