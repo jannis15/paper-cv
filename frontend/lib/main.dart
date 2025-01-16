@@ -1,13 +1,17 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:paper_cv/config/system.dart';
 import 'package:paper_cv/config/text_theme.dart';
+import 'package:paper_cv/generated/l10n.dart';
 import 'package:paper_cv/package_info.dart';
 import 'package:paper_cv/presentation/floor_main_screen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'config/settings.dart';
+import 'config/settings_notifier.dart';
+import 'config/supported_locales.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,7 +22,6 @@ void main() async {
       logException(details, StackTrace.current);
     } finally {
       WidgetsBinding.instance.addPostFrameCallback((_) => showException(details.exception));
-
       FlutterError.presentError(details);
     }
   };
@@ -30,24 +33,17 @@ void main() async {
     }
     return true;
   };
+  final container = ProviderContainer();
+  await container.read(settingsFutureProvider.future);
   timeago.setLocaleMessages('de', timeago.DeMessages());
-  runApp(
-    ProviderScope(
-      child: const MyApp(),
-    ),
-  );
+  timeago.setLocaleMessages('en', timeago.EnMessages());
+  runApp(ProviderScope(parent: container, child: MyApp()));
 }
 
-class MyApp extends StatefulWidget {
-  const MyApp({super.key});
-
+class MyApp extends ConsumerWidget {
   @override
-  State<MyApp> createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
-  @override
-  Widget build(BuildContext context) {
+  Widget build(_, WidgetRef ref) {
+    final settings = ref.watch(settingsNotifierProvider);
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       navigatorKey: navigatorKey,
@@ -62,11 +58,13 @@ class _MyAppState extends State<MyApp> {
         textTheme: FloorTextTheme(),
       ),
       localizationsDelegates: const [
+        AppLocalizationDelegate(),
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      supportedLocales: const [Locale('de')],
+      supportedLocales: supportedLocales,
+      locale: Locale(settings.locale),
       initialRoute: '/home',
       routes: {
         '/home': (_) => const FloorMainScreen(),

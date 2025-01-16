@@ -1,4 +1,5 @@
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:paper_cv/components/floor_app_bar.dart';
 import 'package:paper_cv/components/floor_buttons.dart';
 import 'package:paper_cv/components/floor_card.dart';
@@ -7,10 +8,12 @@ import 'package:paper_cv/components/floor_icon_button.dart';
 import 'package:paper_cv/components/floor_layout_body.dart';
 import 'package:paper_cv/components/floor_wrap_view.dart';
 import 'package:paper_cv/config/config.dart';
+import 'package:paper_cv/config/settings_notifier.dart';
 import 'package:paper_cv/data/models/floor_dto_models.dart';
 import 'package:paper_cv/data/repositories/floor_repository.dart';
 import 'package:paper_cv/components/floor_contact_banner.dart';
 import 'package:paper_cv/domain/floor_models.dart';
+import 'package:paper_cv/generated/l10n.dart';
 import 'package:paper_cv/package_info.dart';
 
 // import 'package:paper_cv/presentation/floor_info_screen.dart';
@@ -26,14 +29,14 @@ import 'package:timeago_flutter/timeago_flutter.dart';
 import '../components/floor_toggle_switch.dart';
 import '../utils/navigator_utils.dart';
 
-class FloorMainScreen extends StatefulWidget {
+class FloorMainScreen extends ConsumerStatefulWidget {
   const FloorMainScreen({super.key});
 
   @override
-  State<FloorMainScreen> createState() => _FloorMainScreenState();
+  ConsumerState<FloorMainScreen> createState() => _FloorMainScreenState();
 }
 
-class _FloorMainScreenState extends State<FloorMainScreen> {
+class _FloorMainScreenState extends ConsumerState<FloorMainScreen> {
   DocumentPreviewDto? _hoverDocumentPreview;
   List<DocumentPreviewDto>? _documentPreviews;
   final GlobalKey<FloorToggleSwitchState<DocumentViewType>> _toggleSwitchKey = GlobalKey();
@@ -101,12 +104,15 @@ class _FloorMainScreenState extends State<FloorMainScreen> {
     }
   }
 
-  // void _seeInfo() async => showDialog(context: context, barrierLabel: 'ewfiji', builder: (_) => FloorInfoScreen());
+  // void _seeInfo() async => showDialog(context: context, builder: (_) => FloorInfoScreen());
 
   void _openOverviewScreen() async => pushNoAnimation(context, widget: FloorOverviewScreen());
 
   @override
   Widget build(BuildContext context) {
+    final settings = ref.watch(settingsNotifierProvider);
+    final settingsNotifier = ref.watch(settingsNotifierProvider.notifier);
+
     Widget buildExampleContainer(DocumentPreviewDto documentPreview) => Container(
           padding: EdgeInsets.symmetric(horizontal: AppSizes.kSmallGap),
           decoration: ShapeDecoration(
@@ -146,7 +152,7 @@ class _FloorMainScreenState extends State<FloorMainScreen> {
           },
           date: documentPreview.modifiedAt,
           allowFromNow: true,
-          locale: 'de',
+          locale: settings.locale,
         );
 
     Widget buildCheckbox(DocumentPreviewDto documentPreview, {Color? activeColor, Color? checkColor}) => Checkbox(
@@ -468,6 +474,7 @@ class _FloorMainScreenState extends State<FloorMainScreen> {
                 crossAxisAlignment: CrossAxisAlignment.baseline,
                 children: [
                   Text('PaperCV'),
+                  Text(S.current.greeting),
                   Text(
                     '${packageInfo.version}+${packageInfo.buildNumber}',
                     style: textTheme.labelMedium?.copyWith(color: colorScheme.outline),
@@ -489,7 +496,15 @@ class _FloorMainScreenState extends State<FloorMainScreen> {
           ),
         ],
         floatingActionButton: useDesktopLayout
-            ? null
+            ? FloatingActionButton(
+                onPressed: () {
+                  if (settings.locale == 'de') {
+                    settingsNotifier.setLocale('en');
+                  } else {
+                    settingsNotifier.setLocale('de');
+                  }
+                },
+              )
             : _isSelectionMode
                 ? RowGap(
                     mainAxisAlignment: MainAxisAlignment.end,
