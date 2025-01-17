@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:paper_cv/config/supported_locales.dart';
 import 'settings_repository.dart';
 import 'settings.dart';
 
@@ -6,8 +7,10 @@ class SettingsNotifier extends StateNotifier<Settings> {
   SettingsNotifier(super.settings);
 
   Future<void> setLocale(String locale) async {
-    await SettingsRepository.instance.saveLocale(locale);
-    state = state.copyWith(locale: locale);
+    final isSupportedLanguage = SupportedLocale.values.map((value) => value.key).contains(locale);
+    final internalLocale = isSupportedLanguage ? locale : 'en';
+    await SettingsRepository.instance.saveLocale(internalLocale);
+    state = state.copyWith(locale: internalLocale);
   }
 
   Future<void> setShowAdBanner(bool showAdBanner) async {

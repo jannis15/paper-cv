@@ -33,7 +33,12 @@ void main() async {
     return true;
   };
   final container = ProviderContainer();
-  await container.read(settingsFutureProvider.future);
+  final settings = await container.read(settingsFutureProvider.future);
+  if (settings.locale.isEmpty) {
+    await container.read(settingsNotifierProvider.notifier).setLocale(
+          PlatformDispatcher.instance.locale.languageCode,
+        );
+  }
   timeago.setLocaleMessages('de', timeago.DeMessages());
   timeago.setLocaleMessages('en', timeago.EnMessages());
   runApp(ProviderScope(parent: container, child: MyApp()));
@@ -41,8 +46,9 @@ void main() async {
 
 class MyApp extends ConsumerWidget {
   @override
-  Widget build(_, WidgetRef ref) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final settings = ref.watch(settingsNotifierProvider);
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       navigatorKey: navigatorKey,

@@ -108,7 +108,7 @@ class __$$SettingsImplCopyWithImpl<$Res>
 /// @nodoc
 
 class _$SettingsImpl implements _Settings {
-  const _$SettingsImpl({this.locale = 'de', this.showAdBanner = true});
+  const _$SettingsImpl({this.locale = '', this.showAdBanner = true});
 
   @override
   @JsonKey()
