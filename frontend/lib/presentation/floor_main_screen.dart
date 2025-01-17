@@ -53,6 +53,11 @@ class _FloorMainScreenState extends ConsumerState<FloorMainScreen> {
   void initState() {
     super.initState();
     _assignPreviewStream();
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) {
+        if (mounted) setState(() {}); // important for re-checking _toggleSwitchKey.currentContext
+      },
+    );
   }
 
   void _assignPreviewStream() {
