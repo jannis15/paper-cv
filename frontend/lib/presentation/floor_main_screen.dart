@@ -113,7 +113,7 @@ class _FloorMainScreenState extends ConsumerState<FloorMainScreen> {
     final settingsNotifier = ref.watch(settingsNotifierProvider.notifier);
     _showBanner = settings.showAdBanner;
 
-    Widget buildExampleContainer(DocumentPreviewDto documentPreview) => Container(
+    Widget buildExampleContainer(DocumentPreviewDto documentPreview, {required TextStyle? textStyle}) => Container(
           padding: EdgeInsets.symmetric(horizontal: AppSizes.kSmallGap),
           decoration: ShapeDecoration(
             shape: StadiumBorder(side: BorderSide(color: colorScheme.outline)),
@@ -122,7 +122,7 @@ class _FloorMainScreenState extends ConsumerState<FloorMainScreen> {
             S.current.example,
             overflow: TextOverflow.ellipsis,
             maxLines: 1,
-            style: textTheme.titleMedium?.copyWith(color: colorScheme.outline),
+            style: textStyle?.copyWith(color: colorScheme.outline),
           ),
         );
 
@@ -205,7 +205,7 @@ class _FloorMainScreenState extends ConsumerState<FloorMainScreen> {
                 gap: AppSizes.kSmallGap,
                 children: [
                   Text(documentPreview.title.isNotEmpty ? documentPreview.title : S.current.untitledDocument),
-                  if (documentPreview.isExample) buildExampleContainer(documentPreview),
+                  if (documentPreview.isExample) buildExampleContainer(documentPreview, textStyle: textTheme.titleSmall),
                 ],
               ),
             )),
@@ -393,7 +393,7 @@ class _FloorMainScreenState extends ConsumerState<FloorMainScreen> {
                                   style: textTheme.titleMedium,
                                 ),
                               ),
-                              if (documentPreview.isExample) buildExampleContainer(documentPreview)
+                              if (documentPreview.isExample) buildExampleContainer(documentPreview, textStyle: textTheme.titleMedium)
                             ],
                           ),
                         ),
