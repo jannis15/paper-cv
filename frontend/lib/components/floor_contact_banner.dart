@@ -8,6 +8,8 @@ import 'package:paper_cv/utils/shadow_utils.dart';
 import 'package:paper_cv/utils/widget_utils.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../generated/l10n.dart';
+
 class FloorContactBanner extends StatefulWidget {
   final void Function() onCloseBanner;
 
@@ -56,8 +58,8 @@ class _FloorContactBannerState extends State<FloorContactBanner> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Text('Moin!', style: textTheme.headlineMedium),
-                  Text("Gefällt Ihnen was Sie sehen?\nKontaktieren Sie mich!", style: textTheme.titleMedium),
+                  Text(S.current.heyThere, style: textTheme.headlineMedium),
+                  Text(S.current.doYouLikeWhatYouAreSeeing + '\n' + S.current.contactMe, style: textTheme.titleMedium),
                   RowGap(
                     gap: AppSizes.kSmallGap,
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -80,7 +82,7 @@ class _FloorContactBannerState extends State<FloorContactBanner> {
                 top: 0,
                 right: 0,
                 child: IconButton(
-                  tooltip: 'Schließen',
+                  tooltip: S.current.close,
                   icon: Icon(Icons.close),
                   onPressed: widget.onCloseBanner,
                 ),

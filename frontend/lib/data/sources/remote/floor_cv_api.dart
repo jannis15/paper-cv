@@ -5,6 +5,7 @@ import 'package:paper_cv/data/models/floor_enums.dart';
 import 'package:paper_cv/utils/api_utils.dart';
 import 'package:paper_cv/utils/file_picker_models.dart';
 
+import '../../../config/settings.dart';
 import '../../../utils/date_format_utils.dart';
 
 class FloorCvApi extends RestApi {
@@ -25,7 +26,7 @@ class FloorCvApi extends RestApi {
     return ScanRecalculationDto.fromJson(response.data!);
   }
 
-  Future<SelectedFile> exportXLSX(ScanResultDto scanResultDto, {CancelToken? cancelToken}) async {
+  Future<SelectedFile> exportXLSX(ScanResultDto scanResultDto, {required String locale, CancelToken? cancelToken}) async {
     final response = await FloorCvApi.instance.post(
       responseType: ResponseType.bytes,
       route: '/export-xlsx',
@@ -36,7 +37,7 @@ class FloorCvApi extends RestApi {
       cancelToken: cancelToken,
     );
     final now = DateTime.now();
-    final String formattedDate = dateFormatDateTime.format(now);
+    final String formattedDate = dateFormatDateTime(locale).format(now);
     final file = SelectedFile(
       filename: 'Spreadsheet ${formattedDate}.xlsx',
       data: Uint8List.fromList(response.data),

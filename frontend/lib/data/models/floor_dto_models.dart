@@ -7,6 +7,8 @@ import 'package:paper_cv/utils/date_format_utils.dart';
 import 'package:paper_cv/utils/file_picker_models.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../generated/l10n.dart';
+
 part 'floor_dto_models.freezed.dart';
 
 part 'floor_dto_models.g.dart';
@@ -55,13 +57,13 @@ class ScanResultDto with _$ScanResultDto {
         cellTexts: List.from(this.cellTexts),
       );
 
-  SelectedFile toSelectedFile() {
+  SelectedFile toSelectedFile(String locale) {
     final now = DateTime.now();
-    final String formattedDate = dateFormatDateTime.format(now);
+    final String formattedDate = dateFormatDateTime(locale).format(now);
     final data = utf8.encode(jsonEncode(toJson()));
     return SelectedFile(
       uuid: uuid ?? Uuid().v4(),
-      filename: 'Scan $formattedDate.json',
+      filename: '${S.current.scan} $formattedDate.json',
       data: data,
       index: null,
       fileType: FileType.scan,

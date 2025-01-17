@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:paper_cv/components/floor_buttons.dart';
 import 'package:paper_cv/components/floor_card.dart';
 import 'package:paper_cv/components/floor_layout_body.dart';
@@ -18,7 +19,10 @@ import 'package:paper_cv/utils/widget_utils.dart';
 import '../components/floor_scroll.dart';
 import 'package:paper_cv/generated/l10n.dart';
 
-class FloorEditTableScreen extends StatefulWidget {
+import '../config/settings.dart';
+import '../config/settings_notifier.dart';
+
+class FloorEditTableScreen extends ConsumerStatefulWidget {
   final SelectedFile file;
   final DocumentForm form;
 
@@ -33,7 +37,7 @@ class FloorEditTableScreen extends StatefulWidget {
   _FloorEditTableScreenState createState() => _FloorEditTableScreenState();
 }
 
-class _FloorEditTableScreenState extends State<FloorEditTableScreen> {
+class _FloorEditTableScreenState extends ConsumerState<FloorEditTableScreen> {
   bool _showImage = true;
   bool _isRecalculating = false;
   late final SelectedFile? _capture;
@@ -93,8 +97,8 @@ class _FloorEditTableScreenState extends State<FloorEditTableScreen> {
     super.dispose();
   }
 
-  void _saveChanges() async {
-    final newSelectedFile = _form.toDto().toSelectedFile();
+  void _saveChanges(Settings settings) async {
+    final newSelectedFile = _form.toDto().toSelectedFile(settings.locale);
     Navigator.of(context).pop(newSelectedFile);
   }
 
@@ -112,6 +116,7 @@ class _FloorEditTableScreenState extends State<FloorEditTableScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final settings = ref.watch(settingsNotifierProvider);
     Widget buildScrollTable() => FloorScroll(
           child: Table(
             columnWidths: {
@@ -156,18 +161,18 @@ class _FloorEditTableScreenState extends State<FloorEditTableScreen> {
           ),
         );
 
-    Widget buildConfirmButton() => FloorButton(
+    Widget buildConfirmButton(Settings settings) => FloorButton(
           type: FloorButtonType.filled,
           iconData: Icons.check,
-          text: 'Bestätigen',
-          onPressed: _saveChanges,
+          text: S.current.confirm,
+          onPressed: () => _saveChanges(settings),
         );
 
     return FloorLoaderOverlay(
       loading: _isRecalculating,
       child: FloorLayoutBody(
-        title: Text('Scan'),
-        actions: useDesktopLayout ? null : [buildConfirmButton()],
+        title: Text(S.current.scan),
+        actions: useDesktopLayout ? null : [buildConfirmButton(settings)],
         sideChildren: useDesktopLayout
             ? [
                 FloorTransparentButton(
@@ -179,7 +184,7 @@ class _FloorEditTableScreenState extends State<FloorEditTableScreen> {
                 if (_capture != null) ...[
                   FloorOutlinedButton(
                     iconData: _showImage ? Icons.visibility : Icons.visibility_off,
-                    text: 'Bild',
+                    text: S.current.image,
                     onPressed: () {
                       setState(() {
                         _showImage = !_showImage;
@@ -189,7 +194,7 @@ class _FloorEditTableScreenState extends State<FloorEditTableScreen> {
                   Divider(),
                 ],
                 FloorOutlinedButton(
-                  text: 'Neu berechnen',
+                  text: S.current.recalculate,
                   onPressed: () async {
                     _isRecalculating = true;
                     setState(() {});
@@ -209,7 +214,7 @@ class _FloorEditTableScreenState extends State<FloorEditTableScreen> {
                     }
                   },
                 ),
-                buildConfirmButton(),
+                buildConfirmButton(settings),
               ]
             : [],
         child: _showImage && _capture != null && useDesktopLayout

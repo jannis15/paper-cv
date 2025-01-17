@@ -9,6 +9,7 @@ import 'package:paper_cv/utils/widget_utils.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 import '../config/settings_notifier.dart';
+import '../generated/l10n.dart';
 
 class FloorDatePickerDialog extends ConsumerStatefulWidget {
   final DateTime? selectedDay;
@@ -47,17 +48,17 @@ class _FloorDatePickerDialogState extends ConsumerState<FloorDatePickerDialog> {
                 gap: AppSizes.kSmallGap,
                 children: [
                   Text(
-                    _selectedDay != null ? dateFormatWeekdayDate(settings.locale).format(_selectedDay!) : 'Kein Datum ausgewählt',
+                    _selectedDay != null ? dateFormatWeekdayDate(settings.locale).format(_selectedDay!) : S.current.noDateSelected,
                     style: textTheme.titleMedium?.copyWith(color: _selectedDay != null ? colorScheme.onSurface : colorScheme.outlineVariant),
                   ),
                   SizedBox(
                     width: MediaQuery.of(context).size.width - (AppSizes.kGap * 2),
                     height: 300,
                     child: TableCalendar(
-                      locale: 'de',
+                      locale: settings.locale,
                       rowHeight: 40,
                       calendarFormat: _calendarFormat,
-                      availableCalendarFormats: {CalendarFormat.month: 'Monat'},
+                      availableCalendarFormats: {CalendarFormat.month: S.current.month},
                       headerStyle: HeaderStyle(
                         titleCentered: true,
                         titleTextStyle: textTheme.titleMedium!.copyWith(overflow: TextOverflow.ellipsis),
@@ -76,8 +77,9 @@ class _FloorDatePickerDialogState extends ConsumerState<FloorDatePickerDialog> {
                       },
                       calendarStyle: CalendarStyle(
                         todayDecoration: ShapeDecoration(
-                            shape: CircleBorder(side: BorderSide(color: colorScheme.primary)),
-                            color: _isHoliday(DateTime.now()) ? Colors.amber : Colors.transparent),
+                          shape: CircleBorder(side: BorderSide(color: colorScheme.primary)),
+                          color: _isHoliday(DateTime.now()) ? Colors.amber : Colors.transparent,
+                        ),
                         todayTextStyle: TextStyle(color: _isHoliday(DateTime.now()) ? Colors.black : colorScheme.onSurface),
                         selectedDecoration: ShapeDecoration(shape: CircleBorder(), color: colorScheme.primary),
                         selectedTextStyle: TextStyle(color: colorScheme.onPrimary),
@@ -101,14 +103,14 @@ class _FloorDatePickerDialogState extends ConsumerState<FloorDatePickerDialog> {
                         onPressed: () {
                           Navigator.of(context).pop();
                         },
-                        text: 'Abbrechen',
+                        text: S.current.cancel,
                       ),
                       FloorTransparentButton(
                         foregroundColor: colorScheme.primary,
                         onPressed: () {
                           Navigator.of(context).pop(_selectedDay);
                         },
-                        text: 'Bestätigen',
+                        text: S.current.confirm,
                       ),
                     ],
                   ),

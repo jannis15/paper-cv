@@ -14,6 +14,8 @@ import 'package:paper_cv/utils/offload_task.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 
+import '../../config/settings.dart';
+
 abstract class FloorRepository {
   static Stream<List<DocumentPreviewDto>> watchDocumentPreviews({
     required DocumentSortType sortType,
@@ -39,8 +41,8 @@ abstract class FloorRepository {
   static Future<void> saveDocumentFile({required SelectedFile file, required String documentId}) =>
       FloorDatabase.instance.saveDocumentFile(file: file, documentId: documentId);
 
-  static Future<SelectedFile> exportXLSX(ScanResultDto scanResultDto, {CancelToken? cancelToken}) =>
-      FloorCvApi.instance.exportXLSX(scanResultDto, cancelToken: cancelToken);
+  static Future<SelectedFile> exportXLSX(ScanResultDto scanResultDto, {required String locale, CancelToken? cancelToken}) =>
+      FloorCvApi.instance.exportXLSX(scanResultDto, locale: locale, cancelToken: cancelToken);
 
   static Future<Uint8List> _createPdf(DocumentForm form) {
     final List<ScanResultDto> dtoList = [];

@@ -84,8 +84,10 @@ class _FloorMainScreenState extends ConsumerState<FloorMainScreen> {
   void _deleteSelectedDocuments() async {
     final alertOption = await showAlertDialog(
       context,
-      title: '${_selectedDocuments.length} ${_selectedDocuments.length == 1 ? 'Dokument' : 'Dokumente'} löschen?',
-      content: '${_selectedDocuments.length == 1 ? 'Das Dokument wird' : 'Die Dokumente werden'} dadurch unwiderruflich gelöscht!',
+      title: _selectedDocuments.length == 1
+          ? S.current.deleteDocumentsQuestion(_selectedDocuments.length)
+          : S.current.deleteDocumentsPluralQuestion(_selectedDocuments.length),
+      content: _selectedDocuments.length == 1 ? S.current.documentDeletionWarning : S.current.multipleDocumentDeletionWarning,
       optionData: [
         AlertOptionData.cancel(),
         AlertOptionData.yes(customText: S.current.delete),
@@ -202,7 +204,7 @@ class _FloorMainScreenState extends ConsumerState<FloorMainScreen> {
               RowGap(
                 gap: AppSizes.kSmallGap,
                 children: [
-                  Text(documentPreview.title.isNotEmpty ? documentPreview.title : 'Unbenanntes Dokument'),
+                  Text(documentPreview.title.isNotEmpty ? documentPreview.title : S.current.untitledDocument),
                   if (documentPreview.isExample) buildExampleContainer(documentPreview),
                 ],
               ),
@@ -212,7 +214,7 @@ class _FloorMainScreenState extends ConsumerState<FloorMainScreen> {
               _buildTableCell(
                 Text(documentPreview.documentDate != null
                     ? dateFormatWeekdayDate(settings.locale).format(documentPreview.documentDate!)
-                    : 'Kein Datum'),
+                    : S.current.noDate),
               ),
             ),
           ],
@@ -385,7 +387,7 @@ class _FloorMainScreenState extends ConsumerState<FloorMainScreen> {
                             children: [
                               Flexible(
                                 child: Text(
-                                  documentPreview.title.trim().isNotEmpty ? documentPreview.title : 'Unbenanntes Dokument',
+                                  documentPreview.title.trim().isNotEmpty ? documentPreview.title : S.current.untitledDocument,
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                   style: textTheme.titleMedium,
@@ -398,7 +400,7 @@ class _FloorMainScreenState extends ConsumerState<FloorMainScreen> {
                         Text(
                           documentPreview.documentDate != null
                               ? dateFormatWeekdayDate(settings.locale).format(documentPreview.documentDate!)
-                              : 'Kein Datum',
+                              : S.current.noDate,
                           style: textTheme.titleMedium?.copyWith(color: colorScheme.outline),
                         ),
                       ],
@@ -410,8 +412,9 @@ class _FloorMainScreenState extends ConsumerState<FloorMainScreen> {
                     : (dismissDirection) async {
                         final alertOption = await showAlertDialog(
                           context,
-                          title: "'${documentPreview.title.trim().isNotEmpty ? documentPreview.title : 'Gescanntes Dokument'}' löschen?",
-                          content: 'Das Dokument wird dadurch unwiderruflich gelöscht!',
+                          title:
+                              S.current.deleteDocument(documentPreview.title.trim().isNotEmpty ? documentPreview.title : S.current.untitledDocument),
+                          content: S.current.documentDeletionWarning,
                           optionData: [
                             AlertOptionData.cancel(),
                             AlertOptionData.yes(customText: S.current.delete),
@@ -457,10 +460,10 @@ class _FloorMainScreenState extends ConsumerState<FloorMainScreen> {
           }
           final alertResult = await showAlertDialog(
             context,
-            title: 'App verlassen?',
+            title: S.current.leaveApp,
             optionData: [
               AlertOptionData.cancel(),
-              AlertOptionData.yes(customText: 'Verlassen'),
+              AlertOptionData.yes(customText: S.current.leave),
             ],
           );
           if (alertResult == AlertOption.yes) {
@@ -654,7 +657,7 @@ class _FloorMainScreenState extends ConsumerState<FloorMainScreen> {
                       } else {
                         _documentPreviews = snapshot.data!;
                         if (_documentPreviews!.isEmpty) {
-                          return Text('Keine Dokumente vorhanden');
+                          return Text(S.current.noDocumentsExisting);
                         } else {
                           return _toggleSwitchKey.currentState?.selectedOption == DocumentViewType.list
                               ? buildListView(_documentPreviews!)

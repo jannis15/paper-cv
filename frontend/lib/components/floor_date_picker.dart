@@ -7,6 +7,7 @@ import 'package:paper_cv/utils/date_format_utils.dart';
 import 'package:paper_cv/utils/widget_utils.dart';
 
 import '../config/settings_notifier.dart';
+import '../generated/l10n.dart';
 
 class FloorDatePicker extends ConsumerStatefulWidget {
   final DateTime? value;
@@ -35,7 +36,6 @@ class _FloorDatePickerState extends ConsumerState<FloorDatePicker> {
       } else {
         resultValue = await showDatePicker(
           context: context,
-          fieldHintText: 'TT.MM.JJJJ',
           firstDate: DateTime(2000),
           lastDate: DateTime(2099, 12, 31),
           currentDate: currentDate,
@@ -58,13 +58,13 @@ class _FloorDatePickerState extends ConsumerState<FloorDatePicker> {
         decoration: InputDecoration(
           contentPadding: AppSizes.inputPadding,
           border: OutlineInputBorder(),
-          labelText: widget.labelText ?? 'Datum',
+          labelText: widget.labelText ?? S.current.noDate,
           suffixIconConstraints: BoxConstraints(maxWidth: AppSizes.kIconButtonSize + AppSizes.kMinInputGap, maxHeight: AppSizes.kIconButtonSize),
           suffixIcon: Padding(
             padding: const EdgeInsets.only(right: AppSizes.kMinInputGap),
             child: FloorIconButton(
               iconData: Icons.today,
-              tooltip: 'Datum ändern',
+              tooltip: S.current.changeDate,
               onPressed: pickDate,
             ),
           ),

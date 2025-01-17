@@ -180,16 +180,6 @@ class S {
     );
   }
 
-  /// `Documents`
-  String get documents {
-    return Intl.message(
-      'Documents',
-      name: 'documents',
-      desc: '',
-      args: [],
-    );
-  }
-
   /// `Cancel`
   String get cancel {
     return Intl.message(
@@ -275,6 +265,396 @@ class S {
     return Intl.message(
       'documents selected',
       name: 'documentsSelected',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Hey there!`
+  String get heyThere {
+    return Intl.message(
+      'Hey there!',
+      name: 'heyThere',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Do you like what you're seeing?`
+  String get doYouLikeWhatYouAreSeeing {
+    return Intl.message(
+      'Do you like what you\'re seeing?',
+      name: 'doYouLikeWhatYouAreSeeing',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Contact me!`
+  String get contactMe {
+    return Intl.message(
+      'Contact me!',
+      name: 'contactMe',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Close`
+  String get close {
+    return Intl.message(
+      'Close',
+      name: 'close',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The document will be permanently deleted!`
+  String get documentDeletionWarning {
+    return Intl.message(
+      'The document will be permanently deleted!',
+      name: 'documentDeletionWarning',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The selected documents will be permanently deleted!`
+  String get multipleDocumentDeletionWarning {
+    return Intl.message(
+      'The selected documents will be permanently deleted!',
+      name: 'multipleDocumentDeletionWarning',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Untitled document`
+  String get untitledDocument {
+    return Intl.message(
+      'Untitled document',
+      name: 'untitledDocument',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No date`
+  String get noDate {
+    return Intl.message(
+      'No date',
+      name: 'noDate',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Leave the app?`
+  String get leaveApp {
+    return Intl.message(
+      'Leave the app?',
+      name: 'leaveApp',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Leave`
+  String get leave {
+    return Intl.message(
+      'Leave',
+      name: 'leave',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Delete {count} document?`
+  String deleteDocumentsQuestion(Object count) {
+    return Intl.message(
+      'Delete $count document?',
+      name: 'deleteDocumentsQuestion',
+      desc: '',
+      args: [count],
+    );
+  }
+
+  /// `Delete {count} documents?`
+  String deleteDocumentsPluralQuestion(Object count) {
+    return Intl.message(
+      'Delete $count documents?',
+      name: 'deleteDocumentsPluralQuestion',
+      desc: '',
+      args: [count],
+    );
+  }
+
+  /// `Delete {document}?`
+  String deleteDocument(Object document) {
+    return Intl.message(
+      'Delete $document?',
+      name: 'deleteDocument',
+      desc: '',
+      args: [document],
+    );
+  }
+
+  /// `Confirm`
+  String get confirm {
+    return Intl.message(
+      'Confirm',
+      name: 'confirm',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Image`
+  String get image {
+    return Intl.message(
+      'Image',
+      name: 'image',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Recalculate`
+  String get recalculate {
+    return Intl.message(
+      'Recalculate',
+      name: 'recalculate',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Scan`
+  String get scan {
+    return Intl.message(
+      'Scan',
+      name: 'scan',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Header`
+  String get header {
+    return Intl.message(
+      'Header',
+      name: 'header',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Table`
+  String get table {
+    return Intl.message(
+      'Table',
+      name: 'table',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Capture`
+  String get capture {
+    return Intl.message(
+      'Capture',
+      name: 'capture',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Remark`
+  String get remark {
+    return Intl.message(
+      'Remark',
+      name: 'remark',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Selection required`
+  String get selection_required {
+    return Intl.message(
+      'Selection required',
+      name: 'selection_required',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Ready`
+  String get ready {
+    return Intl.message(
+      'Ready',
+      name: 'ready',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Generate`
+  String get generate {
+    return Intl.message(
+      'Generate',
+      name: 'generate',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Report`
+  String get report {
+    return Intl.message(
+      'Report',
+      name: 'report',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Upload was canceled`
+  String get uploadCanceled {
+    return Intl.message(
+      'Upload was canceled',
+      name: 'uploadCanceled',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Add`
+  String get add {
+    return Intl.message(
+      'Add',
+      name: 'add',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No date selected`
+  String get noDateSelected {
+    return Intl.message(
+      'No date selected',
+      name: 'noDateSelected',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Month`
+  String get month {
+    return Intl.message(
+      'Month',
+      name: 'month',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Change date`
+  String get changeDate {
+    return Intl.message(
+      'Change date',
+      name: 'changeDate',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No connection to the server`
+  String get noConnectionToServer {
+    return Intl.message(
+      'No connection to the server',
+      name: 'noConnectionToServer',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Unknown error`
+  String get unknownError {
+    return Intl.message(
+      'Unknown error',
+      name: 'unknownError',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Error`
+  String get error {
+    return Intl.message(
+      'Error',
+      name: 'error',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Remove '{filename}'?`
+  String removeFile(Object filename) {
+    return Intl.message(
+      'Remove \'$filename\'?',
+      name: 'removeFile',
+      desc: '',
+      args: [filename],
+    );
+  }
+
+  /// `Remove`
+  String get remove {
+    return Intl.message(
+      'Remove',
+      name: 'remove',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Drop here`
+  String get dropHere {
+    return Intl.message(
+      'Drop here',
+      name: 'dropHere',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Access Denied`
+  String get accessDeniedTitle {
+    return Intl.message(
+      'Access Denied',
+      name: 'accessDeniedTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The app needs permission to access photos from your gallery.`
+  String get accessDeniedContent {
+    return Intl.message(
+      'The app needs permission to access photos from your gallery.',
+      name: 'accessDeniedContent',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Open Settings`
+  String get openSettings {
+    return Intl.message(
+      'Open Settings',
+      name: 'openSettings',
       desc: '',
       args: [],
     );

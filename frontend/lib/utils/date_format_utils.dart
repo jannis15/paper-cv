@@ -1,5 +1,5 @@
 import 'package:intl/intl.dart';
 
-final dateFormatDateTime = DateFormat('dd.MM.yy HH:mm');
+DateFormat dateFormatDateTime(String locale) => DateFormat.yMd(locale).add_jm();
 
 DateFormat dateFormatWeekdayDate(String locale) => DateFormat.yMEd(locale);

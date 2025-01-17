@@ -5,6 +5,8 @@ import 'package:paper_cv/utils/alert_dialog.dart';
 import 'package:paper_cv/utils/file_picker_models.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+import '../generated/l10n.dart';
+
 abstract class FilePickerHelper {
   static Future<List<SelectedFile>> pickImageSelectedFile(BuildContext context, {required bool allowMultiple}) async {
     final List<SelectedFile> images = [];
@@ -43,9 +45,9 @@ abstract class FilePickerHelper {
       if (context.mounted) {
         final AlertOption? result = await showAlertDialog(
           context,
-          title: 'Zugriff verweigert',
-          content: 'Die App benötigt die Berechtigung, um Fotos aus Ihrer Galerie nutzen zu können',
-          optionData: [AlertOptionData.yes(customText: 'Einstellungen öffnen')],
+          title: S.current.accessDeniedTitle,
+          content: S.current.accessDeniedContent,
+          optionData: [AlertOptionData.yes(customText: S.current.openSettings)],
           barrierDismissible: true,
         );
         if (result != null && result == AlertOption.yes) {

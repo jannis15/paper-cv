@@ -3,6 +3,7 @@ import 'package:paper_cv/config/config.dart';
 import 'package:paper_cv/utils/list_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_logs/flutter_logs.dart';
+import '../generated/l10n.dart';
 import 'mobile_system.dart' if (dart.library.html) 'web_system.dart';
 
 GlobalKey<NavigatorState> navigatorKey = GlobalKey();
@@ -48,7 +49,7 @@ Future<void> logException(Object e, StackTrace stackTrace, {String subTag = ''})
 void showException(Object e) {
   if (e is DioException) {
     if ([DioExceptionType.connectionTimeout, DioExceptionType.connectionError].contains(e.type)) {
-      showError('Keine Verbindung zum Server', icon: Icons.wifi_off);
+      showError(S.current.noConnectionToServer, icon: Icons.wifi_off);
     } else {
       final errorText = e.response?.data != null && e.response!.data!['detail'] != null
           ? e.response!.data['detail']
@@ -56,13 +57,13 @@ void showException(Object e) {
               ? e.error.toString()
               : e.response?.statusCode != null
                   ? '${e.response?.statusCode} - ${e.response?.statusMessage}'
-                  : 'Unbekannter Fehler';
+                  : S.current.unknownError;
       showError(errorText);
     }
   } else if (e is FormatException) {
     showError(e.message);
   } else {
-    showError('Fehler: $e');
+    showError('${S.current.error}: $e');
   }
 }
 

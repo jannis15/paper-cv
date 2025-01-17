@@ -17,6 +17,8 @@ import 'package:paper_cv/utils/widget_utils.dart';
 import "package:flutter/material.dart";
 import 'package:paper_cv/utils/mobile_access_file.dart' if (dart.library.html) 'package:paper_cv/utils/web_access_file.dart';
 
+import '../generated/l10n.dart';
+
 class FloorAttachmentCard extends StatefulWidget {
   final String title;
   final List<SelectedFile> files;
@@ -32,7 +34,7 @@ class FloorAttachmentCard extends StatefulWidget {
   final bool disablePickFile;
   final Widget? infoWidget;
 
-  const FloorAttachmentCard({
+  FloorAttachmentCard({
     super.key,
     required this.title,
     required this.files,
@@ -45,9 +47,10 @@ class FloorAttachmentCard extends StatefulWidget {
     this.disablePickFile = false,
     this.iconData = Icons.add,
     this.iconData2,
-    this.iconText = 'Hinzufügen',
+    String? iconText,
     this.infoWidget,
-  }) : assert((iconData2 == null && onPickFiles2 == null) || (iconData2 != null && onPickFiles2 != null), 'FloorAttachmentCard wrong parameters!');
+  })  : assert((iconData2 == null && onPickFiles2 == null) || (iconData2 != null && onPickFiles2 != null), 'FloorAttachmentCard wrong parameters!'),
+        iconText = iconText ?? S.current.add;
 
   @override
   State<FloorAttachmentCard> createState() => FloorAttachmentCardState();
@@ -155,10 +158,10 @@ class FloorAttachmentCardState extends State<FloorAttachmentCard> {
               onPressed: () async {
                 final alertResult = await showAlertDialog(
                   context,
-                  title: "'${file.filename}' entfernen?",
+                  title: S.current.removeFile(file.filename),
                   optionData: [
                     AlertOptionData.cancel(),
-                    AlertOptionData.yes(customText: 'Entfernen'),
+                    AlertOptionData.yes(customText: S.current.remove),
                   ],
                 );
                 if (alertResult == AlertOption.yes) {

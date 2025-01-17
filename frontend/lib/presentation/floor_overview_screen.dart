@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:paper_cv/components/floor_attachment_card.dart';
 import 'package:paper_cv/components/floor_buttons.dart';
 import 'package:paper_cv/components/floor_card.dart';
@@ -31,7 +32,9 @@ import 'package:flutter/material.dart';
 import 'package:timeago_flutter/timeago_flutter.dart';
 import 'package:paper_cv/generated/l10n.dart';
 
-class FloorOverviewScreen extends StatefulWidget {
+import '../config/settings_notifier.dart';
+
+class FloorOverviewScreen extends ConsumerStatefulWidget {
   final String? documentId;
 
   const FloorOverviewScreen({
@@ -40,10 +43,10 @@ class FloorOverviewScreen extends StatefulWidget {
   });
 
   @override
-  State<FloorOverviewScreen> createState() => _FloorOverviewScreenState();
+  ConsumerState<FloorOverviewScreen> createState() => _FloorOverviewScreenState();
 }
 
-class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
+class _FloorOverviewScreenState extends ConsumerState<FloorOverviewScreen> {
   final GlobalKey<FloorAttachmentCardState> _capturesKey = GlobalKey();
   final CancelToken _cancelToken = CancelToken();
   late bool _isLoading;
@@ -66,7 +69,7 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
 
   @override
   void dispose() {
-    _cancelToken.cancel('Hochladen wurde abgebrochen');
+    _cancelToken.cancel(S.current.uploadCanceled);
     super.dispose();
   }
 
@@ -99,6 +102,7 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final settings = ref.watch(settingsNotifierProvider);
     Widget buildDisabledChild({required Widget child}) => IntrinsicHeight(
           child: FloorLoaderOverlay(
             loading: true,
@@ -117,10 +121,10 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
                   final fileBytes = await file.readAsBytes();
                   if (!(ImageUtils.isImage(fileBytes))) continue;
                   final now = DateTime.now();
-                  final String formattedDate = dateFormatDateTime.format(now);
+                  final String formattedDate = dateFormatDateTime(settings.locale).format(now);
                   files.add(
                     SelectedFile(
-                      filename: 'Aufnahme $formattedDate.jpg',
+                      filename: '${S.current.capture} $formattedDate.jpg',
                       data: fileBytes,
                       createdAt: now,
                       modifiedAt: now,
@@ -134,7 +138,7 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
           },
           child: FloorAttachmentCard(
             key: _capturesKey,
-            title: 'Aufnahme',
+            title: S.current.capture,
             files: _form.captures,
             iconData: Icons.add_a_photo,
             iconData2: Icons.perm_media,
@@ -142,8 +146,8 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
               final file = await FloorFilePicker.pickFile(context, pickerOption: FilePickerOption.camera);
               if (file == null) return null;
               final now = DateTime.now();
-              final String formattedDate = dateFormatDateTime.format(now);
-              file.filename = 'Aufnahme $formattedDate.jpg';
+              final String formattedDate = dateFormatDateTime(settings.locale).format(now);
+              file.filename = '${S.current.capture} $formattedDate.jpg';
               file.fileType = FileType.capture;
               return [file];
             },
@@ -151,8 +155,8 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
               final files = await FilePickerHelper.pickImageSelectedFile(context, allowMultiple: true);
               for (final file in files) {
                 final now = DateTime.now();
-                final String formattedDate = dateFormatDateTime.format(now);
-                file.filename = 'Aufnahme $formattedDate.jpg';
+                final String formattedDate = dateFormatDateTime(settings.locale).format(now);
+                file.filename = '${S.current.capture} $formattedDate.jpg';
                 file.fileType = FileType.capture;
               }
               return files;
@@ -202,10 +206,10 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
         );
 
     Widget buildScanCard() => FloorAttachmentCard(
-          title: 'Scan',
+          title: S.current.scan,
           files: _form.scans,
           iconData: Icons.cloud_upload,
-          iconText: 'Hochladen',
+          iconText: S.current.recalculate,
           onPickFiles: () async {
             final result = <SelectedFile>[];
             for (final capture in _form.captures) {
@@ -219,7 +223,7 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
                 ),
                 cancelToken: _cancelToken,
               );
-              final newSelectedFile = scanResult.toSelectedFile();
+              final newSelectedFile = scanResult.toSelectedFile(settings.locale);
               result.add(newSelectedFile);
             }
             return result;
@@ -245,7 +249,7 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
                     shape: StadiumBorder(side: BorderSide(color: _form.selectionsReady ? Colors.green : Colors.amber)),
                   ),
                   child: Text(
-                    _form.selectionsReady ? 'Bereit' : 'Selektion erforderlich',
+                    _form.selectionsReady ? S.current.ready : S.current.selection_required,
                     style: textTheme.titleMedium?.copyWith(color: _form.selectionsReady ? Colors.green : Colors.amber),
                   ),
                 )
@@ -253,17 +257,17 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
         );
 
     Widget buildReportCard() => FloorAttachmentCard(
-          title: 'Bericht',
+          title: S.current.document,
           files: _form.reports,
           iconData: Icons.auto_awesome,
-          iconText: 'Generieren',
+          iconText: S.current.generate,
           onPickFiles: () async {
             Future<SelectedFile> _createPdf() async {
               final pdfData = await FloorRepository.createPdf(_form);
               final now = DateTime.now();
-              final String formattedDate = dateFormatDateTime.format(now);
+              final String formattedDate = dateFormatDateTime(settings.locale).format(now);
               final selectedFile = SelectedFile(
-                filename: 'Bericht $formattedDate.pdf',
+                filename: '${S.current.report} $formattedDate.pdf',
                 data: pdfData,
                 fileType: FileType.report,
                 createdAt: now,
@@ -274,7 +278,7 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
 
             final results = await FutureAggregator.waitForAll<SelectedFile>([
               ..._form.scans.map(
-                (scan) => FloorRepository.exportXLSX(ScanResultDto.fromJson(jsonDecode(utf8.decode(scan.data)))),
+                (scan) => FloorRepository.exportXLSX(ScanResultDto.fromJson(jsonDecode(utf8.decode(scan.data))), locale: settings.locale),
               ),
               _createPdf(),
             ]);
@@ -342,12 +346,14 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
                                       size: AppSizes.kSubIconSize,
                                     ),
                                     Timeago(
-                                        locale: 'de',
+                                        locale: settings.locale,
                                         date: _form.modifiedAt!,
                                         builder: (context, value) {
                                           final now = DateTime.now();
                                           return Text(
-                                            now.difference(_form.modifiedAt!).inDays > 7 ? dateFormatDateTime.format(_form.modifiedAt!) : value,
+                                            now.difference(_form.modifiedAt!).inDays > 7
+                                                ? dateFormatDateTime(settings.locale).format(_form.modifiedAt!)
+                                                : value,
                                             style: textTheme.labelMedium?.copyWith(color: colorScheme.outline),
                                           );
                                         }),
@@ -360,7 +366,7 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
                                     Row(
                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                       children: [
-                                        Text('Bemerkung', style: textTheme.titleLarge),
+                                        Text(S.current.remark, style: textTheme.titleLarge),
                                         FloorIconButton(
                                           iconData: _showDocumentDetails ? Icons.expand_less : Icons.expand_more,
                                           onPressed: () {
@@ -385,10 +391,10 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
                                                     _form.title = value;
                                                     _setIsDirty();
                                                   },
-                                                  decoration: outlinedInputDecoration(labelText: 'Titel'),
+                                                  decoration: outlinedInputDecoration(labelText: S.current.title),
                                                 ),
                                                 FloorDatePicker(
-                                                  labelText: 'Dokumentdatum',
+                                                  labelText: S.current.documentDate,
                                                   value: _form.documentDate,
                                                   onSetValue: (dateTime) {
                                                     _form.documentDate = dateTime;
@@ -403,7 +409,7 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
                                                     _form.notes = value;
                                                     _setIsDirty();
                                                   },
-                                                  decoration: outlinedInputDecoration(labelText: 'Notizen'),
+                                                  decoration: outlinedInputDecoration(labelText: S.current.document),
                                                   minLines: 4,
                                                   maxLines: null,
                                                 ),

@@ -5,7 +5,7 @@ import 'package:paper_cv/components/floor_layout_body.dart';
 import 'package:paper_cv/config/config.dart';
 import 'package:paper_cv/data/models/floor_enums.dart';
 import 'package:paper_cv/domain/floor_models.dart';
-import 'package:paper_cv/selection_extension.dart';
+import 'package:paper_cv/utils/selection_extension.dart';
 import 'package:paper_cv/utils/file_picker_models.dart';
 import 'package:paper_cv/utils/list_utils.dart';
 import 'package:paper_cv/utils/math_utils.dart';
@@ -206,7 +206,7 @@ class _FloorTableSelectionScreenState extends State<FloorTableSelectionScreen> {
     Widget buildConfirmButton() => FloorButton(
           type: !_isFirstBuild && (_headerSelection.isSet && _tableSelection.isSet) ? FloorButtonType.filled : FloorButtonType.outlined,
           iconData: Icons.check,
-          text: 'Bestätigen',
+          text: S.current.confirm,
           onPressed: _saveChanges,
         );
 
@@ -215,7 +215,7 @@ class _FloorTableSelectionScreenState extends State<FloorTableSelectionScreen> {
           type: _selectionType == SelectionType.header ? FloorButtonType.filled : FloorButtonType.outlined,
           foregroundColor: _selectionType == SelectionType.header ? Color(0xFF212121) : null,
           backgroundColor: _selectionType == SelectionType.header ? Colors.orange : null,
-          text: 'Kopfzeile',
+          text: S.current.header,
           onPressed: () {
             _selectionType = SelectionType.header;
             setState(() {});
@@ -227,7 +227,7 @@ class _FloorTableSelectionScreenState extends State<FloorTableSelectionScreen> {
           type: _selectionType == SelectionType.table ? FloorButtonType.filled : FloorButtonType.outlined,
           foregroundColor: _selectionType == SelectionType.table ? Colors.white : null,
           backgroundColor: _selectionType == SelectionType.table ? Colors.blue : null,
-          text: 'Tabelle',
+          text: S.current.table,
           onPressed: () {
             _selectionType = SelectionType.table;
             setState(() {});
@@ -235,7 +235,7 @@ class _FloorTableSelectionScreenState extends State<FloorTableSelectionScreen> {
         );
 
     return FloorLayoutBody(
-      title: Text('Aufnahme'),
+      title: Text(S.current.capture),
       actions: useDesktopLayout ? null : [buildConfirmButton()],
       sideChildren: useDesktopLayout
           ? [
@@ -265,7 +265,7 @@ class _FloorTableSelectionScreenState extends State<FloorTableSelectionScreen> {
                     type: _selectionType == SelectionType.header ? FloorButtonType.filled : FloorButtonType.outlined,
                     foregroundColor: _selectionType == SelectionType.header ? Color(0xFF212121) : null,
                     backgroundColor: _selectionType == SelectionType.header ? Colors.orange : null,
-                    text: 'Kopfzeile',
+                    text: S.current.header,
                     onPressed: () {
                       _selectionType = SelectionType.header;
                       setState(() {});
@@ -276,7 +276,7 @@ class _FloorTableSelectionScreenState extends State<FloorTableSelectionScreen> {
                     type: _selectionType == SelectionType.table ? FloorButtonType.filled : FloorButtonType.outlined,
                     foregroundColor: _selectionType == SelectionType.table ? Colors.white : null,
                     backgroundColor: _selectionType == SelectionType.table ? Colors.blue : null,
-                    text: 'Tabelle',
+                    text: S.current.table,
                     onPressed: () {
                       _selectionType = SelectionType.table;
                       setState(() {});
@@ -326,7 +326,6 @@ class _FloorTableSelectionScreenState extends State<FloorTableSelectionScreen> {
 
           if (!_isFirstBuild) {
             resizeSelectionPaint(_tableSelection);
-
             resizeSelectionPaint(_headerSelection);
           }
           _oldImageRect = imageRect;

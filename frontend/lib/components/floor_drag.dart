@@ -5,6 +5,8 @@ import 'package:paper_cv/config/config.dart';
 import 'package:paper_cv/utils/list_utils.dart';
 import 'package:paper_cv/utils/widget_utils.dart';
 
+import '../generated/l10n.dart';
+
 class FloorDrag extends StatefulWidget {
   final void Function(DropDoneDetails detail)? onDragDone;
   final Widget child;
@@ -59,7 +61,7 @@ class _FloorDragState extends State<FloorDrag> {
                     children: [
                       Icon(Icons.file_download, color: colorScheme.primary, size: AppSizes.kComponentHeight),
                       Text(
-                        'Hier ablegen',
+                        S.current.dropHere,
                         style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
                       )
                     ],
