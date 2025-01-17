@@ -50,21 +50,231 @@ class S {
     return Localizations.of<S>(context, S);
   }
 
-  /// `Hello`
+  /// `Settings`
+  String get settings {
+    return Intl.message(
+      'Settings',
+      name: 'settings',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Back`
+  String get back {
+    return Intl.message(
+      'Back',
+      name: 'back',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Language`
+  String get language {
+    return Intl.message(
+      'Language',
+      name: 'language',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Legal`
+  String get legal {
+    return Intl.message(
+      'Legal',
+      name: 'legal',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Licenses`
+  String get licenses {
+    return Intl.message(
+      'Licenses',
+      name: 'licenses',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Create`
+  String get create {
+    return Intl.message(
+      'Create',
+      name: 'create',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Document date`
+  String get documentDate {
+    return Intl.message(
+      'Document date',
+      name: 'documentDate',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Title`
   String get title {
     return Intl.message(
-      'Hello',
+      'Title',
       name: 'title',
       desc: '',
       args: [],
     );
   }
 
-  /// `Welcome!`
-  String get greeting {
+  /// `Modified at`
+  String get modifiedAt {
     return Intl.message(
-      'Welcome!',
-      name: 'greeting',
+      'Modified at',
+      name: 'modifiedAt',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `List`
+  String get list {
+    return Intl.message(
+      'List',
+      name: 'list',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Tile`
+  String get tile {
+    return Intl.message(
+      'Tile',
+      name: 'tile',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Example`
+  String get example {
+    return Intl.message(
+      'Example',
+      name: 'example',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Document`
+  String get document {
+    return Intl.message(
+      'Document',
+      name: 'document',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Documents`
+  String get documents {
+    return Intl.message(
+      'Documents',
+      name: 'documents',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Cancel`
+  String get cancel {
+    return Intl.message(
+      'Cancel',
+      name: 'cancel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Delete`
+  String get delete {
+    return Intl.message(
+      'Delete',
+      name: 'delete',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Select`
+  String get select {
+    return Intl.message(
+      'Select',
+      name: 'select',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No documents existing`
+  String get noDocumentsExisting {
+    return Intl.message(
+      'No documents existing',
+      name: 'noDocumentsExisting',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Yes`
+  String get yes {
+    return Intl.message(
+      'Yes',
+      name: 'yes',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No`
+  String get no {
+    return Intl.message(
+      'No',
+      name: 'no',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Unknown AlertOption`
+  String get unknownAlertOption {
+    return Intl.message(
+      'Unknown AlertOption',
+      name: 'unknownAlertOption',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `document selected`
+  String get documentSelected {
+    return Intl.message(
+      'document selected',
+      name: 'documentSelected',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `documents selected`
+  String get documentsSelected {
+    return Intl.message(
+      'documents selected',
+      name: 'documentsSelected',
       desc: '',
       args: [],
     );

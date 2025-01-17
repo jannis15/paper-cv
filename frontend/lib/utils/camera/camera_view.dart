@@ -311,7 +311,7 @@ class _CameraViewState extends State<_CameraView> {
                       width: AppSizes.kComponentHeight + AppSizes.kGap,
                       child: IconButton(
                         padding: EdgeInsets.zero,
-                        tooltip: 'Zurück',
+                        tooltip: S.current.back,
                         onPressed: () {
                           if (!_isPerformingAction) Navigator.of(context).pop();
                         },

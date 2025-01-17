@@ -29,6 +29,7 @@ import 'package:paper_cv/utils/navigator_utils.dart';
 import 'package:paper_cv/utils/widget_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:timeago_flutter/timeago_flutter.dart';
+import 'package:paper_cv/generated/l10n.dart';
 
 class FloorOverviewScreen extends StatefulWidget {
   final String? documentId;
@@ -305,11 +306,11 @@ class _FloorOverviewScreenState extends State<FloorOverviewScreen> {
       child: FloorLoaderOverlay(
         loading: _isSaving,
         child: FloorLayoutBody(
-          title: useDesktopLayout ? Text('Dokument') : null,
+          title: useDesktopLayout ? Text(S.current.document) : null,
           customPop: tryCloseForm,
           sideChildren: [
             FloorTransparentButton(
-              text: 'Zurück',
+              text: S.current.back,
               iconData: Icons.chevron_left,
               onPressed: tryCloseForm,
             ),

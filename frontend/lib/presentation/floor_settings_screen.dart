@@ -1,26 +1,29 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:paper_cv/components/floor_buttons.dart';
 import 'package:paper_cv/components/floor_card.dart';
+import 'package:paper_cv/components/floor_dropdown.dart';
 import 'package:paper_cv/components/floor_layout_body.dart';
 import 'package:paper_cv/config/config.dart';
+import 'package:paper_cv/config/settings_notifier.dart';
 import 'package:paper_cv/utils/list_utils.dart';
 
-class FloorSettingsScreen extends StatefulWidget {
+import '../config/supported_locales.dart';
+import '../generated/l10n.dart';
+
+class FloorSettingsScreen extends ConsumerWidget {
   const FloorSettingsScreen({super.key});
 
   @override
-  State<FloorSettingsScreen> createState() => _FloorSettingsScreenState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final settings = ref.watch(settingsNotifierProvider);
+    final settingsNotifier = ref.watch(settingsNotifierProvider.notifier);
 
-class _FloorSettingsScreenState extends State<FloorSettingsScreen> {
-  @override
-  Widget build(BuildContext context) {
     return FloorLayoutBody(
-      title: Text('Einstellungen'),
+      title: Text(S.current.settings),
       sideChildren: [
         FloorTransparentButton(
-          text: 'Zurück',
+          text: S.current.back,
           iconData: Icons.chevron_left,
           onPressed: () => Navigator.of(context).pop(),
         ),
@@ -32,18 +35,64 @@ class _FloorSettingsScreenState extends State<FloorSettingsScreen> {
           child: SizedBox(
             width: AppSizes.kDesktopWidth,
             child: ColumnGap(
-              gap: AppSizes.kSmallGap,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
+              gap: AppSizes.kGap,
               children: [
-                FloorCard(
-                  onTap: () => showLicensePage(context: context),
-                  child: RowGap(
-                    gap: AppSizes.kGap,
-                    children: [
-                      Icon(FontAwesomeIcons.award),
-                      Expanded(child: Text('Lizenzen')),
-                    ],
-                  ),
+                ColumnGap(
+                  gap: AppSizes.kSmallGap,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(S.current.language, style: Theme.of(context).textTheme.labelMedium),
+                    FloorDropdown<String>(
+                      iconData: Icons.language,
+                      items: SupportedLocale.values
+                          .map(
+                            (SupportedLocale locale) => DropdownMenuItem<String>(
+                              value: locale.key,
+                              child: RowGap(
+                                gap: AppSizes.kGap,
+                                children: [
+                                  Text(
+                                    locale.title,
+                                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurface),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          )
+                          .toList(),
+                      value: settings.locale,
+                      onChanged: (value) {
+                        settingsNotifier.setLocale(value!);
+                      },
+                    ),
+                  ],
+                ),
+                ColumnGap(
+                  gap: AppSizes.kSmallGap,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(S.current.legal, style: Theme.of(context).textTheme.labelMedium),
+                    SizedBox(
+                      height: AppSizes.kComponentHeight + 2 * AppSizes.kSmallGap,
+                      child: FloorCard(
+                        onTap: () => showLicensePage(context: context),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: RowGap(
+                                gap: AppSizes.kGap,
+                                children: [
+                                  Icon(Icons.copyright),
+                                  Expanded(child: Text(S.current.licenses)),
+                                ],
+                              ),
+                            ),
+                            Icon(Icons.chevron_right, size: AppSizes.kIconSize),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),

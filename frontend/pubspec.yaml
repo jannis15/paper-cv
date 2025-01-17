@@ -50,7 +50,8 @@ dev_dependencies:
   freezed: ^2.5.7
   json_serializable: ^6.8.0
   drift_dev: ^2.20.3
-  intl_utils: ^2.8.8
+  intl_utils: ^2.8.8 # dart run intl_utils:generate
+
 flutter:
   assets:
     - assets/

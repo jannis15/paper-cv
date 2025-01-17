@@ -9,7 +9,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'config/settings.dart';
 import 'config/settings_notifier.dart';
 import 'config/supported_locales.dart';
 
@@ -63,7 +62,7 @@ class MyApp extends ConsumerWidget {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      supportedLocales: supportedLocales,
+      supportedLocales: SupportedLocale.values.map((value) => value.locale).toList(),
       locale: Locale(settings.locale),
       initialRoute: '/home',
       routes: {

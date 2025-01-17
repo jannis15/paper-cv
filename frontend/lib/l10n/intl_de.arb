@@ -1,5 +1,25 @@
 {
   "@@locale": "de",
-  "title": "Hallo",
-  "greeting": "Willkommen!"
+  "settings": "Einstellungen",
+  "back": "Zurück",
+  "language": "Sprache",
+  "legal": "Rechtliches",
+  "licenses": "Lizenzen",
+  "create": "Erfassen",
+  "documentDate": "Dokumentdatum",
+  "title": "Titel",
+  "modifiedAt": "Zuletzt bearbeitet",
+  "list": "Liste",
+  "tile": "Kachel",
+  "example": "Beispiel",
+  "document": "Dokument",
+  "cancel": "Abbrechen",
+  "delete": "Löschen",
+  "select": "Auswählen",
+  "noDocumentsExisting": "Keine Dokumente vorhanden",
+  "yes": "Ja",
+  "no": "Nein",
+  "unknownAlertOption": "AlertOption unbekannt",
+  "documentSelected": "Dokument ausgewählt",
+  "documentsSelected": "Dokumente ausgewählt"
 }

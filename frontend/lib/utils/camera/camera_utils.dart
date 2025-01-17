@@ -1,5 +1,6 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
+import 'package:paper_cv/generated/l10n.dart';
 import 'package:paper_cv/config/config.dart';
 import 'package:paper_cv/utils/alert_dialog.dart';
 import 'package:flutter/material.dart';

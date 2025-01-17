@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../generated/l10n.dart';
+
 enum AlertOption {
   yes,
   no,
@@ -8,13 +10,13 @@ enum AlertOption {
   String get optionText {
     switch (this) {
       case AlertOption.yes:
-        return 'Ja';
+        return S.current.yes;
       case AlertOption.no:
-        return 'Nein';
+        return S.current.no;
       case AlertOption.cancel:
-        return 'Abbrechen';
+        return S.current.cancel;
       default:
-        throw Exception('AlertOption unbekannt: $this');
+        throw Exception('${S.current.unknownAlertOption}: $this');
     }
   }
 }

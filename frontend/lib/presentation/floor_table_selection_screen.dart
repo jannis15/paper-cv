@@ -11,6 +11,7 @@ import 'package:paper_cv/utils/list_utils.dart';
 import 'package:paper_cv/utils/math_utils.dart';
 import 'package:paper_cv/utils/rect_extension.dart';
 import 'package:paper_cv/utils/widget_utils.dart';
+import 'package:paper_cv/generated/l10n.dart';
 
 class FloorTableSelectionScreen extends StatefulWidget {
   final SelectedFile file;
@@ -239,7 +240,7 @@ class _FloorTableSelectionScreenState extends State<FloorTableSelectionScreen> {
       sideChildren: useDesktopLayout
           ? [
               FloorTransparentButton(
-                text: 'Zurück',
+                text: S.current.back,
                 iconData: Icons.chevron_left,
                 onPressed: Navigator.of(context).pop,
               ),

@@ -22,7 +22,32 @@ class MessageLookup extends MessageLookupByLibrary {
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
-        "greeting": MessageLookupByLibrary.simpleMessage("Willkommen!"),
-        "title": MessageLookupByLibrary.simpleMessage("Hallo")
+        "back": MessageLookupByLibrary.simpleMessage("Zurück"),
+        "cancel": MessageLookupByLibrary.simpleMessage("Abbrechen"),
+        "create": MessageLookupByLibrary.simpleMessage("Erfassen"),
+        "delete": MessageLookupByLibrary.simpleMessage("Löschen"),
+        "document": MessageLookupByLibrary.simpleMessage("Dokument"),
+        "documentDate": MessageLookupByLibrary.simpleMessage("Dokumentdatum"),
+        "documentSelected":
+            MessageLookupByLibrary.simpleMessage("Dokument ausgewählt"),
+        "documentsSelected":
+            MessageLookupByLibrary.simpleMessage("Dokumente ausgewählt"),
+        "example": MessageLookupByLibrary.simpleMessage("Beispiel"),
+        "language": MessageLookupByLibrary.simpleMessage("Sprache"),
+        "legal": MessageLookupByLibrary.simpleMessage("Rechtliches"),
+        "licenses": MessageLookupByLibrary.simpleMessage("Lizenzen"),
+        "list": MessageLookupByLibrary.simpleMessage("Liste"),
+        "modifiedAt":
+            MessageLookupByLibrary.simpleMessage("Zuletzt bearbeitet"),
+        "no": MessageLookupByLibrary.simpleMessage("Nein"),
+        "noDocumentsExisting":
+            MessageLookupByLibrary.simpleMessage("Keine Dokumente vorhanden"),
+        "select": MessageLookupByLibrary.simpleMessage("Auswählen"),
+        "settings": MessageLookupByLibrary.simpleMessage("Einstellungen"),
+        "tile": MessageLookupByLibrary.simpleMessage("Kachel"),
+        "title": MessageLookupByLibrary.simpleMessage("Titel"),
+        "unknownAlertOption":
+            MessageLookupByLibrary.simpleMessage("AlertOption unbekannt"),
+        "yes": MessageLookupByLibrary.simpleMessage("Ja")
       };
 }

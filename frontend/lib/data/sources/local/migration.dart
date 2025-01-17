@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:paper_cv/data/models/floor_enums.dart';
 import 'package:paper_cv/data/sources/local/database.dart';
 import 'package:paper_cv/domain/floor_models.dart';
+import 'package:paper_cv/generated/l10n.dart';
 import 'package:paper_cv/utils/file_picker_models.dart';
 
 extension Migration on FloorDatabase {
@@ -17,13 +18,13 @@ extension Migration on FloorDatabase {
 
           final byteData = await rootBundle.load('assets/example.jpg');
           final DocumentForm form = DocumentForm(
-            title: 'Dokument',
+            title: S.current.document,
             createdAt: now,
             modifiedAt: now,
             documentDate: now,
             captures: [
               SelectedFile(
-                filename: 'Beispiel.jpg',
+                filename: '${S.current.example}.jpg',
                 data: byteData.buffer.asUint8List(),
                 createdAt: now,
                 modifiedAt: now,

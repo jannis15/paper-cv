@@ -10,7 +10,7 @@ class SettingsNotifier extends StateNotifier<Settings> {
     state = state.copyWith(locale: locale);
   }
 
-  Future<void> toggleAdBanner(bool showAdBanner) async {
+  Future<void> setShowAdBanner(bool showAdBanner) async {
     await SettingsRepository.instance.saveShowAdBanner(showAdBanner);
     state = state.copyWith(showAdBanner: showAdBanner);
   }

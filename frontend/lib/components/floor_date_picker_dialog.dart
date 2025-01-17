@@ -1,5 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:paper_cv/components/floor_buttons.dart';
 import 'package:paper_cv/config/config.dart';
 import 'package:paper_cv/utils/date_format_utils.dart';
@@ -7,17 +8,19 @@ import 'package:paper_cv/utils/list_utils.dart';
 import 'package:paper_cv/utils/widget_utils.dart';
 import 'package:table_calendar/table_calendar.dart';
 
-class FloorDatePickerDialog extends StatefulWidget {
+import '../config/settings_notifier.dart';
+
+class FloorDatePickerDialog extends ConsumerStatefulWidget {
   final DateTime? selectedDay;
   final List<DateTime>? holidays;
 
   const FloorDatePickerDialog({super.key, this.selectedDay, this.holidays});
 
   @override
-  State<FloorDatePickerDialog> createState() => _FloorDatePickerDialogState();
+  ConsumerState<FloorDatePickerDialog> createState() => _FloorDatePickerDialogState();
 }
 
-class _FloorDatePickerDialogState extends State<FloorDatePickerDialog> {
+class _FloorDatePickerDialogState extends ConsumerState<FloorDatePickerDialog> {
   final CalendarFormat _calendarFormat = CalendarFormat.month;
   late DateTime _focusedDay = widget.selectedDay ?? DateTime.now();
   late DateTime? _selectedDay = widget.selectedDay;
@@ -27,6 +30,7 @@ class _FloorDatePickerDialogState extends State<FloorDatePickerDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final settings = ref.watch(settingsNotifierProvider);
     return Dialog(
       insetPadding: EdgeInsets.all(AppSizes.kGap),
       child: SizedBox(
@@ -43,7 +47,7 @@ class _FloorDatePickerDialogState extends State<FloorDatePickerDialog> {
                 gap: AppSizes.kSmallGap,
                 children: [
                   Text(
-                    _selectedDay != null ? dateFormatWeekdayDate.format(_selectedDay!) : 'Kein Datum ausgewählt',
+                    _selectedDay != null ? dateFormatWeekdayDate(settings.locale).format(_selectedDay!) : 'Kein Datum ausgewählt',
                     style: textTheme.titleMedium?.copyWith(color: _selectedDay != null ? colorScheme.onSurface : colorScheme.outlineVariant),
                   ),
                   SizedBox(

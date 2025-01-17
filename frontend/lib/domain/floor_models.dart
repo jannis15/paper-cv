@@ -1,6 +1,8 @@
 import 'package:paper_cv/data/models/floor_dto_models.dart';
 import 'package:paper_cv/utils/file_picker_models.dart';
 
+import '../generated/l10n.dart';
+
 enum SortDirection {
   descending,
   ascending;
@@ -17,9 +19,9 @@ enum DocumentSortType {
   documentDate;
 
   String get name => switch (this) {
-        DocumentSortType.title => 'Titel',
-        DocumentSortType.modifiedAt => 'Bearbeitungsdatum',
-        DocumentSortType.documentDate => 'Dokumentdatum',
+        DocumentSortType.title => S.current.title,
+        DocumentSortType.modifiedAt => S.current.modifiedAt,
+        DocumentSortType.documentDate => S.current.documentDate,
       };
 }
 
@@ -28,8 +30,8 @@ enum DocumentViewType {
   grid;
 
   String get label => switch (this) {
-        DocumentViewType.list => 'Liste',
-        DocumentViewType.grid => 'Kachel',
+        DocumentViewType.list => S.current.list,
+        DocumentViewType.grid => S.current.tile,
       };
 }
 

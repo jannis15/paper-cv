@@ -15,8 +15,6 @@ import 'package:paper_cv/components/floor_contact_banner.dart';
 import 'package:paper_cv/domain/floor_models.dart';
 import 'package:paper_cv/generated/l10n.dart';
 import 'package:paper_cv/package_info.dart';
-
-// import 'package:paper_cv/presentation/floor_info_screen.dart';
 import 'package:paper_cv/presentation/floor_overview_screen.dart';
 import 'package:paper_cv/presentation/floor_settings_screen.dart';
 import 'package:paper_cv/utils/alert_dialog.dart';
@@ -42,13 +40,14 @@ class _FloorMainScreenState extends ConsumerState<FloorMainScreen> {
   final GlobalKey<FloorToggleSwitchState<DocumentViewType>> _toggleSwitchKey = GlobalKey();
   final ScrollController _scrollController = ScrollController();
   late Stream<List<DocumentPreviewDto>> _previewStream;
-  bool _showBanner = true;
+  late bool _showBanner;
   bool _isSelectionMode = false;
   final Set<DocumentPreviewDto> _selectedDocuments = {};
   DocumentSortType _sortType = DocumentSortType.documentDate;
   SortDirection _sortDirection = SortDirection.descending;
 
-  String get _selectedText => '${_selectedDocuments.length} ${_selectedDocuments.length == 1 ? 'Dokument' : 'Dokumente'} ausgewählt';
+  String get _selectedText =>
+      '${_selectedDocuments.length} ${_selectedDocuments.length == 1 ? S.current.documentSelected : S.current.documentsSelected}';
 
   @override
   void initState() {
@@ -89,7 +88,7 @@ class _FloorMainScreenState extends ConsumerState<FloorMainScreen> {
       content: '${_selectedDocuments.length == 1 ? 'Das Dokument wird' : 'Die Dokumente werden'} dadurch unwiderruflich gelöscht!',
       optionData: [
         AlertOptionData.cancel(),
-        AlertOptionData.yes(customText: 'Löschen'),
+        AlertOptionData.yes(customText: S.current.delete),
       ],
     );
     if (alertOption == AlertOption.yes) {
@@ -104,14 +103,13 @@ class _FloorMainScreenState extends ConsumerState<FloorMainScreen> {
     }
   }
 
-  // void _seeInfo() async => showDialog(context: context, builder: (_) => FloorInfoScreen());
-
   void _openOverviewScreen() async => pushNoAnimation(context, widget: FloorOverviewScreen());
 
   @override
   Widget build(BuildContext context) {
     final settings = ref.watch(settingsNotifierProvider);
     final settingsNotifier = ref.watch(settingsNotifierProvider.notifier);
+    _showBanner = settings.showAdBanner;
 
     Widget buildExampleContainer(DocumentPreviewDto documentPreview) => Container(
           padding: EdgeInsets.symmetric(horizontal: AppSizes.kSmallGap),
@@ -119,7 +117,7 @@ class _FloorMainScreenState extends ConsumerState<FloorMainScreen> {
             shape: StadiumBorder(side: BorderSide(color: colorScheme.outline)),
           ),
           child: Text(
-            'Beispiel',
+            S.current.example,
             overflow: TextOverflow.ellipsis,
             maxLines: 1,
             style: textTheme.titleMedium?.copyWith(color: colorScheme.outline),
@@ -212,7 +210,9 @@ class _FloorMainScreenState extends ConsumerState<FloorMainScreen> {
             DataCell(_buildTableCell(buildTimeago(documentPreview))),
             DataCell(
               _buildTableCell(
-                Text(documentPreview.documentDate != null ? dateFormatWeekdayDate.format(documentPreview.documentDate!) : 'Kein Datum'),
+                Text(documentPreview.documentDate != null
+                    ? dateFormatWeekdayDate(settings.locale).format(documentPreview.documentDate!)
+                    : 'Kein Datum'),
               ),
             ),
           ],
@@ -260,17 +260,17 @@ class _FloorMainScreenState extends ConsumerState<FloorMainScreen> {
                     dividerThickness: 1,
                     columns: [
                       buildSortColumn(
-                        label: 'Titel',
+                        label: S.current.title,
                         sortType: DocumentSortType.title,
                         documentPreviews: documentPreviews,
                       ),
                       buildSortColumn(
-                        label: 'Zuletzt bearbeitet',
+                        label: S.current.modifiedAt,
                         sortType: DocumentSortType.modifiedAt,
                         documentPreviews: documentPreviews,
                       ),
                       buildSortColumn(
-                        label: 'Dokumentdatum',
+                        label: S.current.documentDate,
                         sortType: DocumentSortType.documentDate,
                         documentPreviews: documentPreviews,
                       ),
@@ -396,7 +396,9 @@ class _FloorMainScreenState extends ConsumerState<FloorMainScreen> {
                           ),
                         ),
                         Text(
-                          documentPreview.documentDate != null ? dateFormatWeekdayDate.format(documentPreview.documentDate!) : 'Kein Datum',
+                          documentPreview.documentDate != null
+                              ? dateFormatWeekdayDate(settings.locale).format(documentPreview.documentDate!)
+                              : 'Kein Datum',
                           style: textTheme.titleMedium?.copyWith(color: colorScheme.outline),
                         ),
                       ],
@@ -412,7 +414,7 @@ class _FloorMainScreenState extends ConsumerState<FloorMainScreen> {
                           content: 'Das Dokument wird dadurch unwiderruflich gelöscht!',
                           optionData: [
                             AlertOptionData.cancel(),
-                            AlertOptionData.yes(customText: 'Löschen'),
+                            AlertOptionData.yes(customText: S.current.delete),
                           ],
                         );
                         return alertOption == AlertOption.yes;
@@ -474,7 +476,6 @@ class _FloorMainScreenState extends ConsumerState<FloorMainScreen> {
                 crossAxisAlignment: CrossAxisAlignment.baseline,
                 children: [
                   Text('PaperCV'),
-                  Text(S.current.greeting),
                   Text(
                     '${packageInfo.version}+${packageInfo.buildNumber}',
                     style: textTheme.labelMedium?.copyWith(color: colorScheme.outline),
@@ -483,7 +484,7 @@ class _FloorMainScreenState extends ConsumerState<FloorMainScreen> {
               ),
         actions: [
           FloorAppBarIconButton(
-            tooltip: 'Einstellungen',
+            tooltip: S.current.settings,
             iconData: Icons.settings,
             onPressed: () {
               Navigator.of(context).push(
@@ -496,15 +497,7 @@ class _FloorMainScreenState extends ConsumerState<FloorMainScreen> {
           ),
         ],
         floatingActionButton: useDesktopLayout
-            ? FloatingActionButton(
-                onPressed: () {
-                  if (settings.locale == 'de') {
-                    settingsNotifier.setLocale('en');
-                  } else {
-                    settingsNotifier.setLocale('de');
-                  }
-                },
-              )
+            ? null
             : _isSelectionMode
                 ? RowGap(
                     mainAxisAlignment: MainAxisAlignment.end,
@@ -513,7 +506,7 @@ class _FloorMainScreenState extends ConsumerState<FloorMainScreen> {
                       FloatingActionButton.extended(
                         heroTag: UniqueKey(),
                         icon: Icon(Icons.delete),
-                        label: Text('Löschen'),
+                        label: Text(S.current.delete),
                         backgroundColor: _selectedDocuments.isEmpty ? Color.alphaBlend(colorScheme.surface.withOpacity(.75), Colors.red) : Colors.red,
                         foregroundColor:
                             _selectedDocuments.isEmpty ? Color.alphaBlend(colorScheme.surface.withOpacity(.75), Colors.white) : Colors.white,
@@ -522,7 +515,7 @@ class _FloorMainScreenState extends ConsumerState<FloorMainScreen> {
                       FloatingActionButton.extended(
                         heroTag: UniqueKey(),
                         icon: Icon(Icons.cancel),
-                        label: Text('Abbrechen'),
+                        label: Text(S.current.cancel),
                         backgroundColor: colorScheme.surfaceContainer,
                         foregroundColor: colorScheme.onSurface,
                         onPressed: () {
@@ -537,33 +530,20 @@ class _FloorMainScreenState extends ConsumerState<FloorMainScreen> {
                     mainAxisAlignment: MainAxisAlignment.end,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      // FloatingActionButton.extended(
-                      //   heroTag: UniqueKey(),
-                      //   backgroundColor: colorScheme.surfaceContainer,
-                      //   foregroundColor: colorScheme.onSurface,
-                      //   onPressed: _seeInfo,
-                      //   icon: Icon(Icons.info),
-                      //   label: Text('Info'),
-                      // ),
                       FloatingActionButton.extended(
                         heroTag: UniqueKey(),
                         onPressed: _openOverviewScreen,
                         icon: Icon(Icons.post_add),
-                        label: Text('Erfassen'),
+                        label: Text(S.current.create),
                       )
                     ],
                   ),
         sideChildren: [
           FloorOutlinedButton(
-            text: 'Erfassen',
+            text: S.current.create,
             iconData: Icons.post_add,
             onPressed: _openOverviewScreen,
           ),
-          // FloorTransparentButton(
-          //   text: 'Mehr erfahren',
-          //   iconData: Icons.info,
-          //   onPressed: _seeInfo,
-          // ),
         ],
         child: SingleChildScrollView(
           controller: _scrollController,
@@ -582,9 +562,12 @@ class _FloorMainScreenState extends ConsumerState<FloorMainScreen> {
                         ? Padding(
                             padding: EdgeInsets.only(bottom: AppSizes.kGap),
                             child: FloorContactBanner(
-                                onCloseBanner: () => setState(() {
-                                      _showBanner = false;
-                                    })),
+                              onCloseBanner: () async {
+                                await settingsNotifier.setShowAdBanner(false);
+                                _showBanner = false;
+                                setState(() {});
+                              },
+                            ),
                           )
                         : SizedBox(),
                   ),
@@ -640,7 +623,7 @@ class _FloorMainScreenState extends ConsumerState<FloorMainScreen> {
                         )
                       else if (_toggleSwitchKey.currentState != null && !_isSelectionMode && useDesktopLayout)
                         FloorOutlinedButton(
-                          text: 'Auswählen',
+                          text: S.current.select,
                           onPressed: () {
                             _isSelectionMode = true;
                             setState(() {});

@@ -16,6 +16,7 @@ import 'package:paper_cv/utils/list_utils.dart';
 import 'package:paper_cv/utils/widget_utils.dart';
 
 import '../components/floor_scroll.dart';
+import 'package:paper_cv/generated/l10n.dart';
 
 class FloorEditTableScreen extends StatefulWidget {
   final SelectedFile file;
@@ -170,7 +171,7 @@ class _FloorEditTableScreenState extends State<FloorEditTableScreen> {
         sideChildren: useDesktopLayout
             ? [
                 FloorTransparentButton(
-                  text: 'Zurück',
+                  text: S.current.back,
                   iconData: Icons.chevron_left,
                   onPressed: Navigator.of(context).pop,
                 ),

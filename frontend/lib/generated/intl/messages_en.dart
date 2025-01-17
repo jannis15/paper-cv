@@ -22,7 +22,32 @@ class MessageLookup extends MessageLookupByLibrary {
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
-        "greeting": MessageLookupByLibrary.simpleMessage("Welcome!"),
-        "title": MessageLookupByLibrary.simpleMessage("Hello")
+        "back": MessageLookupByLibrary.simpleMessage("Back"),
+        "cancel": MessageLookupByLibrary.simpleMessage("Cancel"),
+        "create": MessageLookupByLibrary.simpleMessage("Create"),
+        "delete": MessageLookupByLibrary.simpleMessage("Delete"),
+        "document": MessageLookupByLibrary.simpleMessage("Document"),
+        "documentDate": MessageLookupByLibrary.simpleMessage("Document date"),
+        "documentSelected":
+            MessageLookupByLibrary.simpleMessage("document selected"),
+        "documents": MessageLookupByLibrary.simpleMessage("Documents"),
+        "documentsSelected":
+            MessageLookupByLibrary.simpleMessage("documents selected"),
+        "example": MessageLookupByLibrary.simpleMessage("Example"),
+        "language": MessageLookupByLibrary.simpleMessage("Language"),
+        "legal": MessageLookupByLibrary.simpleMessage("Legal"),
+        "licenses": MessageLookupByLibrary.simpleMessage("Licenses"),
+        "list": MessageLookupByLibrary.simpleMessage("List"),
+        "modifiedAt": MessageLookupByLibrary.simpleMessage("Modified at"),
+        "no": MessageLookupByLibrary.simpleMessage("No"),
+        "noDocumentsExisting":
+            MessageLookupByLibrary.simpleMessage("No documents existing"),
+        "select": MessageLookupByLibrary.simpleMessage("Select"),
+        "settings": MessageLookupByLibrary.simpleMessage("Settings"),
+        "tile": MessageLookupByLibrary.simpleMessage("Tile"),
+        "title": MessageLookupByLibrary.simpleMessage("Title"),
+        "unknownAlertOption":
+            MessageLookupByLibrary.simpleMessage("Unknown AlertOption"),
+        "yes": MessageLookupByLibrary.simpleMessage("Yes")
       };
 }

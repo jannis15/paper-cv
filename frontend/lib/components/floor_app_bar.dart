@@ -1,5 +1,6 @@
 import 'package:paper_cv/components/floor_buttons.dart';
 import 'package:paper_cv/config/config.dart';
+import 'package:paper_cv/generated/l10n.dart';
 import 'package:paper_cv/utils/list_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -55,7 +56,7 @@ class FloorAppBar extends ConsumerWidget implements PreferredSizeWidget {
                 if (!noRouteBelow && showBackButton)
                   FloorTransparentButton(
                     iconData: Icons.chevron_left,
-                    text: 'Zurück',
+                    text: S.current.back,
                     onPressed: customPop ?? Navigator.of(context).pop,
                   ),
                 if (title != null) Expanded(child: title!),
