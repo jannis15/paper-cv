@@ -37,6 +37,7 @@
   "deleteDocument": "{document} löschen?",
   "confirm": "Bestätigen",
   "image": "Bild",
+  "calculate": "Berechnen",
   "recalculate": "Neu berechnen",
   "scan": "Scan",
   "header": "Kopfzeile",
@@ -60,5 +61,6 @@
   "dropHere": "Hier ablegen",
   "accessDeniedTitle": "Zugriff verweigert",
   "accessDeniedContent": "Die App benötigt die Berechtigung, um Fotos aus Ihrer Galerie nutzen zu können.",
-  "openSettings": "Einstellungen öffnen"
+  "openSettings": "Einstellungen öffnen",
+  "notes": "Notizen"
 }

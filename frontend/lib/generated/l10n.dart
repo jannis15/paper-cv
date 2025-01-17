@@ -420,6 +420,16 @@ class S {
     );
   }
 
+  /// `Calculate`
+  String get calculate {
+    return Intl.message(
+      'Calculate',
+      name: 'calculate',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Recalculate`
   String get recalculate {
     return Intl.message(
@@ -655,6 +665,16 @@ class S {
     return Intl.message(
       'Open Settings',
       name: 'openSettings',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Notes`
+  String get notes {
+    return Intl.message(
+      'Notes',
+      name: 'notes',
       desc: '',
       args: [],
     );

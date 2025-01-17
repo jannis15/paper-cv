@@ -36,6 +36,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Zugriff verweigert"),
         "add": MessageLookupByLibrary.simpleMessage("Hinzufügen"),
         "back": MessageLookupByLibrary.simpleMessage("Zurück"),
+        "calculate": MessageLookupByLibrary.simpleMessage("Berechnen"),
         "cancel": MessageLookupByLibrary.simpleMessage("Abbrechen"),
         "capture": MessageLookupByLibrary.simpleMessage("Aufnahme"),
         "changeDate": MessageLookupByLibrary.simpleMessage("Datum ändern"),
@@ -84,6 +85,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Kein Datum ausgewählt"),
         "noDocumentsExisting":
             MessageLookupByLibrary.simpleMessage("Keine Dokumente vorhanden"),
+        "notes": MessageLookupByLibrary.simpleMessage("Notizen"),
         "openSettings":
             MessageLookupByLibrary.simpleMessage("Einstellungen öffnen"),
         "ready": MessageLookupByLibrary.simpleMessage("Bereit"),

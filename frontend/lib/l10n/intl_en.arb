@@ -37,6 +37,7 @@
   "deleteDocument": "Delete {document}?",
   "confirm": "Confirm",
   "image": "Image",
+  "calculate": "Calculate",
   "recalculate": "Recalculate",
   "scan": "Scan",
   "header": "Header",
@@ -60,5 +61,6 @@
   "dropHere": "Drop here",
   "accessDeniedTitle": "Access Denied",
   "accessDeniedContent": "The app needs permission to access photos from your gallery.",
-  "openSettings": "Open Settings"
+  "openSettings": "Open Settings",
+  "notes": "Notes"
 }

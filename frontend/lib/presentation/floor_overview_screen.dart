@@ -209,7 +209,7 @@ class _FloorOverviewScreenState extends ConsumerState<FloorOverviewScreen> {
           title: S.current.scan,
           files: _form.scans,
           iconData: Icons.cloud_upload,
-          iconText: S.current.recalculate,
+          iconText: S.current.calculate,
           onPickFiles: () async {
             final result = <SelectedFile>[];
             for (final capture in _form.captures) {
@@ -409,7 +409,7 @@ class _FloorOverviewScreenState extends ConsumerState<FloorOverviewScreen> {
                                                     _form.notes = value;
                                                     _setIsDirty();
                                                   },
-                                                  decoration: outlinedInputDecoration(labelText: S.current.document),
+                                                  decoration: outlinedInputDecoration(labelText: S.current.notes),
                                                   minLines: 4,
                                                   maxLines: null,
                                                 ),

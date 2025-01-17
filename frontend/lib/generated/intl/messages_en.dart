@@ -36,6 +36,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Access Denied"),
         "add": MessageLookupByLibrary.simpleMessage("Add"),
         "back": MessageLookupByLibrary.simpleMessage("Back"),
+        "calculate": MessageLookupByLibrary.simpleMessage("Calculate"),
         "cancel": MessageLookupByLibrary.simpleMessage("Cancel"),
         "capture": MessageLookupByLibrary.simpleMessage("Capture"),
         "changeDate": MessageLookupByLibrary.simpleMessage("Change date"),
@@ -82,6 +83,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("No date selected"),
         "noDocumentsExisting":
             MessageLookupByLibrary.simpleMessage("No documents existing"),
+        "notes": MessageLookupByLibrary.simpleMessage("Notes"),
         "openSettings": MessageLookupByLibrary.simpleMessage("Open Settings"),
         "ready": MessageLookupByLibrary.simpleMessage("Ready"),
         "recalculate": MessageLookupByLibrary.simpleMessage("Recalculate"),
