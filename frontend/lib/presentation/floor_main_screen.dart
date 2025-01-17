@@ -593,14 +593,19 @@ class _FloorMainScreenState extends ConsumerState<FloorMainScreen> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       if (_toggleSwitchKey.currentState?.selectedOption == DocumentViewType.grid)
-                        FloorDropdownSort<DocumentSortType>(
-                          options: DocumentSortType.values,
-                          labels: {for (final sortType in DocumentSortType.values) sortType: sortType.name},
-                          value: _sortType,
-                          sortDirection: _sortDirection,
-                          onOptionChanged: (value) {
-                            sortDocumentPreviews(_documentPreviews!, sortType: value);
-                          },
+                        Flexible(
+                          child: SizedBox(
+                            width: 200,
+                            child: FloorDropdownSort<DocumentSortType>(
+                              options: DocumentSortType.values,
+                              labels: {for (final sortType in DocumentSortType.values) sortType: sortType.name},
+                              value: _sortType,
+                              sortDirection: _sortDirection,
+                              onOptionChanged: (value) {
+                                sortDocumentPreviews(_documentPreviews!, sortType: value);
+                              },
+                            ),
+                          ),
                         )
                       else if (_toggleSwitchKey.currentState != null && !_isSelectionMode && useDesktopLayout)
                         FloorOutlinedButton(

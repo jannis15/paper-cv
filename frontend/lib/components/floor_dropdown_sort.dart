@@ -46,25 +46,33 @@ class FloorDropdownSortState<E extends Enum> extends State<FloorDropdownSort<E>>
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          InkWell(
-            borderRadius: borderRadius(0),
-            onTap: () {
-              widget.onOptionChanged(widget.value);
-            },
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: AppSizes.kSmallGap),
-              height: AppSizes.kComponentHeight,
-              child: RowGap(
-                mainAxisSize: MainAxisSize.min,
-                gap: AppSizes.kSmallGap,
-                children: [
-                  Icon(
-                    widget.sortDirection == SortDirection.ascending ? Icons.arrow_upward : Icons.arrow_downward,
-                    size: AppSizes.kSubIconSize,
-                    color: colorScheme.secondary,
-                  ),
-                  Text(widget.labels[widget.value]!)
-                ],
+          Expanded(
+            child: InkWell(
+              borderRadius: borderRadius(0),
+              onTap: () {
+                widget.onOptionChanged(widget.value);
+              },
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: AppSizes.kSmallGap),
+                height: AppSizes.kComponentHeight,
+                child: RowGap(
+                  mainAxisSize: MainAxisSize.min,
+                  gap: AppSizes.kSmallGap,
+                  children: [
+                    Icon(
+                      widget.sortDirection == SortDirection.ascending ? Icons.arrow_upward : Icons.arrow_downward,
+                      size: AppSizes.kSubIconSize,
+                      color: colorScheme.secondary,
+                    ),
+                    Flexible(
+                      child: Text(
+                        widget.labels[widget.value]!,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    )
+                  ],
+                ),
               ),
             ),
           ),
