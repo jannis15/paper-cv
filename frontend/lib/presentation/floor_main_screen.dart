@@ -407,28 +407,6 @@ class _FloorMainScreenState extends ConsumerState<FloorMainScreen> {
                     )
                   ],
                 ),
-                confirmDismiss: _isSelectionMode || useDesktopLayout
-                    ? null
-                    : (dismissDirection) async {
-                        final alertOption = await showAlertDialog(
-                          context,
-                          title:
-                              S.current.deleteDocument(documentPreview.title.trim().isNotEmpty ? documentPreview.title : S.current.untitledDocument),
-                          content: S.current.documentDeletionWarning,
-                          optionData: [
-                            AlertOptionData.cancel(),
-                            AlertOptionData.yes(customText: S.current.delete),
-                          ],
-                        );
-                        return alertOption == AlertOption.yes;
-                      },
-                onDismissed: _isSelectionMode || useDesktopLayout
-                    ? null
-                    : (dismissDirection) async {
-                        if (documentPreview.uuid != null) {
-                          await FloorRepository.deleteDocumentById(documentPreview.uuid!);
-                        }
-                      },
               ),
             ),
           );
