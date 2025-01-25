@@ -79,6 +79,25 @@ class _FloorEditTableScreenState extends ConsumerState<FloorEditTableScreen> {
     }
   }
 
+  void _doRecalculation() async {
+    _isRecalculating = true;
+    setState(() {});
+    try {
+      final ScanRecalculationDto response = await FloorRepository.recalculateScan(
+        ScanRecalculationDto(
+          cellTexts: _form.cellTexts,
+          templateNo: 1,
+        ),
+      );
+      _form.cellTexts.clear();
+      _form.cellTexts.addAll(response.cellTexts);
+      _resyncTextControllers();
+    } finally {
+      _isRecalculating = false;
+      if (mounted) setState(() {});
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -118,46 +137,51 @@ class _FloorEditTableScreenState extends ConsumerState<FloorEditTableScreen> {
   Widget build(BuildContext context) {
     final settings = ref.watch(settingsNotifierProvider);
     Widget buildScrollTable() => FloorScroll(
-          child: Table(
-            columnWidths: {
-              for (int i = 0; i < _form.columnWidthsCm.length; i++) i: FixedColumnWidth(_form.columnWidthsCm[i] * 50),
-            },
-            children: _form.cellTexts[0]
-                .mapIndexed(
-                  (rowIdx, _) => TableRow(
-                    children: _form.cellTexts.mapIndexed((colIdx, _) {
-                      final bool isTextEmpty = _controllers[colIdx][rowIdx]?.value.text.isEmpty ?? false;
-                      return Padding(
-                        padding: EdgeInsets.symmetric(horizontal: AppSizes.kSmallGap),
-                        child: _editableMap[colIdx][rowIdx]
-                            ? FloorTextField(
-                                controller: _controllers[colIdx][rowIdx],
-                                decoration: InputDecoration(
-                                    hintText: isTextEmpty ? '[...]' : null,
-                                    hintStyle: textTheme.bodyMedium?.copyWith(color: colorScheme.outline.withOpacity(.5)),
-                                    border: InputBorder.none),
-                                style: textTheme.bodyMedium?.copyWith(
-                                  fontWeight: rowIdx == 0 ? FontWeight.bold : FontWeight.normal,
-                                ),
-                                onChanged: (value) {
-                                  _form.cellTexts[colIdx][rowIdx] = value;
-                                },
-                              )
-                            : Text(
-                                _form.cellTexts[colIdx][rowIdx],
-                                style: textTheme.bodyMedium?.copyWith(
-                                  color: Color.alphaBlend(
-                                    colorScheme.onSurface.withOpacity(.5),
-                                    colorScheme.surface,
+          child: Column(
+            children: [
+              Table(
+                columnWidths: {
+                  for (int i = 0; i < _form.columnWidthsCm.length; i++) i: FixedColumnWidth(_form.columnWidthsCm[i] * 50),
+                },
+                children: _form.cellTexts[0]
+                    .mapIndexed(
+                      (rowIdx, _) => TableRow(
+                        children: _form.cellTexts.mapIndexed((colIdx, _) {
+                          final bool isTextEmpty = _controllers[colIdx][rowIdx]?.value.text.isEmpty ?? false;
+                          return Padding(
+                            padding: EdgeInsets.symmetric(horizontal: AppSizes.kSmallGap),
+                            child: _editableMap[colIdx][rowIdx]
+                                ? FloorTextField(
+                                    controller: _controllers[colIdx][rowIdx],
+                                    decoration: InputDecoration(
+                                        hintText: isTextEmpty ? '[...]' : null,
+                                        hintStyle: textTheme.bodyMedium?.copyWith(color: colorScheme.outline.withOpacity(.5)),
+                                        border: InputBorder.none),
+                                    style: textTheme.bodyMedium?.copyWith(
+                                      fontWeight: rowIdx == 0 ? FontWeight.bold : FontWeight.normal,
+                                    ),
+                                    onChanged: (value) {
+                                      _form.cellTexts[colIdx][rowIdx] = value;
+                                    },
+                                  )
+                                : Text(
+                                    _form.cellTexts[colIdx][rowIdx],
+                                    style: textTheme.bodyMedium?.copyWith(
+                                      color: Color.alphaBlend(
+                                        colorScheme.onSurface.withOpacity(.5),
+                                        colorScheme.surface,
+                                      ),
+                                      fontWeight: rowIdx == 0 ? FontWeight.bold : FontWeight.normal,
+                                    ),
                                   ),
-                                  fontWeight: rowIdx == 0 ? FontWeight.bold : FontWeight.normal,
-                                ),
-                              ),
-                      );
-                    }).toList(),
-                  ),
-                )
-                .toList(),
+                          );
+                        }).toList(),
+                      ),
+                    )
+                    .toList(),
+              ),
+              if (!_isRecalculating && !useDesktopLayout) SizedBox(height: 64 + 10),
+            ],
           ),
         );
 
@@ -168,11 +192,37 @@ class _FloorEditTableScreenState extends ConsumerState<FloorEditTableScreen> {
           onPressed: () => _saveChanges(settings),
         );
 
+    Widget buildShowImageButton() => FloorOutlinedButton(
+          iconData: _showImage ? Icons.visibility : Icons.visibility_off,
+          text: S.current.image,
+          onPressed: () {
+            setState(() {
+              _showImage = !_showImage;
+            });
+          },
+        );
+
+    Widget buildRecalculateButton() => FloorOutlinedButton(
+          text: S.current.recalculate,
+          onPressed: _doRecalculation,
+        );
+
     return FloorLoaderOverlay(
       loading: _isRecalculating,
       child: FloorLayoutBody(
         title: Text(S.current.scan),
-        actions: useDesktopLayout ? null : [buildConfirmButton(settings)],
+        actions: useDesktopLayout
+            ? null
+            : [
+                buildShowImageButton(),
+                buildConfirmButton(settings),
+              ],
+        floatingActionButton: !useDesktopLayout && !_isRecalculating
+            ? FloatingActionButton.extended(
+                onPressed: _doRecalculation,
+                label: Text(S.current.recalculate),
+              )
+            : null,
         sideChildren: useDesktopLayout
             ? [
                 FloorTransparentButton(
@@ -182,52 +232,26 @@ class _FloorEditTableScreenState extends ConsumerState<FloorEditTableScreen> {
                 ),
                 Divider(),
                 if (_capture != null) ...[
-                  FloorOutlinedButton(
-                    iconData: _showImage ? Icons.visibility : Icons.visibility_off,
-                    text: S.current.image,
-                    onPressed: () {
-                      setState(() {
-                        _showImage = !_showImage;
-                      });
-                    },
-                  ),
+                  buildShowImageButton(),
                   Divider(),
                 ],
-                FloorOutlinedButton(
-                  text: S.current.recalculate,
-                  onPressed: () async {
-                    _isRecalculating = true;
-                    setState(() {});
-                    try {
-                      final ScanRecalculationDto response = await FloorRepository.recalculateScan(
-                        ScanRecalculationDto(
-                          cellTexts: _form.cellTexts,
-                          templateNo: 1,
-                        ),
-                      );
-                      _form.cellTexts.clear();
-                      _form.cellTexts.addAll(response.cellTexts);
-                      _resyncTextControllers();
-                    } finally {
-                      _isRecalculating = false;
-                      if (mounted) setState(() {});
-                    }
-                  },
-                ),
+                buildRecalculateButton(),
                 buildConfirmButton(settings),
               ]
             : [],
-        child: _showImage && _capture != null && useDesktopLayout
+        child: _showImage && _capture != null
             ? Padding(
                 padding: EdgeInsets.all(AppSizes.kSmallGap),
                 child: LayoutBuilder(
                   builder: (context, constraints) {
-                    return RowGap(
-                      gap: AppSizes.kSmallGap,
+                    return FlexGap(
+                      separator: useDesktopLayout ? SizedBox(width: AppSizes.kSmallGap) : SizedBox(height: AppSizes.kSmallGap),
+                      direction: useDesktopLayout ? Axis.horizontal : Axis.vertical,
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         SizedBox(
-                          width: constraints.maxWidth * 0.4,
+                          height: useDesktopLayout ? null : constraints.maxHeight * 0.4,
+                          width: useDesktopLayout ? constraints.maxWidth * 0.4 : null,
                           child: FloorCard(
                             usePadding: false,
                             child: InteractiveViewer(
