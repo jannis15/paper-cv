@@ -20,6 +20,7 @@ class FloorButton extends StatelessWidget {
   final FloorButtonType type;
 
   FloorButton({
+    super.key,
     this.iconData,
     this.text,
     this.onPressed,
@@ -97,6 +98,7 @@ class FloorButton extends StatelessWidget {
 
 class FloorTransparentButton extends FloorButton {
   FloorTransparentButton({
+    super.key,
     super.iconData,
     super.foregroundColor,
     super.text,
@@ -108,6 +110,7 @@ class FloorTransparentButton extends FloorButton {
 
 class FloorOutlinedButton extends FloorButton {
   FloorOutlinedButton({
+    super.key,
     super.iconData,
     super.text,
     super.onPressed,
@@ -118,6 +121,7 @@ class FloorOutlinedButton extends FloorButton {
 
 class FloorFilledButton extends FloorButton {
   FloorFilledButton({
+    super.key,
     super.iconData,
     super.text,
     super.onPressed,

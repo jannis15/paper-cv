@@ -6,6 +6,7 @@ import 'package:paper_cv/components/floor_card.dart';
 import 'package:paper_cv/components/floor_dropdown_sort.dart';
 import 'package:paper_cv/components/floor_icon_button.dart';
 import 'package:paper_cv/components/floor_layout_body.dart';
+import 'package:paper_cv/components/floor_onboarding.dart';
 import 'package:paper_cv/components/floor_wrap_view.dart';
 import 'package:paper_cv/config/config.dart';
 import 'package:paper_cv/config/settings_notifier.dart';
@@ -37,6 +38,9 @@ class FloorMainScreen extends ConsumerStatefulWidget {
 class _FloorMainScreenState extends ConsumerState<FloorMainScreen> {
   DocumentPreviewDto? _hoverDocumentPreview;
   List<DocumentPreviewDto>? _documentPreviews;
+  bool _isFirstBuild = true;
+  late bool _isDesktop;
+  GlobalKey? _createKey = GlobalKey();
   final GlobalKey<FloorToggleSwitchState<DocumentViewType>> _toggleSwitchKey = GlobalKey();
   final ScrollController _scrollController = ScrollController();
   late Stream<List<DocumentPreviewDto>> _previewStream;
@@ -114,6 +118,23 @@ class _FloorMainScreenState extends ConsumerState<FloorMainScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (_isFirstBuild) {
+      _isDesktop = useDesktopLayout;
+      _isFirstBuild = false;
+    } else {
+      if (_isDesktop != useDesktopLayout) {
+        _isDesktop = !_isDesktop;
+        _createKey = null;
+        WidgetsBinding.instance.addPostFrameCallback(
+          (_) {
+            if (mounted)
+              setState(() {
+                _createKey = GlobalKey();
+              });
+          },
+        );
+      }
+    }
     final settings = ref.watch(settingsNotifierProvider);
     final settingsNotifier = ref.watch(settingsNotifierProvider.notifier);
     _showBanner = settings.showAdBanner;
@@ -182,7 +203,7 @@ class _FloorMainScreenState extends ConsumerState<FloorMainScreen> {
       DataRow _buildDataRow(DocumentPreviewDto documentPreview) {
         final bool isRowSelected = _isSelectionMode && _selectedDocuments.contains(documentPreview);
         return DataRow(
-          onLongPress: useDesktopLayout
+          onLongPress: _isDesktop
               ? null
               : () {
                   _selectDocument(documentPreview);
@@ -289,7 +310,7 @@ class _FloorMainScreenState extends ConsumerState<FloorMainScreen> {
               );
             },
           ),
-          if (!useDesktopLayout) SizedBox(height: 64),
+          if (!_isDesktop) SizedBox(height: 64),
         ],
       );
     }
@@ -313,7 +334,7 @@ class _FloorMainScreenState extends ConsumerState<FloorMainScreen> {
                 borderRadius: BorderRadius.all(Radius.circular(AppSizes.kBorderRadius)),
               ),
               child: FloorCard(
-                onLongPress: useDesktopLayout
+                onLongPress: _isDesktop
                     ? null
                     : () {
                         _isSelectionMode = !_isSelectionMode;
@@ -426,235 +447,240 @@ class _FloorMainScreenState extends ConsumerState<FloorMainScreen> {
             itemsPerRow: itemsPerRow,
             aspectRatio: 29.7 / 21,
             children: documentPreviews.map(_buildPreviewCard).toList(),
-            endGap: useDesktopLayout ? null : SizedBox(height: 64),
+            endGap: _isDesktop ? null : SizedBox(height: 64),
           );
         },
       );
     }
 
-    return PopScope(
-      canPop: false,
-      onPopInvokedWithResult: (didPop, result) async {
-        if (!didPop) {
-          if (_isSelectionMode) {
-            _disableSelectionMode();
-            setState(() {});
-            return;
+    return FloorOnboarding(
+      child: PopScope(
+        canPop: false,
+        onPopInvokedWithResult: (didPop, result) async {
+          if (!didPop) {
+            if (_isSelectionMode) {
+              _disableSelectionMode();
+              setState(() {});
+              return;
+            }
+            final alertResult = await showAlertDialog(
+              context,
+              title: S.current.leaveApp,
+              optionData: [
+                AlertOptionData.cancel(),
+                AlertOptionData.yes(customText: S.current.leave),
+              ],
+            );
+            if (alertResult == AlertOption.yes) {
+              SystemNavigator.pop();
+            }
           }
-          final alertResult = await showAlertDialog(
-            context,
-            title: S.current.leaveApp,
-            optionData: [
-              AlertOptionData.cancel(),
-              AlertOptionData.yes(customText: S.current.leave),
-            ],
-          );
-          if (alertResult == AlertOption.yes) {
-            SystemNavigator.pop();
-          }
-        }
-      },
-      child: FloorLayoutBody(
-        title: _isSelectionMode && !useDesktopLayout
-            ? Text(_selectedText)
-            : RowGap(
-                gap: AppSizes.kSmallGap,
-                crossAxisAlignment: CrossAxisAlignment.baseline,
-                children: [
-                  Text('PaperCV'),
-                  Text(
-                    '${packageInfo.version}+${packageInfo.buildNumber}',
-                    style: textTheme.labelMedium?.copyWith(color: colorScheme.outline),
-                  ),
-                ],
-              ),
-        actions: [
-          FloorAppBarIconButton(
-            tooltip: S.current.settings,
-            iconData: Icons.settings,
-            onPressed: () {
-              Navigator.of(context).push(
-                PageRouteBuilder(
-                  pageBuilder: (_, __, ___) => FloorSettingsScreen(),
-                  transitionDuration: Duration(seconds: 0),
+        },
+        child: FloorLayoutBody(
+          title: _isSelectionMode && !_isDesktop
+              ? Text(_selectedText)
+              : RowGap(
+                  gap: AppSizes.kSmallGap,
+                  crossAxisAlignment: CrossAxisAlignment.baseline,
+                  children: [
+                    Text('PaperCV'),
+                    Text(
+                      '${packageInfo.version}+${packageInfo.buildNumber}',
+                      style: textTheme.labelMedium?.copyWith(color: colorScheme.outline),
+                    ),
+                  ],
                 ),
-              );
-            },
-          ),
-        ],
-        floatingActionButton: useDesktopLayout
-            ? null
-            : _isSelectionMode
-                ? RowGap(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    gap: AppSizes.kSmallGap,
-                    children: [
-                      FloatingActionButton.extended(
-                        heroTag: UniqueKey(),
-                        icon: Icon(Icons.delete),
-                        label: Text(S.current.delete),
-                        backgroundColor: _selectedDocuments.isEmpty ? Color.alphaBlend(colorScheme.surface.withOpacity(.75), Colors.red) : Colors.red,
-                        foregroundColor:
-                            _selectedDocuments.isEmpty ? Color.alphaBlend(colorScheme.surface.withOpacity(.75), Colors.white) : Colors.white,
-                        onPressed: _selectedDocuments.isEmpty ? null : _deleteSelectedDocuments,
-                      ),
-                      FloatingActionButton.extended(
-                        heroTag: UniqueKey(),
-                        icon: Icon(Icons.cancel),
-                        label: Text(S.current.cancel),
-                        backgroundColor: colorScheme.surfaceContainer,
-                        foregroundColor: colorScheme.onSurface,
-                        onPressed: () {
-                          _disableSelectionMode();
-                          setState(() {});
-                        },
-                      ),
-                    ],
-                  )
-                : ColumnGap(
-                    gap: AppSizes.kGap,
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      FloatingActionButton.extended(
-                        heroTag: UniqueKey(),
-                        onPressed: _openOverviewScreen,
-                        icon: Icon(Icons.post_add),
-                        label: Text(S.current.create),
-                      )
-                    ],
+          actions: [
+            FloorAppBarIconButton(
+              tooltip: S.current.settings,
+              iconData: Icons.settings,
+              onPressed: () {
+                Navigator.of(context).push(
+                  PageRouteBuilder(
+                    pageBuilder: (_, __, ___) => FloorSettingsScreen(),
+                    transitionDuration: Duration(seconds: 0),
                   ),
-        sideChildren: [
-          FloorOutlinedButton(
-            text: S.current.create,
-            iconData: Icons.post_add,
-            onPressed: _openOverviewScreen,
-          ),
-        ],
-        child: SingleChildScrollView(
-          controller: _scrollController,
-          padding: EdgeInsets.all(AppSizes.kGap),
-          child: Align(
-            alignment: Alignment.topCenter,
-            child: SizedBox(
-              width: AppSizes.kDesktopWidth,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  AnimatedSize(
-                    duration: Duration(milliseconds: 200),
-                    curve: Curves.easeIn,
-                    child: _showBanner
-                        ? Padding(
-                            padding: EdgeInsets.only(bottom: AppSizes.kGap),
-                            child: FloorContactBanner(
-                              onCloseBanner: () async {
-                                await settingsNotifier.setShowAdBanner(false);
-                                _showBanner = false;
-                                setState(() {});
-                              },
-                            ),
-                          )
-                        : SizedBox(),
-                  ),
-                  AnimatedSize(
-                    duration: Duration(milliseconds: 200),
-                    curve: Curves.easeIn,
-                    child: _isSelectionMode && useDesktopLayout
-                        ? Padding(
-                            padding: EdgeInsets.only(bottom: AppSizes.kGap),
-                            child: FloorCard(
-                              usePadding: false,
-                              child: Padding(
-                                padding: EdgeInsets.all(AppSizes.kSmallGap),
-                                child: RowGap(
-                                  gap: AppSizes.kGap,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    FloorIconButton(
-                                      backgroundColor: Colors.transparent,
-                                      iconData: Icons.close,
-                                      onPressed: () {
-                                        _disableSelectionMode();
-                                        if (mounted) setState(() {});
-                                      },
-                                    ),
-                                    Text(_selectedText, style: textTheme.labelLarge),
-                                    FloorIconButton(
-                                      backgroundColor: Colors.transparent,
-                                      iconData: Icons.delete,
-                                      onPressed: _selectedDocuments.isEmpty ? null : _deleteSelectedDocuments,
-                                    ),
-                                  ],
+                );
+              },
+            ),
+          ],
+          floatingActionButton: _isDesktop
+              ? null
+              : _isSelectionMode
+                  ? RowGap(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      gap: AppSizes.kSmallGap,
+                      children: [
+                        FloatingActionButton.extended(
+                          heroTag: UniqueKey(),
+                          icon: Icon(Icons.delete),
+                          label: Text(S.current.delete),
+                          backgroundColor:
+                              _selectedDocuments.isEmpty ? Color.alphaBlend(colorScheme.surface.withOpacity(.75), Colors.red) : Colors.red,
+                          foregroundColor:
+                              _selectedDocuments.isEmpty ? Color.alphaBlend(colorScheme.surface.withOpacity(.75), Colors.white) : Colors.white,
+                          onPressed: _selectedDocuments.isEmpty ? null : _deleteSelectedDocuments,
+                        ),
+                        FloatingActionButton.extended(
+                          heroTag: UniqueKey(),
+                          icon: Icon(Icons.cancel),
+                          label: Text(S.current.cancel),
+                          backgroundColor: colorScheme.surfaceContainer,
+                          foregroundColor: colorScheme.onSurface,
+                          onPressed: () {
+                            _disableSelectionMode();
+                            setState(() {});
+                          },
+                        ),
+                      ],
+                    )
+                  : ColumnGap(
+                      gap: AppSizes.kGap,
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        FloatingActionButton.extended(
+                          key: _createKey,
+                          heroTag: UniqueKey(),
+                          onPressed: _openOverviewScreen,
+                          icon: Icon(Icons.post_add),
+                          label: Text(S.current.create),
+                        )
+                      ],
+                    ),
+          sideChildren: [
+            FloorOutlinedButton(
+              key: _createKey,
+              text: S.current.create,
+              iconData: Icons.post_add,
+              onPressed: _openOverviewScreen,
+            ),
+          ],
+          child: SingleChildScrollView(
+            controller: _scrollController,
+            padding: EdgeInsets.all(AppSizes.kGap),
+            child: Align(
+              alignment: Alignment.topCenter,
+              child: SizedBox(
+                width: AppSizes.kDesktopWidth,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    AnimatedSize(
+                      duration: Duration(milliseconds: 200),
+                      curve: Curves.easeIn,
+                      child: _showBanner
+                          ? Padding(
+                              padding: EdgeInsets.only(bottom: AppSizes.kGap),
+                              child: FloorContactBanner(
+                                onCloseBanner: () async {
+                                  await settingsNotifier.setShowAdBanner(false);
+                                  _showBanner = false;
+                                  setState(() {});
+                                },
+                              ),
+                            )
+                          : SizedBox(),
+                    ),
+                    AnimatedSize(
+                      duration: Duration(milliseconds: 200),
+                      curve: Curves.easeIn,
+                      child: _isSelectionMode && _isDesktop
+                          ? Padding(
+                              padding: EdgeInsets.only(bottom: AppSizes.kGap),
+                              child: FloorCard(
+                                usePadding: false,
+                                child: Padding(
+                                  padding: EdgeInsets.all(AppSizes.kSmallGap),
+                                  child: RowGap(
+                                    gap: AppSizes.kGap,
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: [
+                                      FloorIconButton(
+                                        backgroundColor: Colors.transparent,
+                                        iconData: Icons.close,
+                                        onPressed: () {
+                                          _disableSelectionMode();
+                                          if (mounted) setState(() {});
+                                        },
+                                      ),
+                                      Text(_selectedText, style: textTheme.labelLarge),
+                                      FloorIconButton(
+                                        backgroundColor: Colors.transparent,
+                                        iconData: Icons.delete,
+                                        onPressed: _selectedDocuments.isEmpty ? null : _deleteSelectedDocuments,
+                                      ),
+                                    ],
+                                  ),
                                 ),
+                              ),
+                            )
+                          : SizedBox(),
+                    ),
+                    RowGap(
+                      gap: AppSizes.kSmallGap,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        if (_toggleSwitchKey.currentState?.selectedOption == DocumentViewType.grid)
+                          Flexible(
+                            child: SizedBox(
+                              width: 200,
+                              child: FloorDropdownSort<DocumentSortType>(
+                                options: DocumentSortType.values,
+                                labels: {for (final sortType in DocumentSortType.values) sortType: sortType.name},
+                                value: _sortType,
+                                sortDirection: _sortDirection,
+                                onOptionChanged: (value) {
+                                  sortDocumentPreviews(_documentPreviews!, sortType: value);
+                                },
                               ),
                             ),
                           )
-                        : SizedBox(),
-                  ),
-                  RowGap(
-                    gap: AppSizes.kSmallGap,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      if (_toggleSwitchKey.currentState?.selectedOption == DocumentViewType.grid)
-                        Flexible(
-                          child: SizedBox(
-                            width: 200,
-                            child: FloorDropdownSort<DocumentSortType>(
-                              options: DocumentSortType.values,
-                              labels: {for (final sortType in DocumentSortType.values) sortType: sortType.name},
-                              value: _sortType,
-                              sortDirection: _sortDirection,
-                              onOptionChanged: (value) {
-                                sortDocumentPreviews(_documentPreviews!, sortType: value);
-                              },
-                            ),
-                          ),
-                        )
-                      else if (_toggleSwitchKey.currentState != null && !_isSelectionMode && useDesktopLayout)
-                        FloorOutlinedButton(
-                          text: S.current.select,
-                          onPressed: () {
-                            _isSelectionMode = true;
+                        else if (_toggleSwitchKey.currentState != null && !_isSelectionMode && _isDesktop)
+                          FloorOutlinedButton(
+                            text: S.current.select,
+                            onPressed: () {
+                              _isSelectionMode = true;
+                              setState(() {});
+                            },
+                          )
+                        else
+                          SizedBox(),
+                        FloorToggleSwitch<DocumentViewType>(
+                          key: _toggleSwitchKey,
+                          icons: [Icons.list, Icons.grid_view],
+                          options: DocumentViewType.values,
+                          initialOption: DocumentViewType.grid,
+                          labels: DocumentViewType.values.map((value) => value.label).toList(),
+                          onOptionChanged: (value) {
                             setState(() {});
                           },
-                        )
-                      else
-                        SizedBox(),
-                      FloorToggleSwitch<DocumentViewType>(
-                        key: _toggleSwitchKey,
-                        icons: [Icons.list, Icons.grid_view],
-                        options: DocumentViewType.values,
-                        initialOption: DocumentViewType.grid,
-                        labels: DocumentViewType.values.map((value) => value.label).toList(),
-                        onOptionChanged: (value) {
-                          setState(() {});
-                        },
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: AppSizes.kGap),
-                  StreamBuilder(
-                    stream: _previewStream,
-                    builder: (context, snapshot) {
-                      if (snapshot.hasError) {
-                        return Text(snapshot.error.toString(), style: TextStyle(color: colorScheme.error));
-                      } else if (snapshot.connectionState == ConnectionState.waiting || !snapshot.hasData) {
-                        return Center(child: CircularProgressIndicator());
-                      } else {
-                        _documentPreviews = snapshot.data!;
-                        if (_documentPreviews!.isEmpty) {
-                          return Text(S.current.noDocumentsExisting);
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: AppSizes.kGap),
+                    StreamBuilder(
+                      stream: _previewStream,
+                      builder: (context, snapshot) {
+                        if (snapshot.hasError) {
+                          return Text(snapshot.error.toString(), style: TextStyle(color: colorScheme.error));
+                        } else if (snapshot.connectionState == ConnectionState.waiting || !snapshot.hasData) {
+                          return Center(child: CircularProgressIndicator());
                         } else {
-                          return _toggleSwitchKey.currentState?.selectedOption == DocumentViewType.list
-                              ? buildListView(_documentPreviews!)
-                              : buildGridView(_documentPreviews!);
+                          _documentPreviews = snapshot.data!;
+                          if (_documentPreviews!.isEmpty) {
+                            return Text(S.current.noDocumentsExisting);
+                          } else {
+                            return _toggleSwitchKey.currentState?.selectedOption == DocumentViewType.list
+                                ? buildListView(_documentPreviews!)
+                                : buildGridView(_documentPreviews!);
+                          }
                         }
-                      }
-                    },
-                  ),
-                ],
+                      },
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
