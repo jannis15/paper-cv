@@ -3,10 +3,10 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:paper_cv/config/system.dart';
 import 'package:paper_cv/config/text_theme.dart';
 import 'package:paper_cv/generated/l10n.dart';
-import 'package:paper_cv/package_info.dart';
-import 'package:paper_cv/presentation/floor_main_screen.dart';
+import 'package:paper_cv/features/document/presentation/screens/floor_list_screen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:paper_cv/package_info.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'config/settings_notifier.dart';
@@ -72,7 +72,7 @@ class MyApp extends ConsumerWidget {
       locale: Locale(settings.locale),
       initialRoute: '/home',
       routes: {
-        '/home': (_) => const FloorMainScreen(),
+        '/home': (_) => const FloorListScreen(),
       },
     );
   }

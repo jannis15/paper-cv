@@ -1,10 +1,10 @@
 import 'package:dio/dio.dart';
 import 'package:paper_cv/config/config.dart';
-import 'package:paper_cv/utils/list_utils.dart';
+import 'package:paper_cv/core/utils/list_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_logs/flutter_logs.dart';
 import '../generated/l10n.dart';
-import 'mobile_system.dart' if (dart.library.html) 'web_system.dart';
+import 'system.mobile.dart' if (dart.library.html) 'system.web.dart';
 
 GlobalKey<NavigatorState> navigatorKey = GlobalKey();
 
