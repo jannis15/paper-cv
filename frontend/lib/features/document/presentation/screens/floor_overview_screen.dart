@@ -15,7 +15,7 @@ import 'package:paper_cv/core/components/floor_loader_overlay.dart';
 import 'package:paper_cv/core/components/floor_text_field.dart';
 import 'package:paper_cv/config/config.dart';
 import 'package:paper_cv/features/document/domain/models/floor_models.dart';
-import 'package:paper_cv/features/document/data/repositories/floor_repository.dart';
+import 'package:paper_cv/features/document/data/repositories/floor_repository_impl.dart';
 import 'package:paper_cv/features/document/presentation/screens/floor_edit_table_screen.dart';
 import 'package:paper_cv/features/document/presentation/screens/floor_table_selection_screen.dart';
 import 'package:paper_cv/core/utils/date_format_utils.dart';

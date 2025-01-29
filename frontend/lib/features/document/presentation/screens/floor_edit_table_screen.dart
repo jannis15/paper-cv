@@ -9,7 +9,7 @@ import 'package:paper_cv/core/components/floor_loader_overlay.dart';
 import 'package:paper_cv/core/components/floor_text_field.dart';
 import 'package:paper_cv/config/config.dart';
 import 'package:paper_cv/features/document/domain/models/floor_models.dart';
-import 'package:paper_cv/features/document/data/repositories/floor_repository.dart';
+import 'package:paper_cv/features/document/data/repositories/floor_repository_impl.dart';
 import 'package:paper_cv/core/utils/file_picker_models.dart';
 import 'package:paper_cv/core/utils/list_utils.dart';
 import 'package:paper_cv/core/utils/widget_utils.dart';
@@ -19,7 +19,6 @@ import 'package:paper_cv/generated/l10n.dart';
 
 import '../../../../config/settings.dart';
 import '../../../../config/settings_notifier.dart';
-import '../states/scan_state.dart';
 
 class FloorEditTableScreen extends ConsumerStatefulWidget {
   final SelectedFile file;
@@ -41,7 +40,7 @@ class _FloorEditTableScreenState extends ConsumerState<FloorEditTableScreen> {
   bool _isRecalculating = false;
   late final SelectedFile? _capture;
   late List<List<TextEditingController?>> _controllers;
-  late final ScanState _form;
+  late final ScanForm _form;
   late final List<List<bool>> _editableMap;
 
   void _setEditableForColumns(List<List<bool>> editableMap, List<int> columns) {

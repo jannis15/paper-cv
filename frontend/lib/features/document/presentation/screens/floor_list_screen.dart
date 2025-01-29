@@ -11,7 +11,7 @@ import 'package:paper_cv/core/components/floor_wrap_view.dart';
 import 'package:paper_cv/config/config.dart';
 import 'package:paper_cv/config/settings_notifier.dart';
 import 'package:paper_cv/features/document/domain/models/floor_models.dart';
-import 'package:paper_cv/features/document/data/repositories/floor_repository.dart';
+import 'package:paper_cv/features/document/data/repositories/floor_repository_impl.dart';
 import 'package:paper_cv/core/components/floor_contact_banner.dart';
 import 'package:paper_cv/generated/l10n.dart';
 import 'package:paper_cv/package_info.dart';
@@ -27,22 +27,31 @@ import 'package:timeago_flutter/timeago_flutter.dart';
 import '../../../../core/components/floor_toggle_switch.dart';
 import '../../../../core/utils/sort_enums.dart';
 import '../../../../core/utils/navigator_utils.dart';
-import '../states/list_state.dart';
+
+enum _DocumentViewType {
+  list,
+  grid;
+
+  String get label => switch (this) {
+        _DocumentViewType.list => S.current.list,
+        _DocumentViewType.grid => S.current.tile,
+      };
+}
 
 class FloorListScreen extends ConsumerStatefulWidget {
   const FloorListScreen({super.key});
 
   @override
-  ConsumerState<FloorListScreen> createState() => _FloorMainScreenState();
+  ConsumerState<FloorListScreen> createState() => _FloorListScreenState();
 }
 
-class _FloorMainScreenState extends ConsumerState<FloorListScreen> {
+class _FloorListScreenState extends ConsumerState<FloorListScreen> {
   DocumentPreviewDto? _hoverDocumentPreview;
   List<DocumentPreviewDto>? _documentPreviews;
   bool _isFirstBuild = true;
   late bool _isDesktop;
   GlobalKey? _createKey = GlobalKey();
-  final GlobalKey<FloorToggleSwitchState<DocumentViewType>> _toggleSwitchKey = GlobalKey();
+  final GlobalKey<FloorToggleSwitchState<_DocumentViewType>> _toggleSwitchKey = GlobalKey();
   final ScrollController _scrollController = ScrollController();
   late Stream<List<DocumentPreviewDto>> _previewStream;
   late bool _showBanner;
@@ -623,7 +632,7 @@ class _FloorMainScreenState extends ConsumerState<FloorListScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        if (_toggleSwitchKey.currentState?.selectedOption == DocumentViewType.grid)
+                        if (_toggleSwitchKey.currentState?.selectedOption == _DocumentViewType.grid)
                           Flexible(
                             child: SizedBox(
                               width: 200,
@@ -648,12 +657,12 @@ class _FloorMainScreenState extends ConsumerState<FloorListScreen> {
                           )
                         else
                           SizedBox(),
-                        FloorToggleSwitch<DocumentViewType>(
+                        FloorToggleSwitch<_DocumentViewType>(
                           key: _toggleSwitchKey,
                           icons: [Icons.list, Icons.grid_view],
-                          options: DocumentViewType.values,
-                          initialOption: DocumentViewType.grid,
-                          labels: DocumentViewType.values.map((value) => value.label).toList(),
+                          options: _DocumentViewType.values,
+                          initialOption: _DocumentViewType.grid,
+                          labels: _DocumentViewType.values.map((value) => value.label).toList(),
                           onOptionChanged: (value) {
                             setState(() {});
                           },
@@ -673,7 +682,7 @@ class _FloorMainScreenState extends ConsumerState<FloorListScreen> {
                           if (_documentPreviews!.isEmpty) {
                             return Text(S.current.noDocumentsExisting);
                           } else {
-                            return _toggleSwitchKey.currentState?.selectedOption == DocumentViewType.list
+                            return _toggleSwitchKey.currentState?.selectedOption == _DocumentViewType.list
                                 ? buildListView(_documentPreviews!)
                                 : buildGridView(_documentPreviews!);
                           }

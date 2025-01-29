@@ -6,7 +6,6 @@ import 'package:paper_cv/core/utils/file_picker_models.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../../core/utils/enum_utils.dart';
-import '../../presentation/states/scan_state.dart';
 import '../../../../generated/l10n.dart';
 
 part 'floor_models.freezed.dart';
@@ -53,9 +52,10 @@ class ScanResultDto with _$ScanResultDto {
     @JsonKey(name: 'cell_texts') required List<List<String>> cellTexts,
   }) = _ScanResultDto;
 
-  factory ScanResultDto.fromJson(JsonObject json) => _$ScanResultDtoFromJson(json);
+  factory ScanResultDto.fromJson(JsonObject json) =>
+      _$ScanResultDtoFromJson(json);
 
-  ScanState toForm() => ScanState(
+  ScanForm toForm() => ScanForm(
         uuid: this.uuid ?? Uuid().v4(),
         refUuid: this.refUuid,
         columnWidthsCm: this.columnWidthsCm,
@@ -95,7 +95,8 @@ class SelectionDto with _$SelectionDto {
     required double y2,
   }) = _SelectionDto;
 
-  factory SelectionDto.fromJson(Map<String, dynamic> json) => _$SelectionDtoFromJson(json);
+  factory SelectionDto.fromJson(Map<String, dynamic> json) =>
+      _$SelectionDtoFromJson(json);
 }
 
 @freezed
@@ -105,7 +106,8 @@ class ScanRecalculationDto with _$ScanRecalculationDto {
     @JsonKey(name: 'template_no') required int templateNo,
   }) = _ScanRecalculationDto;
 
-  factory ScanRecalculationDto.fromJson(Map<String, dynamic> json) => _$ScanRecalculationDtoFromJson(json);
+  factory ScanRecalculationDto.fromJson(Map<String, dynamic> json) =>
+      _$ScanRecalculationDtoFromJson(json);
 }
 
 @freezed
@@ -118,7 +120,8 @@ class ScanPropertiesDto with _$ScanPropertiesDto {
     @JsonKey(name: 'template_no') required int templateNo,
   }) = _ScanPropertiesDto;
 
-  factory ScanPropertiesDto.fromJson(Map<String, dynamic> json) => _$ScanPropertiesDtoFromJson(json);
+  factory ScanPropertiesDto.fromJson(Map<String, dynamic> json) =>
+      _$ScanPropertiesDtoFromJson(json);
 }
 
 enum DocumentSortType {
@@ -198,5 +201,49 @@ class DocumentForm {
         reports = reports ?? [],
         selections = selections ?? {};
 
-  bool get selectionsReady => selections.entries.map((entry) => entry.value.isTSet).where((entry) => entry).length == captures.length;
+  bool get selectionsReady =>
+      selections.entries
+          .map((entry) => entry.value.isTSet)
+          .where((entry) => entry)
+          .length ==
+      captures.length;
+}
+
+class ScanForm {
+  String? uuid;
+  String refUuid;
+  List<double> columnWidthsCm;
+  double avgRowHeightCm;
+  int rows;
+  double tableXCm;
+  double tableYCm;
+  double imgWidthPx;
+  double imgHeightPx;
+  List<List<String>> cellTexts;
+
+  ScanForm({
+    this.uuid,
+    required this.refUuid,
+    required this.columnWidthsCm,
+    required this.avgRowHeightCm,
+    required this.rows,
+    required this.tableXCm,
+    required this.tableYCm,
+    required this.imgWidthPx,
+    required this.imgHeightPx,
+    required this.cellTexts,
+  });
+
+  ScanResultDto toDto() => ScanResultDto(
+        uuid: this.uuid,
+        refUuid: this.refUuid,
+        columnWidthsCm: this.columnWidthsCm,
+        avgRowHeightCm: this.avgRowHeightCm,
+        rows: this.rows,
+        tableXCm: this.tableXCm,
+        tableYCm: this.tableYCm,
+        imgWidthPx: this.imgWidthPx,
+        imgHeightPx: this.imgHeightPx,
+        cellTexts: this.cellTexts,
+      );
 }
