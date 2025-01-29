@@ -6,7 +6,7 @@ import 'package:paper_cv/generated/l10n.dart';
 import 'package:paper_cv/features/document/presentation/screens/floor_list_screen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:paper_cv/package_info.dart';
+import 'package:paper_cv/core/utils/package_info.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'config/settings_notifier.dart';

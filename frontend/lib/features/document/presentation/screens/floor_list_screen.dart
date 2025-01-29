@@ -14,7 +14,7 @@ import 'package:paper_cv/features/document/domain/models/floor_models.dart';
 import 'package:paper_cv/features/document/data/repositories/floor_repository_impl.dart';
 import 'package:paper_cv/core/components/floor_contact_banner.dart';
 import 'package:paper_cv/generated/l10n.dart';
-import 'package:paper_cv/package_info.dart';
+import 'package:paper_cv/core/utils/package_info.dart';
 import 'package:paper_cv/features/document/presentation/screens/floor_overview_screen.dart';
 import 'package:paper_cv/features/document/presentation/screens/floor_settings_screen.dart';
 import 'package:paper_cv/core/utils/alert_dialog.dart';
