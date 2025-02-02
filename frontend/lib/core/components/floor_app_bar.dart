@@ -3,7 +3,6 @@ import 'package:paper_cv/config/config.dart';
 import 'package:paper_cv/generated/l10n.dart';
 import 'package:paper_cv/core/utils/list_utils.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class FloorAppBarIconButton extends StatelessWidget {
   final IconData iconData;
@@ -23,7 +22,7 @@ class FloorAppBarIconButton extends StatelessWidget {
   }
 }
 
-class FloorAppBar extends ConsumerWidget implements PreferredSizeWidget {
+class FloorAppBar extends StatelessWidget implements PreferredSizeWidget {
   final Widget? title;
   final void Function()? customPop;
   final List<Widget>? actions;
@@ -39,7 +38,7 @@ class FloorAppBar extends ConsumerWidget implements PreferredSizeWidget {
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     bool useDesktopLayout() => MediaQuery.of(context).size.width >= AppSizes.kDesktopWidth;
     final bool noRouteBelow = (ModalRoute.of(context) == null || (ModalRoute.of(context)!.isFirst));
     return AppBar(
