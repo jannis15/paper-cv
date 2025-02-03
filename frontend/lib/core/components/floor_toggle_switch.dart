@@ -27,24 +27,24 @@ class FloorToggleSwitch<E extends Enum> extends StatefulWidget {
 class FloorToggleSwitchState<E extends Enum> extends State<FloorToggleSwitch<E>> {
   static const double _kOptionWidth = 60;
 
-  late E selectedOption;
+  late E _selectedOption;
 
   @override
   void initState() {
     super.initState();
-    selectedOption = widget.initialOption;
+    _selectedOption = widget.initialOption;
   }
 
   void _onOptionTapped(E option) {
     setState(() {
-      selectedOption = option;
+      _selectedOption = option;
     });
     widget.onOptionChanged(option);
   }
 
   Widget _buildOption(int index) {
     final borderRadius = AppSizes.kComponentHeight / 2;
-    final isSelected = selectedOption == widget.options[index];
+    final isSelected = _selectedOption == widget.options[index];
     final iconColor = isSelected ? colorScheme.onSecondary : colorScheme.onSurface;
     final checkIcon = isSelected ? Icon(Icons.check, color: colorScheme.onSecondary) : SizedBox.shrink();
     final optionColor = isSelected ? colorScheme.secondary : Colors.transparent;

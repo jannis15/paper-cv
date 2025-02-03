@@ -432,10 +432,10 @@ class $TbFileTable extends TbFile with TableInfo<$TbFileTable, TbFileData> {
   static const VerificationMeta _fileTypeMeta =
       const VerificationMeta('fileType');
   @override
-  late final GeneratedColumnWithTypeConverter<IJsonEnum<Enum>, int> fileType =
-      GeneratedColumn<int>('file_type', aliasedName, false,
+  late final GeneratedColumnWithTypeConverter<IJsonEnum<FileType>, int>
+      fileType = GeneratedColumn<int>('file_type', aliasedName, false,
               type: DriftSqlType.int, requiredDuringInsert: true)
-          .withConverter<IJsonEnum<Enum>>($TbFileTable.$converterfileType);
+          .withConverter<IJsonEnum<FileType>>($TbFileTable.$converterfileType);
   static const VerificationMeta _createdAtMeta =
       const VerificationMeta('createdAt');
   @override
@@ -534,7 +534,7 @@ class $TbFileTable extends TbFile with TableInfo<$TbFileTable, TbFileData> {
     return $TbFileTable(attachedDatabase, alias);
   }
 
-  static TypeConverter<IJsonEnum<Enum>, int> $converterfileType =
+  static TypeConverter<IJsonEnum<FileType>, int> $converterfileType =
       const EnumConverter(FileType.values);
 }
 
@@ -544,7 +544,7 @@ class TbFileData extends DataClass implements Insertable<TbFileData> {
   final String filename;
   final Uint8List data;
   final int? index;
-  final IJsonEnum<Enum> fileType;
+  final IJsonEnum<FileType> fileType;
   final DateTime createdAt;
   final DateTime modifiedAt;
   const TbFileData(
@@ -602,7 +602,7 @@ class TbFileData extends DataClass implements Insertable<TbFileData> {
       filename: serializer.fromJson<String>(json['filename']),
       data: serializer.fromJson<Uint8List>(json['data']),
       index: serializer.fromJson<int?>(json['index']),
-      fileType: serializer.fromJson<IJsonEnum<Enum>>(json['fileType']),
+      fileType: serializer.fromJson<IJsonEnum<FileType>>(json['fileType']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       modifiedAt: serializer.fromJson<DateTime>(json['modifiedAt']),
     );
@@ -616,7 +616,7 @@ class TbFileData extends DataClass implements Insertable<TbFileData> {
       'filename': serializer.toJson<String>(filename),
       'data': serializer.toJson<Uint8List>(data),
       'index': serializer.toJson<int?>(index),
-      'fileType': serializer.toJson<IJsonEnum<Enum>>(fileType),
+      'fileType': serializer.toJson<IJsonEnum<FileType>>(fileType),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'modifiedAt': serializer.toJson<DateTime>(modifiedAt),
     };
@@ -628,7 +628,7 @@ class TbFileData extends DataClass implements Insertable<TbFileData> {
           String? filename,
           Uint8List? data,
           Value<int?> index = const Value.absent(),
-          IJsonEnum<Enum>? fileType,
+          IJsonEnum<FileType>? fileType,
           DateTime? createdAt,
           DateTime? modifiedAt}) =>
       TbFileData(
@@ -693,7 +693,7 @@ class TbFileCompanion extends UpdateCompanion<TbFileData> {
   final Value<String> filename;
   final Value<Uint8List> data;
   final Value<int?> index;
-  final Value<IJsonEnum<Enum>> fileType;
+  final Value<IJsonEnum<FileType>> fileType;
   final Value<DateTime> createdAt;
   final Value<DateTime> modifiedAt;
   final Value<int> rowid;
@@ -714,7 +714,7 @@ class TbFileCompanion extends UpdateCompanion<TbFileData> {
     required String filename,
     required Uint8List data,
     this.index = const Value.absent(),
-    required IJsonEnum<Enum> fileType,
+    required IJsonEnum<FileType> fileType,
     required DateTime createdAt,
     required DateTime modifiedAt,
     this.rowid = const Value.absent(),
@@ -753,7 +753,7 @@ class TbFileCompanion extends UpdateCompanion<TbFileData> {
       Value<String>? filename,
       Value<Uint8List>? data,
       Value<int?>? index,
-      Value<IJsonEnum<Enum>>? fileType,
+      Value<IJsonEnum<FileType>>? fileType,
       Value<DateTime>? createdAt,
       Value<DateTime>? modifiedAt,
       Value<int>? rowid}) {
@@ -1667,7 +1667,7 @@ typedef $$TbFileTableCreateCompanionBuilder = TbFileCompanion Function({
   required String filename,
   required Uint8List data,
   Value<int?> index,
-  required IJsonEnum<Enum> fileType,
+  required IJsonEnum<FileType> fileType,
   required DateTime createdAt,
   required DateTime modifiedAt,
   Value<int> rowid,
@@ -1678,7 +1678,7 @@ typedef $$TbFileTableUpdateCompanionBuilder = TbFileCompanion Function({
   Value<String> filename,
   Value<Uint8List> data,
   Value<int?> index,
-  Value<IJsonEnum<Enum>> fileType,
+  Value<IJsonEnum<FileType>> fileType,
   Value<DateTime> createdAt,
   Value<DateTime> modifiedAt,
   Value<int> rowid,
@@ -1728,7 +1728,7 @@ class $$TbFileTableFilterComposer
   ColumnFilters<int> get index => $composableBuilder(
       column: $table.index, builder: (column) => ColumnFilters(column));
 
-  ColumnWithTypeConverterFilters<IJsonEnum<Enum>, IJsonEnum<Enum>, int>
+  ColumnWithTypeConverterFilters<IJsonEnum<FileType>, IJsonEnum<FileType>, int>
       get fileType => $composableBuilder(
           column: $table.fileType,
           builder: (column) => ColumnWithTypeConverterFilters(column));
@@ -1819,7 +1819,7 @@ class $$TbFileTableAnnotationComposer
   GeneratedColumn<int> get index =>
       $composableBuilder(column: $table.index, builder: (column) => column);
 
-  GeneratedColumnWithTypeConverter<IJsonEnum<Enum>, int> get fileType =>
+  GeneratedColumnWithTypeConverter<IJsonEnum<FileType>, int> get fileType =>
       $composableBuilder(column: $table.fileType, builder: (column) => column);
 
   GeneratedColumn<DateTime> get createdAt =>
@@ -1878,7 +1878,7 @@ class $$TbFileTableTableManager extends RootTableManager<
             Value<String> filename = const Value.absent(),
             Value<Uint8List> data = const Value.absent(),
             Value<int?> index = const Value.absent(),
-            Value<IJsonEnum<Enum>> fileType = const Value.absent(),
+            Value<IJsonEnum<FileType>> fileType = const Value.absent(),
             Value<DateTime> createdAt = const Value.absent(),
             Value<DateTime> modifiedAt = const Value.absent(),
             Value<int> rowid = const Value.absent(),
@@ -1900,7 +1900,7 @@ class $$TbFileTableTableManager extends RootTableManager<
             required String filename,
             required Uint8List data,
             Value<int?> index = const Value.absent(),
-            required IJsonEnum<Enum> fileType,
+            required IJsonEnum<FileType> fileType,
             required DateTime createdAt,
             required DateTime modifiedAt,
             Value<int> rowid = const Value.absent(),
