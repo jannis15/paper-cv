@@ -7,9 +7,11 @@ import 'package:paper_cv/features/document/domain/repositories/floor_repository.
 import '../../../../core/utils/sort_enums.dart';
 
 class FloorRepositoryImpl implements FloorRepository {
+  FloorRepositoryImpl._();
+
   static FloorRepositoryImpl? _instance;
 
-  factory FloorRepositoryImpl() => _instance ??= FloorRepositoryImpl();
+  factory FloorRepositoryImpl() => _instance ??= FloorRepositoryImpl._();
 
   Stream<List<DocumentPreviewDto>> watchDocumentPreviews({
     required DocumentSortType sortType,
