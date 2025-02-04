@@ -74,7 +74,7 @@ class _FloorOverviewScreenState extends ConsumerState<FloorOverviewScreen> {
 
   void _asyncInit() async {
     try {
-      _form = await FloorRepository.getDocumentFormById(widget.documentId!);
+      _form = await FloorRepositoryImpl().getDocumentFormById(widget.documentId!);
     } finally {
       _isLoading = false;
       if (mounted) setState(() {});
@@ -91,7 +91,7 @@ class _FloorOverviewScreenState extends ConsumerState<FloorOverviewScreen> {
     try {
       _form.title = _form.title.trim();
       _form.notes = _form.notes.trim();
-      await FloorRepository.saveDocumentForm(_form);
+      await FloorRepositoryImpl().saveDocumentForm(_form);
     } finally {
       _isSaving = false;
       if (mounted) setState(() {});
@@ -213,7 +213,7 @@ class _FloorOverviewScreenState extends ConsumerState<FloorOverviewScreen> {
             final result = <SelectedFile>[];
             for (final capture in _form.captures) {
               final selection = _form.selections[capture]!;
-              final scanResult = await FloorRepository.scanCapture(
+              final scanResult = await FloorRepositoryImpl().scanCapture(
                 capture,
                 ScanPropertiesDto(
                   refUuid: capture.uuid,
@@ -277,7 +277,7 @@ class _FloorOverviewScreenState extends ConsumerState<FloorOverviewScreen> {
 
             final results = await FutureAggregator.waitForAll<SelectedFile>([
               ..._form.scans.map(
-                (scan) => FloorRepository.exportXLSX(ScanResultDto.fromJson(jsonDecode(utf8.decode(scan.data))), locale: settings.locale),
+                (scan) => FloorRepositoryImpl().exportXLSX(ScanResultDto.fromJson(jsonDecode(utf8.decode(scan.data))), locale: settings.locale),
               ),
               _createPdf(),
             ]);

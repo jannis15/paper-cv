@@ -81,7 +81,7 @@ class _FloorEditTableScreenState extends ConsumerState<FloorEditTableScreen> {
     _isRecalculating = true;
     setState(() {});
     try {
-      final ScanRecalculationDto response = await FloorRepository.recalculateScan(
+      final ScanRecalculationDto response = await FloorRepositoryImpl().recalculateScan(
         ScanRecalculationDto(
           cellTexts: _form.cellTexts,
           templateNo: 1,

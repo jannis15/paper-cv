@@ -2,22 +2,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paper_cv/features/document/presentation/states/floor_list_state.dart';
 
 import '../../../../core/utils/sort_enums.dart';
-import '../../data/repositories/floor_repository_impl.dart';
 import '../../domain/models/floor_models.dart';
+import '../../domain/repositories/floor_repository.dart';
 
 class FloorListProvider extends Cubit<FloorListState> {
   late Stream<List<DocumentPreviewDto>> _previewStream;
+  late final FloorRepository _repository;
 
-  void _assignPreviewStream({
-    required DocumentSortType documentSortType,
-    required SortDirection sortDirection,
-  }) =>
-      _previewStream = FloorRepository.watchDocumentPreviews(
-        sortType: documentSortType,
-        sortDirection: sortDirection,
-      );
-
-  FloorListProvider() : super(FloorListState.loading()) {
+  FloorListProvider({required FloorRepository repository}) : super(FloorListState.loading()) {
+    _repository = repository;
     _assignPreviewStream(
       documentSortType: DocumentSortType.documentDate,
       sortDirection: SortDirection.descending,
@@ -32,6 +25,15 @@ class FloorListProvider extends Cubit<FloorListState> {
       },
     );
   }
+
+  void _assignPreviewStream({
+    required DocumentSortType documentSortType,
+    required SortDirection sortDirection,
+  }) =>
+      _previewStream = _repository.watchDocumentPreviews(
+        sortType: documentSortType,
+        sortDirection: sortDirection,
+      );
 
   void disableSelectionMode() {
     state.whenOrNull(
@@ -124,7 +126,7 @@ class FloorListProvider extends Cubit<FloorListState> {
     state.whenOrNull(
       data: (documentPreviews, isSelectionMode, selectedDocuments, documentViewType, sortType, sortDirection) async {
         for (final document in selectedDocuments) {
-          await FloorRepository.deleteDocumentById(document.uuid!);
+          await _repository.deleteDocumentById(document.uuid);
         }
       },
     );

@@ -26,7 +26,7 @@ enum SelectionType implements IJsonEnum<SelectionType> {
 @freezed
 class DocumentPreviewDto with _$DocumentPreviewDto {
   const factory DocumentPreviewDto({
-    required String? uuid,
+    required String uuid,
     required String title,
     required DateTime createdAt,
     required DateTime modifiedAt,
@@ -52,8 +52,7 @@ class ScanResultDto with _$ScanResultDto {
     @JsonKey(name: 'cell_texts') required List<List<String>> cellTexts,
   }) = _ScanResultDto;
 
-  factory ScanResultDto.fromJson(JsonObject json) =>
-      _$ScanResultDtoFromJson(json);
+  factory ScanResultDto.fromJson(JsonObject json) => _$ScanResultDtoFromJson(json);
 
   ScanForm toForm() => ScanForm(
         uuid: this.uuid ?? Uuid().v4(),
@@ -95,8 +94,7 @@ class SelectionDto with _$SelectionDto {
     required double y2,
   }) = _SelectionDto;
 
-  factory SelectionDto.fromJson(Map<String, dynamic> json) =>
-      _$SelectionDtoFromJson(json);
+  factory SelectionDto.fromJson(Map<String, dynamic> json) => _$SelectionDtoFromJson(json);
 }
 
 @freezed
@@ -106,8 +104,7 @@ class ScanRecalculationDto with _$ScanRecalculationDto {
     @JsonKey(name: 'template_no') required int templateNo,
   }) = _ScanRecalculationDto;
 
-  factory ScanRecalculationDto.fromJson(Map<String, dynamic> json) =>
-      _$ScanRecalculationDtoFromJson(json);
+  factory ScanRecalculationDto.fromJson(Map<String, dynamic> json) => _$ScanRecalculationDtoFromJson(json);
 }
 
 @freezed
@@ -120,8 +117,7 @@ class ScanPropertiesDto with _$ScanPropertiesDto {
     @JsonKey(name: 'template_no') required int templateNo,
   }) = _ScanPropertiesDto;
 
-  factory ScanPropertiesDto.fromJson(Map<String, dynamic> json) =>
-      _$ScanPropertiesDtoFromJson(json);
+  factory ScanPropertiesDto.fromJson(Map<String, dynamic> json) => _$ScanPropertiesDtoFromJson(json);
 }
 
 enum DocumentSortType {
@@ -201,12 +197,7 @@ class DocumentForm {
         reports = reports ?? [],
         selections = selections ?? {};
 
-  bool get selectionsReady =>
-      selections.entries
-          .map((entry) => entry.value.isTSet)
-          .where((entry) => entry)
-          .length ==
-      captures.length;
+  bool get selectionsReady => selections.entries.map((entry) => entry.value.isTSet).where((entry) => entry).length == captures.length;
 }
 
 class ScanForm {

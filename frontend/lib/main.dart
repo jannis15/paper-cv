@@ -36,8 +36,8 @@ void main() async {
   final settings = await container.read(settingsFutureProvider.future);
   if (settings.locale.isEmpty) {
     await container.read(settingsNotifierProvider.notifier).setLocale(
-          PlatformDispatcher.instance.locale.languageCode,
-        );
+      PlatformDispatcher.instance.locale.languageCode,
+    );
   }
   timeago.setLocaleMessages('de', timeago.DeMessages());
   timeago.setLocaleMessages('en', timeago.EnMessages());

@@ -10,6 +10,7 @@ import 'package:paper_cv/core/components/floor_layout_body.dart';
 import 'package:paper_cv/core/components/floor_wrap_view.dart';
 import 'package:paper_cv/config/config.dart';
 import 'package:paper_cv/config/settings_notifier.dart';
+import 'package:paper_cv/features/document/data/repositories/floor_repository_impl.dart';
 import 'package:paper_cv/features/document/domain/models/floor_models.dart';
 import 'package:paper_cv/core/components/floor_contact_banner.dart';
 import 'package:paper_cv/features/document/presentation/providers/floor_list_provider.dart';
@@ -346,7 +347,7 @@ class _FloorListScreenState extends ConsumerState<FloorListScreen> {
     }
 
     return BlocProvider<FloorListProvider>(
-      create: (context) => FloorListProvider(),
+      create: (context) => FloorListProvider(repository: FloorRepositoryImpl()),
       child: BlocBuilder<FloorListProvider, FloorListState>(
         builder: (context, state) => PopScope(
           canPop: false,
